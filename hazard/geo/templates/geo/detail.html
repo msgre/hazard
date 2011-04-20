@@ -1,0 +1,16 @@
+{% extends "bone.html" %}
+
+{% block content %}
+    <div class="box" id="info_box">
+        <p><strong class="big">{{ entry.dperc|floatformat:0 }}%</strong> výherních automatů
+        a terminálů v obci {{ entry.title }} je <strong>provozováno
+        protiprávně</strong>.{# TODO: slovni skore #}</p>
+        <p>O jednu hernu se zde "dělí" {{ entry.dper_population|floatformat:0 }}
+        lidí, na ploše 1&nbsp;km<sup>2</sup> se nachází
+        {{ entry.dper_area|floatformat:1 }} automatů.</p>
+    </div>
+{% endblock %}
+
+{% block inline_js %}
+    window.hells = {{ hells|json }};
+{% endblock %}

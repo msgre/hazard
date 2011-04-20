@@ -1,0 +1,33 @@
+.right {
+    text-align:right;
+}
+
+.big {
+    font-size:400%;
+    font-weight:bold;
+    float:left;
+    padding:0 10px 2px 0;
+    margin:0;
+}
+
+#id_buildings, #id_hells {
+    width:98%;
+}
+
+#info_box {
+    position:fixed;
+    right:60px;
+    top:80px;
+    width:200px;
+    z-index:100;
+}
+
+body {
+    height:600px;
+    z-index:0;
+}
+
+#header {
+    position:fixed;
+    z-index:100;
+}

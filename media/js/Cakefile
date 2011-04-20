@@ -1,0 +1,68 @@
+# https://gist.github.com/860272
+#
+# Tento Cakefile definuje 2 prikazy:
+#
+# * "build" spoji vice *.coffee souboru do jedineho a zkompiluje jej do vysledneho
+#   javascriptu. To, ktere soubory patri k sobe je definovano v hashi appFiles.
+#   Klic je nazev vystupniho souboru (ulozi se do adresare `out`), hodnoty nazvy
+#   souboru z adresare `source` bez pripony '.coffee'
+# * "watch" sleduje zmeny v adresari `src` a pokud detekuje zmenu v nekterem z
+#   .coffee souboru, vyvolava "build"
+#
+# Po pravde, moc tomu nerozumim, ale zrejme to facha.
+#
+# Vice informaci:
+#
+# * https://github.com/jashkenas/coffee-script/wiki/[HowTo]-Compiling-and-Setting-Up-Build-Tools
+# * https://github.com/jashkenas/coffee-script/blob/master/src/command.coffee#L74
+# * https://github.com/jashkenas/coffee-script/blob/master/Cakefile
+# * http://howtonode.org/control-flow
+# * http://jashkenas.github.com/coffee-script/documentation/docs/cake.html
+
+fs     = require 'fs'
+path   = require 'path'
+{exec} = require 'child_process'
+
+# vstupni adresar s *.coffee soubory
+source = 'src/'
+
+# vystupni adresar, kam se ukladaji zkompilovane javascripty
+out = 'lib/'
+
+# definuje, ktere soubory z adresare `source` se maji spojit
+appFiles  = {
+  'map_app': [
+    'map'
+  ]
+}
+
+# buffer s nactenymi obsahy souboru
+buffer = {}
+
+
+# pomocna fce, ktera zkompiluje soubory z buffer[name] do finalniho JS
+process = (name) ->
+  fs.writeFile "#{out}#{name}.coffee", buffer[name].join('\n\n'), 'utf8', (err) ->
+    throw err if err
+    exec "coffee --compile #{out}#{name}.coffee", (err, stdout, stderr) ->
+      throw err if err
+      fs.unlink "#{out}#{name}.coffee", (err) ->
+        throw err if err
+  console.log "Application #{name} compiled."
+
+
+task 'build', "Zkompiluje #{source}*.coffee soubory do jedineho vystupniho JS", ->
+  buffer = {}
+  for name, list of appFiles
+    buffer[name] = []
+    for file, index in list then do (file, index) ->
+      buffer[name].push(fs.readFileSync("#{source}#{file}.coffee", 'utf8'))
+    process(name)
+
+task 'watch', "Sleduje zmeny v adresari #{source} a automaticky spousti 'build'", (options) ->
+  fs.readdir source, (err, files) ->
+    for file in files
+      if path.extname(file) is '.coffee'
+        fs.watchFile path.join(source, file), {persistent: true, interval: 500}, (curr, prev) ->
+          return if curr.size is prev.size and curr.mtime.getTime() is prev.mtime.getTime()
+          invoke('build')
