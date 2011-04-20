@@ -189,3 +189,8 @@ COMPRESS_CSS_FILTERS = [
     'compressor.filters.css_default.CssAbsoluteFilter',
     'compressor.filters.cssmin.CSSMinFilter',
 ]
+
+try:
+    from local_settings import *
+except ImportError:
+    pass
