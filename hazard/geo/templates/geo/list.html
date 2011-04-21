@@ -1,0 +1,17 @@
+{% extends "bone.html" %}
+
+{% block content %}
+    <h3>Hitparáda</h3>
+    <p>Která města a obce jsou ta "nejlepší" v protizákonných povolováních
+    výherních automatů?</p>
+    <table>
+        {% for entry in entries %}
+            <tr>
+                <td><a href="{{ entry.get_absolute_url }}">{{ entry.title }}</a></td>
+                <td class="tright">{{ entry.dperc|floatformat:0 }}%</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <p><em><strong>Poznámka</strong>: Číslo v tabulce vyjadřuje kolik procent
+    heren na území obce provozuje svou živnost na zakázaných místech.</em></p>
+{% endblock %}

@@ -1,16 +1,14 @@
 {% extends "bone.html" %}
 
 {% block content %}
-    <div class="box" id="info_box">
-        <h3>Nový záznam</h3>
-        <p>Chcete zjistit situaci i ve svém městě či obci? Je to jednoduché
-        &mdash; připravte si s pomocí Google maps seznam veřejných
-        budov a heren, a vložte je do tohoto formuláře.</p>
-        <p><a href="">Nevíte si rady? Mrkněte na instruktážní video</a></p>
-        <form method="post" action="."> {# TODO: #}
-            {% csrf_token %}
-            {{ form.as_p }}
-            <input type="submit" value="Odeslat" />
-        </form>
-    </div>
+    <h3>Přidat obec</h3>
+    <p>Chcete zjistit situaci i ve svém městě či obci? Je to jednoduché
+    &mdash; připravte si s pomocí Google maps seznam veřejných
+    budov a heren, a vložte je do tohoto formuláře.</p>
+    <p><a href="#">Návod na výrobu mapy</a></p>
+    <form method="post" action="."> {# TODO: #}
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Nahrát mapy" />
+    </form>
 {% endblock %}

@@ -1,13 +1,19 @@
-.right {
+.tright {
     text-align:right;
 }
 
 .big {
-    font-size:400%;
+    font-size:120%;
+}
+.percentage {
+    line-height:100%;
+    font-size:500%;
     font-weight:bold;
-    float:left;
-    padding:0 10px 2px 0;
+    padding:0 0 20px 0;
     margin:0;
+    float:left;
+    padding:0 15px 10px 0;
+    /*color:#e53404;*/
 }
 
 #id_buildings, #id_hells {
@@ -15,19 +21,61 @@
 }
 
 #info_box {
+    background:#333;
+    color:#eee;
     position:fixed;
-    right:60px;
-    top:80px;
-    width:200px;
+    left:30px;
+    top:30px;
+    width:300px;
     z-index:100;
+    padding:15px 20px;
+}
+#info_box h1,
+#info_box h2,
+#info_box h3,
+#info_box h4,
+#info_box h5,
+#info_box h6 {
+    color:#eee;
+}
+#info_box a {
+    color:#ffc31e;
+    text-decoration:none;
+}
+#info_box a:hover {
+    color:#ffc31e;
+    text-decoration:underline;
+}
+
+
+.inner_box {
+    padding:15px 20px;
+    background:#ffc31e;
+    color:#333;
+    margin-bottom:15px;
 }
 
 body {
-    height:600px;
+    height:700px;
+    width:100%;
     z-index:0;
 }
 
 #header {
     position:fixed;
     z-index:100;
+}
+
+table {
+    border-top:1px dotted #eee;
+    border-collapse: collapse;
+}
+td {
+    border-bottom:1px dotted #eee;
+}
+tbody tr:nth-child(even) td, tbody tr.even td {
+    background:transparent;
+}
+#nav {
+    padding-top:5px;
 }

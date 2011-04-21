@@ -1,16 +1,27 @@
 {% extends "bone.html" %}
 
+{% load shared %}
+
 {% block content %}
-    <div class="box" id="info_box">
-        <p><strong class="big">{{ entry.dperc|floatformat:0 }}%</strong> výherních automatů
-        a terminálů v obci {{ entry.title }} je <strong>provozováno
-        protiprávně</strong>.{# TODO: slovni skore #}</p>
-        <p>O jednu hernu se zde "dělí" {{ entry.dper_population|floatformat:0 }}
-        lidí, na ploše 1&nbsp;km<sup>2</sup> se nachází
-        {{ entry.dper_area|floatformat:1 }} automatů.</p>
-    </div>
+    <h3>{{ entry.title }}</h3>
+
+    <p><strong class="percentage">{{ entry.dperc|floatformat:0 }}%</strong>
+    heren v této v obci je <strong>provozováno protiprávně</strong>.</p>
+
+    <p class="clear" id="detailed_info">Další zajímavosti</p>
+    <ul>
+        <li>Na území obce existuje celkem {{ entry.dhell_count|floatformat:0 }}&nbsp;heren, z čehož pouze {{ entry.dok_hell_count|floatformat:0 }} jich je na povolených místech</li>
+        <li>Na jednu hernu připadá {{ entry.dper_population|floatformat:0 }} obyvatel</li>
+        <li>Na 1&nbsp;km<sup>2</sup> území obce se nalézá {{ entry.dper_area|floatformat:2 }} herny</li>
+    </ul>
 {% endblock %}
 
 {% block inline_js %}
+    /*<![CDATA[*/
+    {# TODO: zkratit floaty na mensi retezce #}
     window.hells = {{ hells|json }};
+    window.buildings = {{ buildings|json }};
+    window.zones = {{ zones|json }};
+    /*]]>*/
+
 {% endblock %}

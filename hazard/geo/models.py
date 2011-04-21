@@ -137,6 +137,7 @@ class Hell(CommonInfo):
     """
     point = geomodels.PointField(u"Poloha")
     zones = models.ManyToManyField(Zone, related_name='hells', verbose_name=u'Zakázané zóny')
+    uzone = models.ForeignKey(Zone, editable=False, blank=True, null=True)
     zones_calculated = models.BooleanField(editable=False, default=False)
 
     class Meta:
@@ -159,6 +160,21 @@ class Hell(CommonInfo):
         self.zones.add(*zones)
         self.zones_calculated = True
         self.save()
+
+    def calculate_uzone(self):
+        """
+        Udela sjednoceni vsech zon, ktere se k herne vazou. Vysledkem je jediny
+        velky polygon.
+        """
+        uzone = None
+        for zone in self.zones.all():
+            if uzone:
+                uzone = zone.poly.union(uzone)
+            else:
+                uzone = zone.poly
+        if uzone:
+            self.uzone = Zone.objects.create(poly=uzone)
+            self.save()
 
     def is_in_conflict(self):
         if not self.zones_calculated:

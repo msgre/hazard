@@ -20,8 +20,8 @@ class KMLForm(forms.Form):
     Formular pro zadani KML souboru s popisem obrysu verejnych budov a bodu
     s hernami.
     """
-    buildings = forms.URLField(label=u'URL s popisem veřejných budov')
-    hells     = forms.URLField(label=u'URL s popisem heren')
+    buildings = forms.URLField(label=u'Mapa veřejných budov')
+    hells     = forms.URLField(label=u'Mapa heren')
 
     err_wrong = u"Hm... Se zadaným odkazem si neporadím. Je to skutečně odkaz na KML soubor?"
     err_down = u"Nepovedlo se mi stáhnout odkazovaný KML soubor. Zkuste prosím odeslat formulář znovu."
@@ -218,3 +218,4 @@ class KMLForm(forms.Form):
 
             # zjistime zony se kterymi ma podnik konflikt
             b.calculate_conflicts()
+            b.calculate_uzone()

@@ -26,6 +26,7 @@
 </head>
 <body id="body">
     <div class="container">
+    {% comment %}
         {# hlavicka #}
         <div id="header" class="box">
             {# logo #}
@@ -43,13 +44,23 @@
             </div>
         </div>
         <div class="clear"></div>
+    {% endcomment %}
 
         {# hlavni obsah #}
         <div id="content">
-            {% block content %}{% endblock %}
+            <div id="info_box">
+                <a href="/"><img src="{{ MEDIA_URL }}img/herny3.png" width="200" height="64" /></a>
+                <p id="nav"><a href="/">O projektu</a> | <a href="{% url entry-list %}">Hitparáda</a> | <a href="{% url entry-form %}">Přidat obec</a> | <a href="{% url contact %}">Kontakt</a></p>
+                {% block content %}{% endblock %}
+            </div>
         </div>
         <div id="map"></div>
     </div>
+    <script type="text/javascript">
+    //<![CDATA[
+        {% block inline_js%}{% endblock %}
+    //]]>
+    </script>
 </body>
 </html>
 {# vim: set et si ts=4 sw=4 syn=django: #}

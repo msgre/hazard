@@ -117,7 +117,9 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django_extensions',
+    'django.contrib.webdesign',
     'compressor',
+    'shared',
     'geo',
 )
 
@@ -189,8 +191,3 @@ COMPRESS_CSS_FILTERS = [
     'compressor.filters.css_default.CssAbsoluteFilter',
     'compressor.filters.cssmin.CSSMinFilter',
 ]
-
-try:
-    from local_settings import *
-except ImportError:
-    pass
