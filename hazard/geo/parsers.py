@@ -90,6 +90,8 @@ class KMLHandler(xml.sax.handler.ContentHandler):
                 self.placemark['name'].append(data)
             elif 'coordinates' in self.starts:
                 self.placemark['coordinates'].append(data)
+            elif 'description' in self.starts:
+                self.placemark['description'].append(data)
 
     def normalizedOutput(self, filter=None):
         """
@@ -108,6 +110,8 @@ class KMLHandler(xml.sax.handler.ContentHandler):
             # vycistime konkretni prvky
             if 'name' in item and item['name']:
                 item['name'] = item['name'][0].strip()
+            if 'description' in item and item['description']:
+                item['description'] = item['description'][0].strip()
             if 'type' in item and item['type']:
                 item['type'] = item['type'][0].strip()
             if 'coordinates' in item and item['coordinates']:
@@ -115,6 +119,7 @@ class KMLHandler(xml.sax.handler.ContentHandler):
                                        for i in item['coordinates']]
                 item['coordinates'] = [dict(zip(['lon', 'lat'], i)) for i in item['coordinates']]
 
+            print item
             if filter and item['type'] in filter:
                 out.append(item)
 

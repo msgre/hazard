@@ -101,10 +101,11 @@ setup = () ->
 
     # nastylovani mapy
     MAP_STYLE = [
-        {featureType:"landscape", elementType:"all", stylers:[{saturation:-100}]}
+        {featureType:"landscape", elementType:"all", stylers:[{saturation:-60}]}
         {featureType:"road", elementType:"all", stylers:[{saturation:-100}]}
-        {featureType:"water", elementType:"all", stylers:[{saturation:-100}]}
+        {featureType:"water", elementType:"all", stylers:[{saturation:-60}]}
         {featureType:"transit", elementType:"all", stylers:[{saturation:-100}]}
+        {featureType:"poi", elementType:"all", stylers:[{saturation:-100}]}
     ]
 
     false
@@ -252,8 +253,10 @@ click_handler = (ev) ->
 
     # zobrazime bublinu
     content = '<h4>' + @._data.title + '</h4>'
+    if @._data.description
+        content += @._data.description
     if @_data.conflict
-        content += '<p>Provoz herny <strong>je v rozporu se zákonem</strong>, protože v jejím okolí se nalézají tyto veřejné budovy:</p>'
+        content += '<p>Provoz herny <strong>je v rozporu se zákonem</strong>, protože v jejím okolí se nalézají tyto budovy:</p>'
         content += '<ul>'
         for building in @_data.buildings
             content += '<li><a id="b-' + building + '" onmouseover="javascript:window.mouseover_bubble_building(this)" onmouseout="javascript:window.mouseout_bubble_building(this)">' + window.buildings[building].title + '</a></li>'
@@ -314,12 +317,12 @@ draw_hells = () ->
 
     # focus na spendlosy
     if window.hells
-        console.log 'maslo'
         bounds = new google.maps.LatLngBounds(
             new google.maps.LatLng(sw[0], sw[1]),
             new google.maps.LatLng(ne[0], ne[1])
         )
         window.map.fitBounds(bounds)
+        window.map.panBy(-160, 0)
 
 
 ###

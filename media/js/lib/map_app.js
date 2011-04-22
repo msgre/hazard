@@ -63,7 +63,7 @@
         elementType: "all",
         stylers: [
           {
-            saturation: -100
+            saturation: -60
           }
         ]
       }, {
@@ -79,11 +79,19 @@
         elementType: "all",
         stylers: [
           {
-            saturation: -100
+            saturation: -60
           }
         ]
       }, {
         featureType: "transit",
+        elementType: "all",
+        stylers: [
+          {
+            saturation: -100
+          }
+        ]
+      }, {
+        featureType: "poi",
         elementType: "all",
         stylers: [
           {
@@ -299,8 +307,11 @@
     }
     dimm_hell(this);
     content = '<h4>' + this._data.title + '</h4>';
+    if (this._data.description) {
+      content += this._data.description;
+    }
     if (this._data.conflict) {
-      content += '<p>Provoz herny <strong>je v rozporu se zákonem</strong>, protože v jejím okolí se nalézají tyto veřejné budovy:</p>';
+      content += '<p>Provoz herny <strong>je v rozporu se zákonem</strong>, protože v jejím okolí se nalézají tyto budovy:</p>';
       content += '<ul>';
       _ref = this._data.buildings;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -365,9 +376,9 @@
       google.maps.event.addListener(MARKERS[id], 'click', click_handler);
     }
     if (window.hells) {
-      console.log('maslo');
       bounds = new google.maps.LatLngBounds(new google.maps.LatLng(sw[0], sw[1]), new google.maps.LatLng(ne[0], ne[1]));
-      return window.map.fitBounds(bounds);
+      window.map.fitBounds(bounds);
+      return window.map.panBy(-160, 0);
     }
   };
   /*

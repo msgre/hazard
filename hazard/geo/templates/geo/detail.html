@@ -2,6 +2,8 @@
 
 {% load shared %}
 
+{% block title %}Herny v obci {{ entry.title }}{% endblock %}
+
 {% block content %}
     <h3>{{ entry.title }}</h3>
 
@@ -10,9 +12,9 @@
 
     <p class="clear" id="detailed_info">Další zajímavosti</p>
     <ul>
-        <li>Na území obce existuje celkem {{ entry.dhell_count|floatformat:0 }}&nbsp;heren, z čehož pouze {{ entry.dok_hell_count|floatformat:0 }} jich je na povolených místech</li>
-        <li>Na jednu hernu připadá {{ entry.dper_population|floatformat:0 }} obyvatel</li>
-        <li>Na 1&nbsp;km<sup>2</sup> území obce se nalézá {{ entry.dper_area|floatformat:2 }} herny</li>
+        <li>Celkem {{ entry.dhell_count|floatformat:0 }}&nbsp;heren, {{ entry.dok_hell_count|floatformat:0 }} na povolených místech</li>
+        <li>{{ entry.dper_population|floatformat:0 }} obyvatel/hernu</li>
+        <li>{{ entry.dper_area|floatformat:2 }} herny/km<sup>2</sup></li>
     </ul>
 {% endblock %}
 

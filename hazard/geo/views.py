@@ -15,10 +15,17 @@ class EntryFormView(FormView):
     """
     form_class = KMLForm
     template_name = 'geo/form.html'
+    # # valmez
+    # initial = {
+    #     'buildings': 'http://maps.google.com/maps/ms?ie=UTF8&hl=cs&vps=2&jsv=332a&msa=0&output=nl&msid=217120881929273348625.00049e61b09dabeb67157',
+    #     'hells': 'http://maps.google.com/maps/ms?ie=UTF8&hl=cs&vps=4&jsv=332a&msa=0&output=nl&msid=217120881929273348625.0004a13fa50f7e1dc6c22'
+    # }
+    # brno
     initial = {
-        'buildings': 'http://maps.google.com/maps/ms?ie=UTF8&hl=cs&vps=2&jsv=332a&msa=0&output=nl&msid=217120881929273348625.00049e61b09dabeb67157',
-        'hells': 'http://maps.google.com/maps/ms?ie=UTF8&hl=cs&vps=1&jsv=332a&msa=0&output=nl&msid=217120881929273348625.0004a13fa50f7e1dc6c22'
+        'buildings': 'http://maps.google.com/maps/ms?ie=UTF8&hl=cs&vps=1&jsv=332a&msa=0&output=nl&msid=217120881929273348625.0004a1739eed3bb1f0f24',
+        'hells': 'http://maps.google.com/maps/ms?ie=UTF8&hl=cs&vps=1&jsv=332a&msa=0&output=nl&msid=217120881929273348625.0004a172ca42f5022bab1'
     }
+
 
     def form_valid(self, form):
         """
@@ -55,7 +62,7 @@ class EntryDetailView(DetailView):
 
         # pomocne promenne
         hells = dict([(i.id, {'title':i.title, 'pos':i.point.coords, \
-                     'conflict':i.in_conflict, \
+                     'description': i.description, 'conflict':i.in_conflict, \
                      'buildings':list(i.zones.all().values_list('building', flat=True)),
                      'uzone': i.uzone and i.uzone.poly.coords[0] or []}) \
                      for i in self.object.hell_set.all()])

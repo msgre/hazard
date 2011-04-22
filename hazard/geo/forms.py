@@ -5,6 +5,7 @@ import logging
 from django import forms
 from django.contrib.gis.geos import Polygon, Point
 from django.template.defaultfilters import iriencode
+from django.contrib.gis.gdal import CoordTransform, SpatialReference
 
 from hazard.shared.czech import slugify
 from hazard.geo.parsers import parse_xml, KMLHandler, LinkHandler, MediaWikiHandler
@@ -14,6 +15,9 @@ from hazard.geo.geocoders.google import geocode
 
 
 logger = logging.getLogger(__name__)
+
+M100 = 100 # okoli budov v metrech
+
 
 class KMLForm(forms.Form):
     """
@@ -27,7 +31,33 @@ class KMLForm(forms.Form):
     err_down = u"Nepovedlo se mi stáhnout odkazovaný KML soubor. Zkuste prosím odeslat formulář znovu."
 
     def clean_buildings(self):
-        return self._common_clean('buildings', 'polygon')
+        """
+        Budovy mohou byt v KML zadany budto jako polygony, nebo jako jednoduche
+        body (spendliky). Body se ale zde prevedenou na male kolecka (polygony),
+        protoze veskery ostatni kod s tim pocita.
+        """
+        # normalne rozparsujeme KML
+        url = self._common_clean('buildings', ['polygon', 'point'])
+
+        # no ale ted rozdelime vysledek na 2 hromadky: polygony a body
+        points = [i for i in self.buildings_data if i['type'] == 'point']
+        polys = [i for i in self.buildings_data if i['type'] != 'point']
+
+        # hromadku bodu prevedeme na malinke polygony (male kolca)
+        out = []
+        ct1 = CoordTransform(SpatialReference('WGS84'), SpatialReference(102065))
+        ct2 = CoordTransform(SpatialReference(102065), SpatialReference('WGS84'))
+        for point in points:
+            _point = Point(point['coordinates'][0]['lon'], point['coordinates'][0]['lat'], srid=4326)
+            m_point = _point.transform(ct1, clone=True)
+            m_point2 = m_point.buffer(3)
+            m_point2.transform(ct2)
+            point['coordinates'] = [dict(zip(['lon', 'lat'], i)) for i in m_point2.coords[0]]
+            out.append(point)
+
+        # no a vratime origos polygony a nase pretransformovane body na kolca
+        self.buildings_data = polys + out
+        return url
 
     def clean_hells(self):
         return self._common_clean('hells', 'point')
@@ -144,12 +174,11 @@ class KMLForm(forms.Form):
         data = self.find_entry_information()
 
         # zajistime jedinecny slug
-        slug = slugify(data['town'])
+        slug = slugify(data['town'][:99])
         if Entry.objects.filter(slug=slug).exists():
             slug = "%s-%i" % (slug, Entry.objects.all().order_by('-id').values_list('id', flat=True)[0] + 1)
 
         # vytvorime zaznam Entry
-        # TODO: mel bych nejak dynamicky menit m100, ale porad nevim podle jakeho algoritmu
         entry, created = Entry.objects.get_or_create(
             title        = data['town'],
             slug         = slug,
@@ -189,13 +218,13 @@ class KMLForm(forms.Form):
             b = Building.objects.create(
                 title       = building['name'],
                 description = building['description'],
-                slug        = slugify(building['name']),
+                slug        = slugify(building['name'][:99]),
                 entry       = entry,
                 poly        = poly
             )
 
             # vypocteme okoli budovy
-            b.calculate_zone(entry.m100)
+            b.calculate_zone(M100)
 
     def save_hells(self, entry):
         """
@@ -211,7 +240,7 @@ class KMLForm(forms.Form):
             b = Hell.objects.create(
                 title       = hell['name'],
                 description = hell['description'],
-                slug        = slugify(hell['name']),
+                slug        = slugify(hell['name'][:99]),
                 entry       = entry,
                 point       = point
             )

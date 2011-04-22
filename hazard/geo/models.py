@@ -11,14 +11,13 @@ from django.core.urlresolvers import reverse
 
 class Entry(models.Model):
     """
-    TODO:
+    Zaznam jedne obce/mesta.
     """
     title        = models.CharField(u"Název", max_length=200)
     slug         = models.SlugField(u"Webové jméno", max_length=100, unique=True)
     population   = models.IntegerField(u"Populace", blank=True, null=True)
     area         = models.IntegerField(u"Plocha katastrálního území", blank=True, null=True)
     wikipedia    = models.URLField(u"URL na Wikipedii", blank=True, null=True)
-    m100         = models.FloatField(u"Konstanta 100 m", default=152)
     hell_url     = models.URLField(u"URL na KML s popisem heren", blank=True, null=True)
     hell_kml     = models.TextField(editable=False)
     building_url = models.URLField(u"URL na KML s popisem veřejných budov", blank=True, null=True)
@@ -26,34 +25,22 @@ class Entry(models.Model):
     public       = models.BooleanField(u"Veřejný záznam", default=False)
     created      = models.DateTimeField(u"Datum vytvoření", auto_now_add=True, editable=False)
     # denormalizovane hodnoty
+    # TODO: popsat
     dperc           = models.FloatField(editable=False, default=0)
     dhell_count     = models.FloatField(editable=False, default=0)
-    dok_hell_count  = models.FloatField(editable=False, default=0) # TODO: popsat
+    dok_hell_count  = models.FloatField(editable=False, default=0)
     dper_population = models.FloatField(editable=False, default=0)
     dper_area       = models.FloatField(editable=False, default=0)
 
     class Meta:
-        verbose_name = u'?' # TODO:
-        verbose_name_plural = u'?' # TODO:
+        verbose_name = u'Záznam obce'
+        verbose_name_plural = u'Záznamy obcí'
 
     def __unicode__(self):
         return self.title
 
     def get_absolute_url(self):
         return reverse('entry-detail', kwargs={'slug': self.slug})
-
-    # def has_kml_change(self, type):
-    #     """
-    #     TODO:
-    #     """
-    #     kml = getattr(self, '%s_kml' % type)
-    #     current_hash = hashlib.sha224(kml).hexdigest()
-    #     url = getattr(self, '%s_url' % type)
-    #     f = urllib2.urlopen(url)
-    #     content = f.read()
-    #     f.close()
-    #     new_hash = hashlib.sha224(content).hexdigest()
-    #     return current_hash == new_hash
 
     def recalculate_denormalized_values(self, counts=False):
         """
@@ -115,15 +102,15 @@ class Building(CommonInfo):
         if self.zone:
             self.zone.delete()
 
-        # prepocteme WGS84 souradnice obrysu budovy do metrickych jednotek
-        ct1 = CoordTransform(SpatialReference('WGS84'), SpatialReference('EPSG:3785'))
+        # prepocteme WGS84 souradnice obrysu budovy do krovaka
+        ct1 = CoordTransform(SpatialReference('WGS84'), SpatialReference(102065))
         m_poly = self.poly.transform(ct1, clone=True)
 
         # vypocitame okoli/sousedstvi budovy
         zone = m_poly.buffer(distance)
 
         # prevedeme okoli zpet na WGS84
-        ct2 = CoordTransform(SpatialReference('EPSG:3785'), SpatialReference('WGS84'))
+        ct2 = CoordTransform(SpatialReference(102065), SpatialReference('WGS84'))
         zone.transform(ct2)
 
         # vytvorime v DB novy objekt
