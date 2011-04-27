@@ -128,7 +128,6 @@ class KMLForm(forms.Form):
         zadana pozice `pos`.
         """
         json = geocode("%(lat)s, %(lon)s" % pos, '') # TODO: API key
-        print json
         try:
             town = json['Placemark'][0]['AddressDetails']['Country']['AdministrativeArea']['SubAdministrativeArea']['SubAdministrativeAreaName']
         except (KeyError, IndexError):

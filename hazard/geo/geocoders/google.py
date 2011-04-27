@@ -4,7 +4,6 @@ from utils import simplejson, geocoder_factory
 # http://code.google.com/apis/maps/documentation/geocoding/index.html
 
 def geocode(q, api_key):
-    print q
     json = simplejson.load(urllib.urlopen(
         'http://maps.google.com/maps/geo?' + urllib.urlencode({
             'q': q.encode('utf-8'),

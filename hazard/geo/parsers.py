@@ -119,7 +119,6 @@ class KMLHandler(xml.sax.handler.ContentHandler):
                                        for i in item['coordinates']]
                 item['coordinates'] = [dict(zip(['lon', 'lat'], i)) for i in item['coordinates']]
 
-            print item
             if filter and item['type'] in filter:
                 out.append(item)
 
