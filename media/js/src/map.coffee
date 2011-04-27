@@ -253,7 +253,7 @@ click_handler = (ev) ->
 
     # zobrazime bublinu
     content = '<h4>' + @._data.title + '</h4>'
-    if @._data.description
+    if @._data.description and not /^#style\d+$/.test(@._data.description)
         content += @._data.description
     if @_data.conflict
         content += '<p>Provoz herny <strong>je v rozporu se zákonem</strong>, protože v jejím okolí se nalézají tyto budovy:</p>'
@@ -321,8 +321,9 @@ draw_hells = () ->
             new google.maps.LatLng(sw[0], sw[1]),
             new google.maps.LatLng(ne[0], ne[1])
         )
+        google.maps.event.addListenerOnce window.map, 'idle', () ->
+            window.map.panBy(-160, 0)
         window.map.fitBounds(bounds)
-        window.map.panBy(-160, 0)
 
 
 ###

@@ -307,7 +307,7 @@
     }
     dimm_hell(this);
     content = '<h4>' + this._data.title + '</h4>';
-    if (this._data.description) {
+    if (this._data.description && !/^#style\d+$/.test(this._data.description)) {
       content += this._data.description;
     }
     if (this._data.conflict) {
@@ -377,8 +377,10 @@
     }
     if (window.hells) {
       bounds = new google.maps.LatLngBounds(new google.maps.LatLng(sw[0], sw[1]), new google.maps.LatLng(ne[0], ne[1]));
-      window.map.fitBounds(bounds);
-      return window.map.panBy(-160, 0);
+      google.maps.event.addListenerOnce(window.map, 'idle', function() {
+        return window.map.panBy(-160, 0);
+      });
+      return window.map.fitBounds(bounds);
     }
   };
   /*
