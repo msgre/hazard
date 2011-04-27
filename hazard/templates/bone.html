@@ -1,17 +1,15 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!doctype html>
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
     <title>{% block title %}Herny{% endblock %}</title>
 
     {# Meta uzitecne pro Google, Seznam, Facebook #}
-    <meta name="description" content="TODO:" />
+    <meta name="description" content="TODO:">
 
     {# Facebook OpenGraph #}
-    <meta property="og:image" content="TODO:" />
-    <meta property="og:site_name" content="TODO:" />
-    <meta name="viewport" content="width=1024" />
+    <meta property="og:image" content="TODO:">
+    <meta property="og:site_name" content="TODO:">
+    <meta name="viewport" content="width=1024">
 
     {% load compress %}
     {% compress js %}
@@ -49,7 +47,7 @@
         {# hlavni obsah #}
         <div id="content">
             <div id="info_box">
-                <a href="/"><img src="{{ MEDIA_URL }}img/herny3.png" width="200" height="64" /></a>
+                <a href="/"><img src="{{ MEDIA_URL }}img/herny3.png" width="200" height="64"></a>
                 <p id="nav"><a href="/">O projektu</a> | <a href="{% url entry-list %}">Hitparáda</a> | <a href="{% url entry-form %}">Přidat obec</a> | <a href="{% url contact %}">Kontakt</a></p>
                 {% block content %}{% endblock %}
             </div>
