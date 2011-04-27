@@ -50,13 +50,13 @@
       fillOpacity: .9,
       zIndex: FILL_Z_INDEX + 1
     };
-    ICONS['allowed'] = new google.maps.MarkerImage('/media/img/yes.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14));
-    ICONS['allowed_dimmed'] = new google.maps.MarkerImage('/media/img/yes_dimmed.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14));
-    ICONS['allowed_hovered'] = new google.maps.MarkerImage('/media/img/yes_hovered.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14));
-    ICONS['disallowed'] = new google.maps.MarkerImage('/media/img/no.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14));
-    ICONS['disallowed_dimmed'] = new google.maps.MarkerImage('/media/img/no_dimmed.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14));
-    ICONS['disallowed_hovered'] = new google.maps.MarkerImage('/media/img/no_hovered.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14));
-    ICONS['shadow'] = new google.maps.MarkerImage('/media/img/stin.png', new google.maps.Size(21, 12), new google.maps.Point(0, 0), new google.maps.Point(2, -1));
+    ICONS['allowed'] = new google.maps.MarkerImage('http://media.parkujujakcyp.cz/hazard/img/yes.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14));
+    ICONS['allowed_dimmed'] = new google.maps.MarkerImage('http://media.parkujujakcyp.cz/hazard/img/yes_dimmed.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14));
+    ICONS['allowed_hovered'] = new google.maps.MarkerImage('http://media.parkujujakcyp.cz/hazard/img/yes_hovered.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14));
+    ICONS['disallowed'] = new google.maps.MarkerImage('http://media.parkujujakcyp.cz/hazard/img/no.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14));
+    ICONS['disallowed_dimmed'] = new google.maps.MarkerImage('http://media.parkujujakcyp.cz/hazard/img/no_dimmed.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14));
+    ICONS['disallowed_hovered'] = new google.maps.MarkerImage('http://media.parkujujakcyp.cz/hazard/img/no_hovered.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14));
+    ICONS['shadow'] = new google.maps.MarkerImage('http://media.parkujujakcyp.cz/hazard/img/stin.png', new google.maps.Size(21, 12), new google.maps.Point(0, 0), new google.maps.Point(2, -1));
     MAP_STYLE = [
       {
         featureType: "landscape",
