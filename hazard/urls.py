@@ -13,6 +13,7 @@ urlpatterns = patterns('',
     url(r'^pridat/$', EntryFormView.as_view(), name="entry-form"),
     url(r'^hitparada/$', EntryListView.as_view(), name="entry-list"),
     url(r'^kontakt/$', TemplateView.as_view(template_name="shared/contact.html"), name="contact"),
+    url(r'^navod/$', TemplateView.as_view(template_name="shared/instruction.html"), name="instruction"),
     url(r'^d/(?P<slug>[-_0-9a-z]+)/$', EntryDetailView.as_view(), name="entry-detail"),
 )
 

@@ -1,0 +1,68 @@
+{% extends "bone.html" %}
+
+{% block content %}
+    <h3>Návod na vytvoření mapy heren</h3>
+
+    <p>Naše stránky ke své funkci vužívají aplikaci "Moje mapy" od společnosti
+    Google.  Princip je jednoduchý -- připravíte si dvě mapy, jednu s hernami,
+    druhou s budovami. Pak vložíte URL adresy obou map do <a href="{% url
+    entry-form %}">tohoto formuláře</a> a po jejich nahrání se vám zobrazí
+    situace ve vašem městě.</p>
+
+    <p>Pojďme na to.</p>
+
+    <h4>Nakreslení mapy heren</h4>
+    <ul>
+        <li>Navštivte adresu <a href="http://maps.google.com/">maps.google.com</a>
+        <li>V levém sloupci klikněte na odkaz "Moje mapy".
+        <li>Pokud využíváte některou ze služeb společnosti Google (GMail, Reader, apod.)
+          a jste přihlášeni, můžete hned začít vytvářet novou mapu. V opačném případě
+          uvidíte tlačítko "Začít". Klikněte na něj a buďto se přihlašte, nebo si
+          zřiďte nový uživatelský účet.
+        <li>Po přihlášení se levý sloupeček změní (pokud neuvidíte podobný obsah jako je
+          na obrázku, klikněte na odkaz "Vytvořit novou mapu").
+        <li>Do políčka nadpis zadejte např. "Herny ve Vsetíně".
+        <li>Najděte v mapě svou obec, klikněte v levém horním rohu na ikonu špendlíku a
+          dalším kliknutím jej umístěte do mapy. Do políčka "Nadpis" v bublině zadejte
+          název herny. Pokud máte o ní máte zjištěny nějaké zajímavé informace,
+          klikněte na "Formát RTF" a vložte je do políčka "Popis" (např. přesnější
+          adresu, fotku, datum od kdy je herna v provozu, apod.). Pokud o herně žádné
+          podrobnosti neznáte, můžete políčko "Popis" nechat prázdné. Klikněte na
+          tlačítko "OK".
+        <li>Zaneste stejným způsobem do mapy všechny ostatní herny z vaší obce a nakonec
+          klikněte na tlačítko "Hotovo" v levém sloupci.
+    </ul>
+
+    <h4>Nakreslení mapy budov</h4>
+    <ul>
+        <li>V levém sloupci klikněte na odkaz "Moje mapy" a poté na "Vytvořit novou mapu"
+        <li>Do políčka nadpis zadejte např. "Budovy ve Vsetíně".
+        <li>Stejně jako v případě heren můžete začít do mapy přidávat špendlíky označující
+          konkrétní budovy v obci, v jejichž sousedství nesmějí být herny provozovány
+          (kompletní seznam).
+        <li>Přesnějších výsledků ale dosáhnete, pokud namísto špendlíků obkreslíte
+          půdorys budov s pomocí mnohoúhelníku -- stačí stisknout levé tlačítko myši
+          nad ikonou lomené čáry, a vybrat položku "Nakreslit tvar". Pak jen stačí
+          klikat na rohy budovy.
+        <li>Do políčka "Nadpis" v bublině zadejte název budovy a pokud chcete, do pole
+          "Popis" pak další doplňující údaje.
+        <li>Až budete mít všechny budovy v mapě zaneseny, klikněte na tlačítko "Hotovo"
+          v levém sloupci.
+    </ul>
+
+    <h4>Získání URL adresy mapy</h4>
+    <ul>
+        <li>V levém sloupci klikněte na odkaz "Moje mapy" a vyberte mapu s hernami.
+        <li>Klikněte pravým tlačítkem myši nad odkazem "Zobrazit v aplikaci Google Earth"
+          (modrý proužek nad mapou) a vyberte z kontextového menu položku "Kopírovat
+          adresu odkazu".
+        <li>Otevřete si v prohlížeči novou záložku a navštivte adresu "?/pridat/". Klikněte
+          myší do políčka "Mapa heren" a stiskněte CTRL+V (příp. Cmd+V na Macu).
+        <li>Vraťte se zpět do Google map, stejným postupem zjistěte URL adresu mapy budov
+          a vložte ji do políčka "Mapa budov".
+        <li>Klikněte na tlačítko "Nahrát mapy" a chvíli počkejte.
+        <li>Pokud někde nenastala chyba, zobrazí se vám po chvíli stránka s vaší obcí
+          a podrobnostmi.
+    </ul>
+
+{% endblock %}

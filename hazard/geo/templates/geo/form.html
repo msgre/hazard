@@ -2,10 +2,10 @@
 
 {% block content %}
     <h3>Přidat obec</h3>
-    <p>Chcete zjistit situaci i ve svém městě či obci? Je to jednoduché
-    &mdash; připravte si s pomocí Google maps seznam veřejných
-    budov a heren, a vložte je do tohoto formuláře.</p>
-    <p><a href="#">Návod na výrobu mapy</a></p>
+    <p>Chcete zjistit situaci i ve svém městě či obci? Je to jednoduché &mdash;
+    připravte si s pomocí <a href="http://maps.google.com/">Google maps</a>
+    seznam heren a budov, a vložte je do tohoto formuláře.</p>
+    <p><a href="{% url instruction %}">Podrobný návod na výrobu mapy</a></p>
     <form method="post" action="."> {# TODO: #}
         {% csrf_token %}
         {{ form.as_p }}

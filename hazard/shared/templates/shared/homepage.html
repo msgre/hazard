@@ -1,6 +1,14 @@
 {% extends "bone.html" %}
 
 {% block content %}
-    {% load webdesign %}
-    {% lorem 2 p %}
+    <p>Stránky ?? mapují situaci heren ve vybraných městech České republiky. Podle
+    zákona nesmějí být v sousedství určitých budov (škol, nemocnic, kostelů)
+    herny provozovány.</p>
+
+    <p><a href="{% url entry-list %}">Realita je ale bohužel jiná</a>. Spousta
+    obcí o zákoně buďto neví anebo jej vědomě ignoruje. Pokud vám tento stav
+    vadí, pokuste se společně s námi tento stav změnit.</p>
+
+    <p>Zdrojový kód projektu ?? <a href="https://github.com/msgre/hazard">je
+    volně k dispozici</a>.</p>
 {% endblock %}

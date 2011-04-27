@@ -24,40 +24,20 @@
 </head>
 <body id="body">
     <div class="container">
-    {% comment %}
-        {# hlavicka #}
-        <div id="header" class="box">
-            {# logo #}
-            <div class="span-8">
-                <h3><a href="/">Automaty</a></h3>
-            </div>
-            {# hlavni navigace #}
-            {# TODO: #}
-            <div class="span-15 last right">
-                <a href="/">Úvodní strana</a> |
-                <a href="/novy/">Přidat nový záznam</a> |
-                <a href="#">Kontakt</a> |
-                <a href="#">O aplikaci</a> |
-                <a href="#">Facebook</a>
-            </div>
-        </div>
-        <div class="clear"></div>
-    {% endcomment %}
-
         {# hlavni obsah #}
         <div id="content">
             <div id="info_box">
                 <a href="/"><img src="{{ MEDIA_URL }}img/herny3.png" width="200" height="64"></a>
-                <p id="nav"><a href="/">O projektu</a> | <a href="{% url entry-list %}">Hitparáda</a> | <a href="{% url entry-form %}">Přidat obec</a> | <a href="{% url contact %}">Kontakt</a></p>
-                {% block content %}{% endblock %}
+                <p id="nav"><a href="/">O projektu</a> | <a href="{% url entry-list %}">Hitparáda</a> | <a href="{% url entry-form %}">Přidat obec</a>{# | <a href="{% url contact %}">Kontakt</a>#}</p>
+                <div id="inner_box">
+                    {% block content %}{% endblock %}
+                </div>
             </div>
         </div>
         <div id="map"></div>
     </div>
     <script type="text/javascript">
-    //<![CDATA[
         {% block inline_js%}{% endblock %}
-    //]]>
     </script>
 </body>
 </html>

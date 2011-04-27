@@ -29,6 +29,7 @@
     width:300px;
     z-index:100;
     padding:15px 20px;
+    height:80%;
 }
 #info_box h1,
 #info_box h2,
@@ -48,11 +49,17 @@
 }
 
 
+/*
 .inner_box {
     padding:15px 20px;
     background:#ffc31e;
     color:#333;
     margin-bottom:15px;
+}
+*/
+#inner_box {
+    overflow:scroll;
+    height:80%;
 }
 
 body {
