@@ -1,3 +1,9 @@
 *.pyc
 *.swp
 .DS_Store
+apache2
+bin
+lib
+hazard.wsgi
+hazard/manage.sh
+hazard/local.py

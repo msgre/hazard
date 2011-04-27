@@ -12,17 +12,6 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'hazard',                      # Or path to database file if using sqlite3.
-        'USER': 'postgres',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-    }
-}
-
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
@@ -48,12 +37,12 @@ USE_L10N = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = ''
+MEDIA_ROOT = os.path.join(PROJECT_PATH, '../media/')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-MEDIA_URL = ''
+MEDIA_URL = 'http://media.parkujujakcyp.cz/hazard/'
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
@@ -80,6 +69,7 @@ STATICFILES_DIRS = (
 # List of finder classes that know how to find static files in
 # various locations.
 STATICFILES_FINDERS = (
+    'compressor.finders.CompressorFinder',
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
@@ -119,8 +109,8 @@ INSTALLED_APPS = (
     'django_extensions',
     'django.contrib.webdesign',
     'compressor',
-    'shared',
-    'geo',
+    'hazard.shared',
+    'hazard.geo',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -145,8 +135,6 @@ LOGGING = {
         },
     }
 }
-
-GEOS_LIBRARY_PATH = '/usr/local/Cellar/geos/3.2.2/lib/libgeos_c.dylib'
 
 LOGGING = {
     'version': 1,
@@ -184,10 +172,12 @@ LOGGING = {
     }
 }
 
-
-MEDIA_ROOT = os.path.join(PROJECT_PATH, '../media/')
-MEDIA_URL = '/media/'
 COMPRESS_CSS_FILTERS = [
     'compressor.filters.css_default.CssAbsoluteFilter',
     'compressor.filters.cssmin.CSSMinFilter',
 ]
+
+try:
+    from hazard.local import *
+except ImportError:
+    pass
