@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # vim: set et si ts=4 sw=4:
 
-from random import random
 from hazard.geo.models import Entry
 
 def common(request):
@@ -13,8 +12,8 @@ def common(request):
     entries = {}
     for entry in Entry.objects.filter(public=True):
         entries[entry.id] = {
-            'lat': 49.21388 + (1 - random()), # TODO: random
-            'lon': 16.57467 + (1 - random()), # TODO: random
+            'lat': entry.dpoint.coords[1],
+            'lon': entry.dpoint.coords[0],
             'perc': int(round(entry.dperc)),
             'url': entry.get_absolute_url()
         }

@@ -106,9 +106,11 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-    'django_extensions',
     'django.contrib.webdesign',
+    'django.contrib.gis',
+    'django_extensions',
     'compressor',
+    'south',
     'hazard.shared',
     'hazard.geo',
 )

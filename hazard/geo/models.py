@@ -7,6 +7,7 @@ from django.db import models
 from django.contrib.gis.db import models as geomodels
 from django.contrib.gis.gdal import CoordTransform, SpatialReference
 from django.core.urlresolvers import reverse
+from django.contrib.gis.geos import Point
 
 
 class Entry(models.Model):
@@ -31,6 +32,7 @@ class Entry(models.Model):
     dok_hell_count  = models.FloatField(editable=False, default=0)
     dper_population = models.FloatField(editable=False, default=0)
     dper_area       = models.FloatField(editable=False, default=0)
+    dpoint          = geomodels.PointField(null=True, blank=True, editable=False)
 
     class Meta:
         verbose_name = u'Záznam obce'
@@ -54,6 +56,12 @@ class Entry(models.Model):
             self.dper_population = float(self.population) / self.dhell_count
         if self.area > 0.0:
             self.dper_area = float(self.dhell_count) / self.area
+
+        # stred zaznamu se udela z prumerne pozice heren
+        coords = [i.point.coords for i in self.hell_set.all() if i.point]
+        avg_lat = sum([i[1] for i in coords]) / len(coords)
+        avg_lon = sum([i[0] for i in coords]) / len(coords)
+        self.dpoint = Point(avg_lon, avg_lat, srid=4326)
 
 
 class Zone(models.Model):
