@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
 from django.views.generic import TemplateView
-
+from django.views.decorators.cache import cache_page
 
 from hazard.geo.views import EntryDetailView, EntryFormView, EntryListView
 
@@ -14,7 +14,7 @@ urlpatterns = patterns('',
     url(r'^hitparada/$', EntryListView.as_view(), name="entry-list"),
     url(r'^kontakt/$', TemplateView.as_view(template_name="shared/contact.html"), name="contact"),
     url(r'^navod/$', TemplateView.as_view(template_name="shared/instruction.html"), name="instruction"),
-    url(r'^d/(?P<slug>[-_0-9a-z]+)/$', EntryDetailView.as_view(), name="entry-detail"),
+    url(r'^d/(?P<slug>[-_0-9a-z]+)/$', cache_page(EntryDetailView.as_view(), 60 * 60), name="entry-detail"),
 )
 
 

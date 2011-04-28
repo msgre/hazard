@@ -188,6 +188,14 @@ TEMPLATE_CONTEXT_PROCESSORS = [
     "hazard.shared.context_processors.common",
 ]
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(PROJECT_PATH, '../cache/'),
+        'TIMEOUT': 60 * 60 # 1 hodina
+    }
+}
+
 try:
     from hazard.local import *
 except ImportError:
