@@ -15,11 +15,11 @@ class EntryFormView(FormView):
     """
     form_class = KMLForm
     template_name = 'geo/form.html'
-    # brno podruhe
-    initial = {
-        'buildings': 'http://maps.google.com/maps/ms?ie=UTF8&hl=cs&vps=2&jsv=334b&msa=0&output=nl&msid=217120881929273348625.0004a1ecb651553072cca',
-        'hells': 'http://maps.google.com/maps/ms?ie=UTF8&hl=cs&vps=2&jsv=334b&msa=0&output=nl&msid=217120881929273348625.0004a1eca126d4f32052c'
-    }
+    # # brno podruhe
+    # initial = {
+    #     'buildings': 'http://maps.google.com/maps/ms?ie=UTF8&hl=cs&vps=2&jsv=334b&msa=0&output=nl&msid=217120881929273348625.0004a1ecb651553072cca',
+    #     'hells': 'http://maps.google.com/maps/ms?ie=UTF8&hl=cs&vps=2&jsv=334b&msa=0&output=nl&msid=217120881929273348625.0004a1eca126d4f32052c'
+    # }
     # # valmez
     # initial = {
     #     'buildings': 'http://maps.google.com/maps/ms?ie=UTF8&hl=cs&vps=2&jsv=332a&msa=0&output=nl&msid=217120881929273348625.00049e61b09dabeb67157',
