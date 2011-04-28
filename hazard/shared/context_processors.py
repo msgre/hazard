@@ -22,7 +22,8 @@ def common(request):
             entries[entry.id] = {
                 'lat': entry.dpoint.coords[1],
                 'lon': entry.dpoint.coords[0],
-                'perc': int(round(entry.dperc)),
+                'perc': '%i%%' % int(round(entry.dperc)),
+                'title': u"%s: %i%% protizákonných heren" % (entry.title, int(round(entry.dperc))),
                 'url': entry.get_absolute_url()
             }
         cache.set(key, entries, TIMEOUT)

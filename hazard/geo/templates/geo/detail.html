@@ -15,6 +15,12 @@
     <p><strong class="percentage">{{ entry.dperc|floatformat:0 }}%</strong>
     heren v této v obci je <strong>provozováno protiprávně</strong>.</p>
 
+    {% if entry.description %}
+        <div class="clear">
+            {{ entry.description|safe }}
+        </div>
+    {% endif %}
+
     <p class="clear" id="detailed_info">Další zajímavosti</p>
     <ul>
         <li>Celkem {{ entry.dhell_count|floatformat:0 }}&nbsp;heren, {{ entry.dok_hell_count|floatformat:0 }} na povolených místech</li>

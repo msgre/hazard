@@ -16,6 +16,7 @@ class Entry(models.Model):
     """
     title        = models.CharField(u"Název", max_length=200)
     slug         = models.SlugField(u"Webové jméno", max_length=100, unique=True)
+    description  = models.TextField(u"Popis", blank=True)
     population   = models.IntegerField(u"Populace", blank=True, null=True)
     area         = models.IntegerField(u"Plocha katastrálního území", blank=True, null=True)
     wikipedia    = models.URLField(u"URL na Wikipedii", blank=True, null=True)

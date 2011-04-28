@@ -139,9 +139,9 @@
     div = document.createElement('DIV');
     div.className = "group";
     div.style.display = "none";
-    div.title = this.data_['c'] + "% protizákonných heren";
+    div.title = this.data_['t'];
     count = document.createElement('P');
-    count.innerHTML = this.data_['c'] + '%';
+    count.innerHTML = this.data_['c'];
     div.appendChild(count);
     google.maps.event.addDomListener(div, 'click', __bind(function(ev) {
       return window.location = this.url;
@@ -212,6 +212,7 @@
         'a': data.lat,
         'o': data.lon,
         'c': data.perc,
+        't': data.title,
         'u': data.url
       };
       group = new Group(_data, window.map);

@@ -10,6 +10,7 @@ draw_entries = () ->
             'a': data.lat
             'o': data.lon
             'c': data.perc
+            't': data.title
             'u': data.url
         group = new Group(_data, window.map)
         group.show()

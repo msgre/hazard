@@ -65,11 +65,11 @@ Group.prototype.onAdd = () ->
     div = document.createElement('DIV')
     div.className = "group"
     div.style.display = "none"
-    div.title = @data_['c'] + "% protizákonných heren" # TODO: dame jinou hlasku?
+    div.title = @data_['t']
 
     # box s obsahem (cislem s procenty)
     count = document.createElement('P')
-    count.innerHTML = @data_['c'] + '%'
+    count.innerHTML = @data_['c']
     div.appendChild(count)
 
     # kliknuti na ikonu nas dovede na detailni stranku
