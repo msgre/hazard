@@ -76,6 +76,7 @@ class KMLForm(forms.Form):
                 # chyba behem downloadu
                 logger.info('Problem with downloading URL %s' % data)
                 raise forms.ValidationError(self.err_down)
+            setattr(self, '%s_kml' % att, content)
 
             # rozparsujeme zadany KML
             parsed_data = parse_xml(KMLHandler(), content, filter)
@@ -97,6 +98,7 @@ class KMLForm(forms.Form):
                     # chyba behem downloadu
                     logger.info('Problem with downloading URL %s' % new_url)
                     raise forms.ValidationError(self.err_down)
+                setattr(self, '%s_kml' % att, content)
 
                 # rozparsujeme novy KML
                 parsed_data = parse_xml(KMLHandler(), content, filter)
@@ -185,7 +187,9 @@ class KMLForm(forms.Form):
             area         = int(data['area']),
             wikipedia    = data['wikipedia_url'],
             hell_url     = self.cleaned_data['hells'],
+            hell_kml     = self.hells_kml,
             building_url = self.cleaned_data['buildings'],
+            building_kml = self.buildings_kml,
             public       = data['public']
         )
         return entry, created
