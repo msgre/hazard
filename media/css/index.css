@@ -86,3 +86,19 @@ tbody tr:nth-child(even) td, tbody tr.even td {
 #nav {
     padding-top:5px;
 }
+.group {
+    position:absolute;
+    background:url(http://media.parkujujakcyp.cz/hazard/img/percent.png);
+    width:40px;
+    height:40px;
+    font-size:11px;
+    font-weight:bold;
+    text-align:center;
+}
+.group:hover {
+    cursor:pointer;
+}
+.group p {
+    padding-top:12px;
+    padding-left:1px;
+}

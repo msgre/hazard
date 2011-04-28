@@ -1,63 +1,15 @@
 (function() {
-  var BUBBLE_POLYGONS, BUILDINGS, FILL_OPTIONS, FILL_Z_INDEX, HOVERED_PIN_Z_INDEX, ICONS, IW, MAP_STYLE, MARKERS, OPENED, PIN_Z_INDEX, ZONES, clear_buildings, clear_zones, click_handler, detail_page_setup, dimm_hell, draw_buildings, draw_hells, draw_zones, mouseout_hell, mouseover_hell, setup, shine_hell;
+  /*
+  TODO:
+  */  var BUBBLE_POLYGONS, BUILDINGS, FILL_OPTIONS, FILL_Z_INDEX, HOVERED_PIN_Z_INDEX, ICONS, IW, MAP_STYLE, MARKERS, MC_STYLE, OPENED, PIN_Z_INDEX, ZONES, clear_buildings, clear_zones, click_handler, dimm_hell, draw_buildings, draw_hells, draw_zones, init_map, mouseout_hell, mouseover_hell, setup, setup_detail, shine_hell;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   window.map = void 0;
-  PIN_Z_INDEX = 10;
-  HOVERED_PIN_Z_INDEX = 20;
-  FILL_Z_INDEX = 14;
-  FILL_OPTIONS = {};
-  ICONS = {};
   MAP_STYLE = void 0;
-  MARKERS = {};
-  BUILDINGS = [];
-  ZONES = [];
-  BUBBLE_POLYGONS = [];
-  OPENED = void 0;
-  IW = void 0;
   /*
-  Nakonfigurovani stylu a ikon.
+  Nakonfigurovani stylu mapy.
   */
   setup = function() {
-    FILL_OPTIONS['building'] = {
-      strokeWeight: 0,
-      strokeColor: '#000000',
-      strokeOpacity: .01,
-      fillColor: '#ffffff',
-      fillOpacity: 1,
-      zIndex: FILL_Z_INDEX
-    };
-    FILL_OPTIONS['zone'] = {
-      strokeWeight: 0,
-      strokeColor: '#000000',
-      strokeOpacity: .01,
-      fillColor: '#000000',
-      fillOpacity: .7,
-      zIndex: FILL_Z_INDEX - 1
-    };
-    FILL_OPTIONS['building_hovered'] = {
-      strokeWeight: 0,
-      strokeColor: '#000000',
-      strokeOpacity: .01,
-      fillColor: '#000000',
-      fillOpacity: .9,
-      zIndex: FILL_Z_INDEX + 2
-    };
-    FILL_OPTIONS['zone_hovered'] = {
-      strokeWeight: 0,
-      strokeColor: '#e53404',
-      strokeOpacity: .01,
-      fillColor: '#e53404',
-      fillOpacity: .9,
-      zIndex: FILL_Z_INDEX + 1
-    };
-    ICONS['allowed'] = new google.maps.MarkerImage('http://media.parkujujakcyp.cz/hazard/img/yes.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14));
-    ICONS['allowed_dimmed'] = new google.maps.MarkerImage('http://media.parkujujakcyp.cz/hazard/img/yes_dimmed.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14));
-    ICONS['allowed_hovered'] = new google.maps.MarkerImage('http://media.parkujujakcyp.cz/hazard/img/yes_hovered.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14));
-    ICONS['disallowed'] = new google.maps.MarkerImage('http://media.parkujujakcyp.cz/hazard/img/no.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14));
-    ICONS['disallowed_dimmed'] = new google.maps.MarkerImage('http://media.parkujujakcyp.cz/hazard/img/no_dimmed.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14));
-    ICONS['disallowed_hovered'] = new google.maps.MarkerImage('http://media.parkujujakcyp.cz/hazard/img/no_hovered.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14));
-    ICONS['shadow'] = new google.maps.MarkerImage('http://media.parkujujakcyp.cz/hazard/img/shadow.png', new google.maps.Size(27, 14), new google.maps.Point(0, 0), new google.maps.Point(8, 0));
-    MAP_STYLE = [
+    return MAP_STYLE = [
       {
         featureType: "landscape",
         elementType: "all",
@@ -100,6 +52,108 @@
         ]
       }
     ];
+  };
+  /*
+  TODO:
+  */
+  init_map = function() {
+    var center, map_options, styledMapType;
+    if (!(window.map != null)) {
+      map_options = {
+        backgroundColor: '#ffffff',
+        mapTypeControlOptions: {
+          mapTypeIds: ['CB', google.maps.MapTypeId.SATELLITE, google.maps.MapTypeId.ROADMAP]
+        },
+        mapTypeId: 'CB',
+        noClear: true,
+        mapTypeControl: true,
+        panControl: false,
+        zoomControl: true,
+        zoomControlOptions: {
+          position: google.maps.ControlPosition.RIGHT_TOP
+        }
+      };
+      window.map = new google.maps.Map(document.getElementById("body"), map_options);
+      styledMapType = new google.maps.StyledMapType(MAP_STYLE, {
+        name: 'Černobílá'
+      });
+      window.map.mapTypes.set('CB', styledMapType);
+    }
+    center = new google.maps.LatLng(49.38512, 14.61765);
+    window.map.setCenter(center);
+    return window.map.setZoom(7);
+  };
+  /*
+  TODO:
+  */
+  PIN_Z_INDEX = 10;
+  HOVERED_PIN_Z_INDEX = 20;
+  FILL_Z_INDEX = 14;
+  FILL_OPTIONS = {};
+  ICONS = {};
+  MARKERS = {};
+  BUILDINGS = [];
+  ZONES = [];
+  BUBBLE_POLYGONS = [];
+  OPENED = void 0;
+  IW = void 0;
+  MC_STYLE = {};
+  /*
+  Nakonfigurovani stylu a ikon.
+  */
+  setup_detail = function() {
+    FILL_OPTIONS['building'] = {
+      strokeWeight: 0,
+      strokeColor: '#000000',
+      strokeOpacity: .01,
+      fillColor: '#ffffff',
+      fillOpacity: 1,
+      zIndex: FILL_Z_INDEX
+    };
+    FILL_OPTIONS['zone'] = {
+      strokeWeight: 0,
+      strokeColor: '#000000',
+      strokeOpacity: .01,
+      fillColor: '#000000',
+      fillOpacity: .7,
+      zIndex: FILL_Z_INDEX - 1
+    };
+    FILL_OPTIONS['building_hovered'] = {
+      strokeWeight: 0,
+      strokeColor: '#000000',
+      strokeOpacity: .01,
+      fillColor: '#000000',
+      fillOpacity: .9,
+      zIndex: FILL_Z_INDEX + 2
+    };
+    FILL_OPTIONS['zone_hovered'] = {
+      strokeWeight: 0,
+      strokeColor: '#e53404',
+      strokeOpacity: .01,
+      fillColor: '#e53404',
+      fillOpacity: .9,
+      zIndex: FILL_Z_INDEX + 1
+    };
+    ICONS['allowed'] = new google.maps.MarkerImage('http://media.parkujujakcyp.cz/hazard/img/yes.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14));
+    ICONS['allowed_dimmed'] = new google.maps.MarkerImage('http://media.parkujujakcyp.cz/hazard/img/yes_dimmed.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14));
+    ICONS['allowed_hovered'] = new google.maps.MarkerImage('http://media.parkujujakcyp.cz/hazard/img/yes_hovered.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14));
+    ICONS['disallowed'] = new google.maps.MarkerImage('http://media.parkujujakcyp.cz/hazard/img/no.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14));
+    ICONS['disallowed_dimmed'] = new google.maps.MarkerImage('http://media.parkujujakcyp.cz/hazard/img/no_dimmed.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14));
+    ICONS['disallowed_hovered'] = new google.maps.MarkerImage('http://media.parkujujakcyp.cz/hazard/img/no_hovered.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14));
+    ICONS['shadow'] = new google.maps.MarkerImage('http://media.parkujujakcyp.cz/hazard/img/shadow.png', new google.maps.Size(27, 14), new google.maps.Point(0, 0), new google.maps.Point(8, 0));
+    MC_STYLE = {
+      url: 'http://media.parkujujakcyp.cz/hazard/img/group.png',
+      height: 40,
+      width: 40,
+      opt_anchor: [20, 20],
+      opt_textColor: '#ffffff',
+      opt_textSize: 11
+    };
+    $('#detailed_info').wrapInner('<a href="#" id="detailed_info_link"></a>').next().hide();
+    $('#detailed_info_link').click(function() {
+      $(this).closest('p').next().toggle();
+      return false;
+    });
     return false;
   };
   /*
@@ -338,7 +392,7 @@
   Vykresleni vsech heren.
   */
   draw_hells = function() {
-    var bounds, data, i, id, marker_cluster, mstyle, ne, sw, _ref;
+    var bounds, data, i, id, marker_cluster, ne, sw, _ref;
     sw = [1000, 1000];
     ne = [0, 0];
     _ref = window.hells;
@@ -374,14 +428,6 @@
       google.maps.event.addListener(MARKERS[id], 'mouseout', mouseout_hell);
       google.maps.event.addListener(MARKERS[id], 'click', click_handler);
     }
-    mstyle = {
-      url: 'http://media.parkujujakcyp.cz/hazard/img/group.png',
-      height: 40,
-      width: 40,
-      opt_anchor: [20, 20],
-      opt_textColor: '#ffffff',
-      opt_textSize: 11
-    };
     marker_cluster = new MarkerClusterer(window.map, (function() {
       var _results;
       _results = [];
@@ -392,7 +438,7 @@
     })(), {
       maxZoom: 14,
       gridSize: 50,
-      styles: [mstyle, mstyle, mstyle]
+      styles: [MC_STYLE, MC_STYLE, MC_STYLE]
     });
     if (window.hells) {
       bounds = new google.maps.LatLngBounds(new google.maps.LatLng(sw[0], sw[1]), new google.maps.LatLng(ne[0], ne[1]));
@@ -402,44 +448,10 @@
       return window.map.fitBounds(bounds);
     }
   };
-  /*
-  Inicializace prvku na strance s detailem konkretni obce.
-  */
-  detail_page_setup = function() {
-    $('#detailed_info').wrapInner('<a href="#" id="detailed_info_link"></a>').next().hide();
-    return $('#detailed_info_link').click(function() {
-      $(this).closest('p').next().toggle();
-      return false;
-    });
-  };
   $(document).ready(function() {
-    var center, map_options, styledMapType;
     setup();
-    detail_page_setup();
-    if (!(window.map != null)) {
-      map_options = {
-        backgroundColor: '#ffffff',
-        mapTypeControlOptions: {
-          mapTypeIds: ['CB', google.maps.MapTypeId.SATELLITE, google.maps.MapTypeId.ROADMAP]
-        },
-        mapTypeId: 'CB',
-        noClear: true,
-        mapTypeControl: true,
-        panControl: false,
-        zoomControl: true,
-        zoomControlOptions: {
-          position: google.maps.ControlPosition.RIGHT_TOP
-        }
-      };
-      window.map = new google.maps.Map(document.getElementById("body"), map_options);
-      styledMapType = new google.maps.StyledMapType(MAP_STYLE, {
-        name: 'Černobílá'
-      });
-      window.map.mapTypes.set('CB', styledMapType);
-    }
-    center = new google.maps.LatLng(49.38512, 14.61765);
-    window.map.setCenter(center);
-    window.map.setZoom(7);
+    setup_detail();
+    init_map();
     return draw_hells();
   });
 }).call(this);

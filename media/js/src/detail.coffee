@@ -1,5 +1,6 @@
-# mapa na strance
-window.map = undefined
+###
+TODO:
+###
 
 # konstanty
 # z-index normalni a hover znacky
@@ -11,20 +12,20 @@ FILL_Z_INDEX = 14
 # globalni promenne
 FILL_OPTIONS = {}       # definice stylu pro polygony
 ICONS = {}              # definice custom ikonek pouzitych v mape
-MAP_STYLE = undefined   # definice stylu pro nasi custom mapu
 MARKERS = {}            # hash mapa vsech znacek na mape (id: data)
 BUILDINGS = []          # seznam vsech aktualne vykreslenych budov na mape
 ZONES = []              # seznam vsech vykreslenych oblasti okolo budov na mape
 BUBBLE_POLYGONS = []    # seznam polygonu budov a zon, ktere se vykreslily po hoveru nad verejnou budovou v bubline
 OPENED = undefined      # rozkliknuta znacka
 IW = undefined          # rozkliknuta bublina
+MC_STYLE = {}           # styly pro marker clusterer
 
 
 ###
 Nakonfigurovani stylu a ikon.
 ###
 
-setup = () ->
+setup_detail = () ->
     # nastylovani polygonu
     FILL_OPTIONS['building'] =
         strokeWeight: 0
@@ -99,14 +100,20 @@ setup = () ->
         new google.maps.Point(8, 0)
     )
 
-    # nastylovani mapy
-    MAP_STYLE = [
-        {featureType:"landscape", elementType:"all", stylers:[{saturation:-60}]}
-        {featureType:"road", elementType:"all", stylers:[{saturation:-100}]}
-        {featureType:"water", elementType:"all", stylers:[{saturation:-60}]}
-        {featureType:"transit", elementType:"all", stylers:[{saturation:-100}]}
-        {featureType:"poi", elementType:"all", stylers:[{saturation:-100}]}
-    ]
+    # nastylovani marker clusterer
+    MC_STYLE =
+        url: 'http://media.parkujujakcyp.cz/hazard/img/group.png'
+        height: 40
+        width: 40
+        opt_anchor: [20, 20]
+        opt_textColor: '#ffffff'
+        opt_textSize: 11
+
+    # Inicializace prvku na strance s detailem konkretni obce.
+    $('#detailed_info').wrapInner('<a href="#" id="detailed_info_link"></a>').next().hide()
+    $('#detailed_info_link').click () ->
+        $(this).closest('p').next().toggle()
+        return false
 
     false
 
@@ -315,18 +322,11 @@ draw_hells = () ->
         # click nad znackou
         google.maps.event.addListener(MARKERS[id], 'click', click_handler)
 
-    # vlozime znacky do marker clustere
-    mstyle =
-        url: 'http://media.parkujujakcyp.cz/hazard/img/group.png'
-        height: 40
-        width: 40
-        opt_anchor: [20, 20]
-        opt_textColor: '#ffffff'
-        opt_textSize: 11
+    # vlozime znacky do shlukovace
     marker_cluster = new MarkerClusterer(window.map, (MARKERS[i] for i of MARKERS), {
         maxZoom: 14
         gridSize: 50
-        styles: [mstyle, mstyle, mstyle]
+        styles: [MC_STYLE, MC_STYLE, MC_STYLE]
     })
 
     # focus na spendlosy
@@ -340,16 +340,6 @@ draw_hells = () ->
         window.map.fitBounds(bounds)
 
 
-###
-Inicializace prvku na strance s detailem konkretni obce.
-###
-
-detail_page_setup = () ->
-    $('#detailed_info').wrapInner('<a href="#" id="detailed_info_link"></a>').next().hide()
-    $('#detailed_info_link').click () ->
-        $(this).closest('p').next().toggle()
-        return false
-
 
 # maso - maso - maso - maso - maso - maso - maso - maso - maso - maso - maso
 
@@ -357,27 +347,7 @@ $(document).ready () ->
 
     # inicializace
     setup()
-    detail_page_setup()
-    if not window.map?
-        map_options =
-            backgroundColor: '#ffffff'
-            mapTypeControlOptions: {mapTypeIds:['CB', google.maps.MapTypeId.SATELLITE, google.maps.MapTypeId.ROADMAP]},
-            mapTypeId: 'CB'
-            noClear: true
-            mapTypeControl: true
-            # streetViewControl: false
-            panControl: false
-            zoomControl: true
-            zoomControlOptions:
-                position: google.maps.ControlPosition.RIGHT_TOP
-
-        window.map = new google.maps.Map(document.getElementById("body"), map_options)
-        styledMapType = new google.maps.StyledMapType(MAP_STYLE, {name:'Černobílá'})
-        window.map.mapTypes.set('CB', styledMapType)
-
-    # defaultne zamerime na CR
-    center = new google.maps.LatLng(49.38512, 14.61765)
-    window.map.setCenter(center)
-    window.map.setZoom(7)
+    setup_detail()
+    init_map()
 
     draw_hells()

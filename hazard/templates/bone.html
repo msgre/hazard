@@ -15,8 +15,9 @@
     {% compress js %}
         <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&language=cs&region=CZ"></script>
         <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.4.2.js"></script>
-        <script type="text/javascript" src="{{ MEDIA_URL }}js/markerclusterer.js"></script>
-        <script type="text/javascript" src="{{ MEDIA_URL }}js/lib/map_app.js"></script>
+        {% block compress_js %}
+            <script type="text/javascript" src="{{ MEDIA_URL }}js/lib/percent_map.js"></script>
+        {% endblock %}
     {% endcompress %}
     {% compress css %}
         <link rel="stylesheet" href="{{ MEDIA_URL }}css/blueprint/screen.css" type="text/css" media="screen">
@@ -38,7 +39,11 @@
         <div id="map"></div>
     </div>
     <script type="text/javascript">
-        {% block inline_js%}{% endblock %}
+        {# TODO: udelat nejaky obalujici template tag, ktery zkrati lat/lon na mensi cisla #}
+        {% load shared %}
+        {% block inline_js%}
+            window.perc_entries = {{ perc_entries|json }};
+        {% endblock %}
     </script>
 </body>
 </html>
