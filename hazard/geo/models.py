@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
-import hashlib
-import urllib2
+import pickle
 
 from django.db import models
 from django.contrib.gis.db import models as geomodels
 from django.contrib.gis.gdal import CoordTransform, SpatialReference
 from django.core.urlresolvers import reverse
-from django.contrib.gis.geos import Point
+from django.contrib.gis.geos import Point, Polygon
+
+from hazard.geo.utils import get_unique_slug
 
 
 class Entry(models.Model):
@@ -63,6 +64,129 @@ class Entry(models.Model):
         avg_lat = sum([i[1] for i in coords]) / len(coords)
         avg_lon = sum([i[0] for i in coords]) / len(coords)
         self.dpoint = Point(avg_lon, avg_lat, srid=4326)
+
+    def dump(self, filename=None):
+        """
+        Ulozi kompletni strukturu dat popisujici jeden zaznam Entry. Vraci
+        slovnik s daty a pokud je zadan parametr `filename`, pak vysledek
+        "zpickluje" a ulozi do zadaneho souboru.
+        """
+        out = {'entry': {}, 'zones': {}, 'buildings': {}, 'hells': {}}
+        zones = []
+
+        # zaznam Entry
+        out['entry'] = Entry.objects.filter(slug=self.slug).values()[0]
+        out['entry']['dpoint'] = self.dpoint.coords
+
+        # budovy
+        for building in self.building_set.all():
+            out['buildings'][building.id] = {
+                'title':       building.title,
+                'description': building.description,
+                'slug':        building.slug,
+                'poly':        building.poly.coords[0],
+                'zone':        building.zone_id
+            }
+            zones.append(building.zone_id)
+
+        # herny
+        for hell in self.hell_set.all():
+            out['hells'][hell.id] = {
+                'title':            hell.title,
+                'description':      hell.description,
+                'slug':             hell.slug,
+                'point':            hell.point.coords,
+                'zones':            hell.zones.all().values_list('id', flat=True),
+                'uzone':            hell.uzone_id,
+                'zones_calculated': hell.zones_calculated
+            }
+            zones.append(hell.uzone_id)
+            zones.extend(out['hells'][hell.id]['zones'])
+
+        # zones
+        for zone in Zone.objects.filter(id__in=set(zones)):
+            out['zones'][zone.id] = {'poly': zone.poly.coords[0]}
+
+        # ulozeni do souboru
+        if filename:
+            f = open(filename, 'wb')
+            pickle.dump(out, f)
+            f.close()
+
+        return out
+
+    @staticmethod
+    def load(data_or_filename):
+        """
+        Vytvori komplet novy zaznam o jednom Entry podle dodanych dat.
+        Data mohou byt zadana ve forme slovniku nebo cesty k pickle souboru
+        (produkt Entry.dump). Nove naimportovana data budou mit jina ID, a
+        zaznam Entry mozna i jiny slug.
+
+        NOTE: Bacha! Pokud je parametr `data_or_filename` slovnik, bude jeho
+        struktura mirne modifikovana (zaznamy zones dostanou novy klic 'new_id'
+        s nove vytvorenym Zone.id).
+        """
+        # data jsou predana budto jako slovnik nebo cesta k pickle souboru
+        if type(data_or_filename) in [type(''), type(u'')]:
+            f = open(data_or_filename, 'rb')
+            data = pickle.load(f)
+            f.close()
+        else:
+            data = data_or_filename
+
+        # zaznam Entry
+        slug = get_unique_slug(data['entry']['title'])
+        entry = Entry.objects.create(
+            title           = data['entry']['title'],
+            slug            = slug,
+            description     = data['entry']['description'],
+            population      = data['entry']['population'],
+            area            = data['entry']['area'],
+            wikipedia       = data['entry']['wikipedia'],
+            hell_url        = data['entry']['hell_url'],
+            hell_kml        = data['entry']['hell_kml'],
+            building_url    = data['entry']['building_url'],
+            building_kml    = data['entry']['building_kml'],
+            public          = data['entry']['public'],
+            created         = data['entry']['created'],
+            dperc           = data['entry']['dperc'],
+            dhell_count     = data['entry']['dhell_count'],
+            dok_hell_count  = data['entry']['dok_hell_count'],
+            dper_population = data['entry']['dper_population'],
+            dper_area       = data['entry']['dper_area'],
+            dpoint          = Point(data['entry']['dpoint'][0], data['entry']['dpoint'][1], srid=4326)
+        )
+
+        # zones
+        for zone_id, zone in data['zones'].iteritems():
+            z = Zone.objects.create(poly=Polygon(zone['poly'], srid=4326))
+            data['zones'][zone_id]['new_id'] = z.id
+
+        # herny
+        for hell_id, hell in data['hells'].iteritems():
+            h = Hell.objects.create(
+                title            = hell['title'],
+                description      = hell['description'],
+                slug             = hell['slug'],
+                entry            = entry,
+                point            = Point(hell['point'][0], hell['point'][1], srid=4326),
+                uzone            = hell['uzone'] and Zone.objects.get(id=data['zones'][hell['uzone']]['new_id']) or None,
+                zones_calculated = hell['zones_calculated']
+            )
+            zones = [data['zones'][i]['new_id'] for i in hell['zones']]
+            h.zones.add(*Zone.objects.filter(id__in=zones))
+
+        # budovy
+        for building_id, building in data['buildings'].iteritems():
+            b = Building.objects.create(
+                title       = building['title'],
+                description = building['description'],
+                slug        = building['slug'],
+                entry       = entry,
+                zone        = Zone.objects.get(id=data['zones'][building['zone']]['new_id']),
+                poly        = Polygon(building['poly'], srid=4326)
+            )
 
 
 class Zone(models.Model):
@@ -178,5 +302,4 @@ class Hell(CommonInfo):
         return self.zones.count() > 0
     in_conflict = property(is_in_conflict)
 
-
-import signals
+#import signals

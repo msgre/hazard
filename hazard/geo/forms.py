@@ -9,7 +9,7 @@ from django.contrib.gis.gdal import CoordTransform, SpatialReference
 
 from hazard.shared.czech import slugify
 from hazard.geo.parsers import parse_xml, KMLHandler, LinkHandler, MediaWikiHandler
-from hazard.geo.utils import download_content
+from hazard.geo.utils import download_content, get_unique_slug
 from hazard.geo.models import Building, Hell
 from hazard.geo.geocoders.google import geocode
 
@@ -175,9 +175,7 @@ class KMLForm(forms.Form):
         data = self.find_entry_information()
 
         # zajistime jedinecny slug
-        slug = slugify(data['town'][:99])
-        if Entry.objects.filter(slug=slug).exists():
-            slug = "%s-%i" % (slug, Entry.objects.all().order_by('-id').values_list('id', flat=True)[0] + 1)
+        slug = get_unique_slug(data['town'][:99])
 
         # vytvorime zaznam Entry
         entry, created = Entry.objects.get_or_create(
@@ -251,3 +249,7 @@ class KMLForm(forms.Form):
             # zjistime zony se kterymi ma podnik konflikt
             b.calculate_conflicts()
             b.calculate_uzone()
+
+        # vypocet denormalizovanych hodnot
+        entry.recalculate_denormalized_values(True)
+        entry.save()
