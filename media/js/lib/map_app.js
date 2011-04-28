@@ -56,7 +56,7 @@
     ICONS['disallowed'] = new google.maps.MarkerImage('http://media.parkujujakcyp.cz/hazard/img/no.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14));
     ICONS['disallowed_dimmed'] = new google.maps.MarkerImage('http://media.parkujujakcyp.cz/hazard/img/no_dimmed.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14));
     ICONS['disallowed_hovered'] = new google.maps.MarkerImage('http://media.parkujujakcyp.cz/hazard/img/no_hovered.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14));
-    ICONS['shadow'] = new google.maps.MarkerImage('http://media.parkujujakcyp.cz/hazard/img/stin.png', new google.maps.Size(21, 12), new google.maps.Point(0, 0), new google.maps.Point(2, -1));
+    ICONS['shadow'] = new google.maps.MarkerImage('http://media.parkujujakcyp.cz/hazard/img/shadow.png', new google.maps.Size(27, 14), new google.maps.Point(0, 0), new google.maps.Point(8, 0));
     MAP_STYLE = [
       {
         featureType: "landscape",
@@ -338,7 +338,7 @@
   Vykresleni vsech heren.
   */
   draw_hells = function() {
-    var bounds, data, id, ne, sw, _ref;
+    var bounds, data, i, id, marker_cluster, mstyle, ne, sw, _ref;
     sw = [1000, 1000];
     ne = [0, 0];
     _ref = window.hells;
@@ -363,7 +363,6 @@
       }
       MARKERS[id] = new google.maps.Marker({
         position: new google.maps.LatLng(data.pos[1], data.pos[0]),
-        map: window.map,
         title: data.title,
         icon: ICONS[data['image']],
         shadow: ICONS['shadow'],
@@ -375,6 +374,26 @@
       google.maps.event.addListener(MARKERS[id], 'mouseout', mouseout_hell);
       google.maps.event.addListener(MARKERS[id], 'click', click_handler);
     }
+    mstyle = {
+      url: 'http://media.parkujujakcyp.cz/hazard/img/group.png',
+      height: 40,
+      width: 40,
+      opt_anchor: [20, 20],
+      opt_textColor: '#ffffff',
+      opt_textSize: 11
+    };
+    marker_cluster = new MarkerClusterer(window.map, (function() {
+      var _results;
+      _results = [];
+      for (i in MARKERS) {
+        _results.push(MARKERS[i]);
+      }
+      return _results;
+    })(), {
+      maxZoom: 14,
+      gridSize: 50,
+      styles: [mstyle, mstyle, mstyle]
+    });
     if (window.hells) {
       bounds = new google.maps.LatLngBounds(new google.maps.LatLng(sw[0], sw[1]), new google.maps.LatLng(ne[0], ne[1]));
       google.maps.event.addListenerOnce(window.map, 'idle', function() {

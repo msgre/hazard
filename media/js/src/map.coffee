@@ -93,10 +93,10 @@ setup = () ->
         new google.maps.Point(14, 14)
     )
     ICONS['shadow'] = new google.maps.MarkerImage(
-        'http://media.parkujujakcyp.cz/hazard/img/stin.png'
-        new google.maps.Size(21, 12)
+        'http://media.parkujujakcyp.cz/hazard/img/shadow.png'
+        new google.maps.Size(27, 14)
         new google.maps.Point(0,0)
-        new google.maps.Point(2, -1)
+        new google.maps.Point(8, 0)
     )
 
     # nastylovani mapy
@@ -299,7 +299,7 @@ draw_hells = () ->
         # vlozeni znacky do mapy
         MARKERS[id] = new google.maps.Marker({
             position: new google.maps.LatLng(data.pos[1], data.pos[0])
-            map: window.map
+            #map: window.map
             title: data.title
             icon: ICONS[data['image']]
             shadow: ICONS['shadow']
@@ -314,6 +314,20 @@ draw_hells = () ->
 
         # click nad znackou
         google.maps.event.addListener(MARKERS[id], 'click', click_handler)
+
+    # vlozime znacky do marker clustere
+    mstyle =
+        url: 'http://media.parkujujakcyp.cz/hazard/img/group.png'
+        height: 40
+        width: 40
+        opt_anchor: [20, 20]
+        opt_textColor: '#ffffff'
+        opt_textSize: 11
+    marker_cluster = new MarkerClusterer(window.map, (MARKERS[i] for i of MARKERS), {
+        maxZoom: 14
+        gridSize: 50
+        styles: [mstyle, mstyle, mstyle]
+    })
 
     # focus na spendlosy
     if window.hells
