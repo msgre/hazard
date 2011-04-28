@@ -39,11 +39,12 @@
         <div id="map"></div>
     </div>
     <script type="text/javascript">
-        {# TODO: udelat nejaky obalujici template tag, ktery zkrati lat/lon na mensi cisla #}
         {% load shared %}
-        {% block inline_js%}
-            window.perc_entries = {{ perc_entries|json }};
-        {% endblock %}
+        {% filter shorten_latlon %}
+            {% block inline_js%}
+                window.perc_entries = {{ perc_entries|json }};
+            {% endblock %}
+        {% endfilter %}
     </script>
 </body>
 </html>

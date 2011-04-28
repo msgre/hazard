@@ -5,9 +5,6 @@ obce.
 ###
 
 draw_entries = () ->
-
-    #window.entries = {1: {'lat': 49.21388, 'lon': 16.57467, 'perc': 10, 'url': '/d/valasske-mezirici/'}}
-
     for id, data of window.perc_entries
         _data =
             'a': data.lat
@@ -16,7 +13,6 @@ draw_entries = () ->
             'u': data.url
         group = new Group(_data, window.map)
         group.show()
-
 
 $(document).ready () ->
     setup()
