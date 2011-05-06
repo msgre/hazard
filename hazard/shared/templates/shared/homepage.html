@@ -1,14 +1,20 @@
 {% extends "bone.html" %}
 
 {% block content %}
-    <p><strong>MapyHazardu.cz</strong> sledují situaci heren ve vybraných
-    městech České republiky. Podle zákona nesmějí být v sousedství určitých
-    budov (škol, nemocnic, kostelů) herny provozovány.</p>
+    <p><em>MapyHazardu.cz</em> sledují situaci heren ve vybraných
+    městech České republiky. Podle <a href="http://portal.gov.cz/wps/portal/_s.155/701/.cmd/ad/.c/313/.ce/10821/.p/8411/_s.155/701?PC_8411_number1=202/1990&PC_8411_p=17&PC_8411_l=202/1990&PC_8411_ps=10#10821">zákona</a>
+    totiž nesmějí být herny provozovány v
+    sousedství určitých budov (např. škol,
+    nemocnic a kostelů).</p>
 
     <p><a href="{% url entry-list %}">Realita je ale bohužel jiná</a>. Spousta
-    obcí o zákoně buďto neví anebo jej vědomě ignoruje. Pokud vám tento stav
-    vadí, pokuste se společně s námi tento stav změnit.</p>
+    obcí o zákoně buďto neví anebo jej vědomě ignoruje. Budeme rádi, pokud
+    pomůžete zmapovat situaci i u vás. Podívejte se na
+    <a href="{% url instruction %}">jednoduchý návod</a>, jak vytvořit mapu
+    hazardu i ve vašem městě.</p>
 
-    <p>Zdrojový kód projektu <a href="https://github.com/msgre/hazard">je volně
-    k dispozici</a>.</p>
+    <p>Zdrojový kód projektu je <a href="https://github.com/msgre/hazard">volně
+    k dispozici</a>.<br>
+    Web MapyHazardu.cz provozuje <a href="{% url contact %}">Občanské sdružení
+    Brnění</a>.</p>
 {% endblock %}

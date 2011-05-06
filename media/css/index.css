@@ -59,7 +59,7 @@
 */
 #inner_box {
     overflow:auto;
-    height:80%;
+    height:74%;
 }
 
 body {
@@ -84,7 +84,12 @@ tbody tr:nth-child(even) td, tbody tr.even td {
     background:transparent;
 }
 #nav {
-    padding-top:5px;
+    padding-bottom:2px;
+    color:#999;
+}
+#nav a {
+    padding-right:6px;
+    padding-left:6px;
 }
 .group {
     position:absolute;
