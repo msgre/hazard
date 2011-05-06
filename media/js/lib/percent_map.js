@@ -145,11 +145,12 @@
     count.innerHTML = this.data_['c'];
     div.appendChild(count);
     google.maps.event.addDomListener(div, 'click', __bind(function(ev) {
+      console.log('klikanec');
       return window.location = this.url;
     }, this));
     this.div_ = div;
     panes = this.getPanes();
-    return panes.overlayImage.appendChild(div);
+    return panes.overlayMouseTarget.appendChild(div);
   };
   /*
   Vykresli grupu v mape, presne na zadanych souradnicich. Pokud je interni atribut

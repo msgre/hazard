@@ -74,6 +74,7 @@ Group.prototype.onAdd = () ->
 
     # kliknuti na ikonu nas dovede na detailni stranku
     google.maps.event.addDomListener div, 'click', (ev) =>
+        console.log 'klikanec'
         window.location = @url
 
     # prcnem grupu do mapy
@@ -81,7 +82,7 @@ Group.prototype.onAdd = () ->
 
     # overlayImage -> This pane contains the marker foreground images. (Pane 3).
     panes = @getPanes()
-    panes.overlayImage.appendChild(div)
+    panes.overlayMouseTarget.appendChild(div)
 
 
 ###
