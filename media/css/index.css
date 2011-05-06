@@ -58,12 +58,12 @@
 }
 */
 #inner_box {
-    overflow:scroll;
+    overflow:auto;
     height:80%;
 }
 
 body {
-    height:700px;
+    height:500px;
     width:100%;
     z-index:0;
 }

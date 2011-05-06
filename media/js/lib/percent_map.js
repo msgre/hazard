@@ -58,6 +58,7 @@
   */
   init_map = function() {
     var center, map_options, styledMapType;
+    $('body').height($(window).height() + 'px');
     if (!(window.map != null)) {
       map_options = {
         backgroundColor: '#ffffff',

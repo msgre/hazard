@@ -28,6 +28,9 @@ TODO:
 ###
 
 init_map = () ->
+    # nastaveni vysky mapy pres cele okno prohlizece
+    $('body').height($(window).height() + 'px')
+
     if not window.map?
         map_options =
             backgroundColor: '#ffffff'
