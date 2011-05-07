@@ -87,7 +87,7 @@
   /*
   Custom ikonka, ktera ve sve stredu zobrazuje procenta.
 
-  Pozor! Vzhled ikomny je treba definovat na urovni CSS, napr.:
+  Pozor! Vzhled ikony je treba definovat na urovni CSS, napr.:
 
       .group {
           position:absolute;
@@ -98,11 +98,20 @@
           font-weight:bold;
           text-align:center;
       }
-      .group:hover {
-          cursor:pointer;
-      }
       .group p {
           padding-top:12px;
+      }
+
+  Nad ikonou se vykresluje pruhledny DIV, ktery zachytava klikani mysi. Musi
+  byt stejne velky, jako ikona. Napr.:
+
+      .slide {
+          position:absolute;
+          width:40px;
+          height:40px;
+      }
+      .slide:hover {
+          cursor:pointer;
       }
   */
   /*
@@ -122,7 +131,8 @@
   Group = function(data, map) {
     this.center_ = [20, 20];
     this.data_ = data;
-    this.div_ = null;
+    this.icon_ = null;
+    this.slide_ = null;
     this.visible_ = false;
     this.pos_ = new google.maps.LatLng(data['a'], data['o']);
     this.url = data['u'];
@@ -136,34 +146,43 @@
   zobrazeni je nutne volat metodu show).
   */
   Group.prototype.onAdd = function() {
-    var count, div, panes;
-    div = document.createElement('DIV');
-    div.className = "group";
-    div.style.display = "none";
-    div.title = this.data_['t'];
+    var count, icon, panes, slide;
+    icon = document.createElement('DIV');
+    icon.className = "group";
+    icon.style.display = "none";
+    icon.title = this.data_['t'];
     count = document.createElement('P');
     count.innerHTML = this.data_['c'];
-    div.appendChild(count);
-    google.maps.event.addDomListener(div, 'click', __bind(function(ev) {
-      console.log('klikanec');
+    icon.appendChild(count);
+    slide = document.createElement('DIV');
+    slide.className = "slide";
+    slide.style.display = "none";
+    google.maps.event.addDomListener(slide, 'click', __bind(function(ev) {
       return window.location = this.url;
     }, this));
-    this.div_ = div;
+    this.icon_ = icon;
+    this.slide_ = slide;
     panes = this.getPanes();
-    return panes.overlayMouseTarget.appendChild(div);
+    panes.overlayImage.appendChild(icon);
+    return panes.overlayMouseTarget.appendChild(slide);
   };
   /*
   Vykresli grupu v mape, presne na zadanych souradnicich. Pokud je interni atribut
   @visible_ == false, grupa se nevykresli.
   */
   Group.prototype.draw = function() {
-    var overlayProjection, pixel_pos;
-    if (this.div_ && this.visible_) {
-      this.div_.style.display = "block";
+    var left, overlayProjection, pixel_pos, top;
+    if (this.icon_ && this.visible_) {
+      this.icon_.style.display = "block";
+      this.slide_.style.display = "block";
       overlayProjection = this.getProjection();
       pixel_pos = overlayProjection.fromLatLngToDivPixel(this.pos_);
-      this.div_.style.left = pixel_pos.x - this.center_[0] + 'px';
-      this.div_.style.top = pixel_pos.y - this.center_[1] + 'px';
+      left = pixel_pos.x - this.center_[0] + 'px';
+      top = pixel_pos.y - this.center_[1] + 'px';
+      this.icon_.style.left = left;
+      this.icon_.style.top = top;
+      this.slide_.style.left = left;
+      this.slide_.style.top = top;
     }
   };
   /*
@@ -177,8 +196,9 @@
   Skryje grupu v mape (fyzicky tam zustava, ale z oci mizi).
   */
   Group.prototype.hide = function() {
-    if (this.div_) {
-      this.div_.style.display = "none";
+    if (this.icon_) {
+      this.icon_.style.display = "none";
+      this.slide_.style.display = "none";
       this.visible_ = false;
     }
   };
@@ -187,8 +207,10 @@
   mapy a resetu vnitrnich hodnot.
   */
   Group.prototype.onRemove = function() {
-    this.div_.parentNode.removeChild(this.div_);
-    this.div_ = null;
+    this.icon_.parentNode.removeChild(this.icon_);
+    this.icon_ = null;
+    this.slide_.parentNode.removeChild(this.slide_);
+    this.slide_ = null;
     this.data_ = null;
     this.visible_ = false;
     return this.pos_ = null;

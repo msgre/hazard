@@ -1,7 +1,7 @@
 ###
 Custom ikonka, ktera ve sve stredu zobrazuje procenta.
 
-Pozor! Vzhled ikomny je treba definovat na urovni CSS, napr.:
+Pozor! Vzhled ikony je treba definovat na urovni CSS, napr.:
 
     .group {
         position:absolute;
@@ -12,11 +12,20 @@ Pozor! Vzhled ikomny je treba definovat na urovni CSS, napr.:
         font-weight:bold;
         text-align:center;
     }
-    .group:hover {
-        cursor:pointer;
-    }
     .group p {
         padding-top:12px;
+    }
+
+Nad ikonou se vykresluje pruhledny DIV, ktery zachytava klikani mysi. Musi
+byt stejne velky, jako ikona. Napr.:
+
+    .slide {
+        position:absolute;
+        width:40px;
+        height:40px;
+    }
+    .slide:hover {
+        cursor:pointer;
     }
 ###
 
@@ -41,7 +50,8 @@ Group = (data, map) ->
     # inicializace
     @center_ = [20, 20]
     @data_ = data
-    @div_ = null       # HTML reprezentace ikony
+    @icon_ = null      # HTML reprezentace ikony
+    @slide_ = null     # pruhledny DIV nad ikonou, ktery zachytava klikani
     @visible_ = false  # flag viditelnosti
     @pos_ = new google.maps.LatLng(data['a'], data['o'])
     @url = data['u']
@@ -61,28 +71,31 @@ zobrazeni je nutne volat metodu show).
 
 Group.prototype.onAdd = () ->
 
-    # obal
-    div = document.createElement('DIV')
-    div.className = "group"
-    div.style.display = "none"
-    div.title = @data_['t']
-
-    # box s obsahem (cislem s procenty)
+    # ikona
+    icon = document.createElement('DIV')
+    icon.className = "group"
+    icon.style.display = "none"
+    icon.title = @data_['t']
     count = document.createElement('P')
     count.innerHTML = @data_['c']
-    div.appendChild(count)
+    icon.appendChild(count)
+
+    # pruhledna klikaci vrstva nad ikonou
+    slide = document.createElement('DIV')
+    slide.className = "slide"
+    slide.style.display = "none"
 
     # kliknuti na ikonu nas dovede na detailni stranku
-    google.maps.event.addDomListener div, 'click', (ev) =>
-        console.log 'klikanec'
+    google.maps.event.addDomListener slide, 'click', (ev) =>
         window.location = @url
 
-    # prcnem grupu do mapy
-    @div_ = div
+    @icon_ = icon
+    @slide_ = slide
 
-    # overlayImage -> This pane contains the marker foreground images. (Pane 3).
+    # sup do mapy
     panes = @getPanes()
-    panes.overlayMouseTarget.appendChild(div)
+    panes.overlayImage.appendChild(icon)
+    panes.overlayMouseTarget.appendChild(slide)
 
 
 ###
@@ -91,16 +104,21 @@ Vykresli grupu v mape, presne na zadanych souradnicich. Pokud je interni atribut
 ###
 
 Group.prototype.draw = () ->
-    if @div_ and @visible_
+    if @icon_ and @visible_
         # ukazeme element
-        @div_.style.display = "block"
+        @icon_.style.display = "block"
+        @slide_.style.display = "block"
 
         # nastavime spravnou pozici
         overlayProjection = @getProjection()
         pixel_pos = overlayProjection.fromLatLngToDivPixel(@pos_)
 
-        @div_.style.left = pixel_pos.x - @center_[0] + 'px'
-        @div_.style.top = pixel_pos.y - @center_[1] + 'px'
+        left = pixel_pos.x - @center_[0] + 'px'
+        top = pixel_pos.y - @center_[1] + 'px'
+        @icon_.style.left = left
+        @icon_.style.top = top
+        @slide_.style.left = left
+        @slide_.style.top = top
 
     return
 
@@ -120,8 +138,9 @@ Skryje grupu v mape (fyzicky tam zustava, ale z oci mizi).
 ###
 
 Group.prototype.hide = () ->
-    if @div_
-        @div_.style.display = "none"
+    if @icon_
+        @icon_.style.display = "none"
+        @slide_.style.display = "none"
         @visible_ = false
     return
 
@@ -133,8 +152,10 @@ mapy a resetu vnitrnich hodnot.
 
 Group.prototype.onRemove = () ->
     # odstraneni HTML elementu
-    @div_.parentNode.removeChild(@div_)
-    @div_ = null
+    @icon_.parentNode.removeChild(@icon_)
+    @icon_ = null
+    @slide_.parentNode.removeChild(@slide_)
+    @slide_ = null
 
     # reset atributu
     @data_ = null

@@ -100,10 +100,15 @@ tbody tr:nth-child(even) td, tbody tr.even td {
     font-weight:bold;
     text-align:center;
 }
-.group:hover {
-    cursor:pointer;
-}
 .group p {
     padding-top:12px;
     padding-left:1px;
+}
+.slide {
+    position:absolute;
+    width:40px;
+    height:40px;
+}
+.slide:hover {
+    cursor:pointer;
 }
