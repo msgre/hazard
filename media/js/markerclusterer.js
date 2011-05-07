@@ -785,6 +785,7 @@ function ClusterIcon(cluster, styles, opt_padding) {
   this.center_ = null;
   this.map_ = cluster.getMap();
   this.div_ = null;
+  this.slide_ = null;
   this.sums_ = null;
   this.visible_ = false;
 
@@ -810,6 +811,14 @@ ClusterIcon.prototype.triggerClusterClick = function() {
   }
 };
 
+ClusterIcon.prototype.setUpSlide = function() {
+  this.slide_.style.position = this.div_.style.position;
+  this.slide_.style.left = this.div_.style.left;
+  this.slide_.style.top = this.div_.style.top;
+  this.slide_.style.width = this.div_.style.width;
+  this.slide_.style.height = this.div_.style.height;
+  this.slide_.style.cursor = 'pointer';
+}
 
 /**
  * Adding the cluster icon to the dom.
@@ -817,17 +826,20 @@ ClusterIcon.prototype.triggerClusterClick = function() {
  */
 ClusterIcon.prototype.onAdd = function() {
   this.div_ = document.createElement('DIV');
+  this.slide_ = document.createElement('DIV');
   if (this.visible_) {
     var pos = this.getPosFromLatLng_(this.center_);
     this.div_.style.cssText = this.createCss(pos);
     this.div_.innerHTML = this.sums_.text;
+    this.setUpSlide();
   }
 
   var panes = this.getPanes();
-  panes.overlayMouseTarget.appendChild(this.div_);
+  panes.overlayImage.appendChild(this.div_);
+  panes.overlayMouseTarget.appendChild(this.slide_);
 
   var that = this;
-  google.maps.event.addDomListener(this.div_, 'click', function() {
+  google.maps.event.addDomListener(this.slide_, 'click', function() {
     that.triggerClusterClick();
   });
 };
@@ -857,6 +869,8 @@ ClusterIcon.prototype.draw = function() {
     var pos = this.getPosFromLatLng_(this.center_);
     this.div_.style.top = pos.y + 'px';
     this.div_.style.left = pos.x + 'px';
+    this.slide_.style.top = pos.y + 'px';
+    this.slide_.style.left = pos.x + 'px';
   }
 };
 
@@ -867,6 +881,7 @@ ClusterIcon.prototype.draw = function() {
 ClusterIcon.prototype.hide = function() {
   if (this.div_) {
     this.div_.style.display = 'none';
+    this.slide_.style.display = 'none';
   }
   this.visible_ = false;
 };
@@ -879,7 +894,10 @@ ClusterIcon.prototype.show = function() {
   if (this.div_) {
     var pos = this.getPosFromLatLng_(this.center_);
     this.div_.style.cssText = this.createCss(pos);
+    this.div_.style.cssText = this.createCss(pos);
     this.div_.style.display = '';
+    this.setUpSlide();
+    this.slide_.style.display = '';
   }
   this.visible_ = true;
 };
@@ -902,6 +920,8 @@ ClusterIcon.prototype.onRemove = function() {
     this.hide();
     this.div_.parentNode.removeChild(this.div_);
     this.div_ = null;
+    this.slide_.parentNode.removeChild(this.slide_);
+    this.slide_ = null;
   }
 };
 
