@@ -27,6 +27,8 @@ class Entry(models.Model):
     building_kml = models.TextField(editable=False)
     public       = models.BooleanField(u"Veřejný záznam", default=False)
     created      = models.DateTimeField(u"Datum vytvoření", auto_now_add=True, editable=False)
+    email        = models.EmailField(u"Kontaktní email", blank=True)
+    ip           = models.CharField(u"IP adresa", max_length=40, blank=True)
     # denormalizovane hodnoty
     # TODO: popsat
     dperc           = models.FloatField(editable=False, default=0)

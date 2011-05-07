@@ -26,6 +26,7 @@ class KMLForm(forms.Form):
     """
     hells     = forms.URLField(label=u'Mapa heren')
     buildings = forms.URLField(label=u'Mapa budov')
+    email     = forms.EmailField(label=u'Kontaktní email', required=False)
 
     err_wrong = u"Hm... Se zadaným odkazem si neporadím. Je to skutečně odkaz na KML soubor?"
     err_down = u"Nepovedlo se mi stáhnout odkazovaný KML soubor. Zkuste prosím odeslat formulář znovu."
@@ -166,7 +167,7 @@ class KMLForm(forms.Form):
                     out['public'] = True
         return out
 
-    def create_entry(self):
+    def create_entry(self, ip=''):
         """
         Vytvori zaznam Entry. Pro vytvoreni objektu pouzije informace ziskane
         prostrednictvim zadanych KML souboru (viz find_entry_information).
@@ -188,7 +189,9 @@ class KMLForm(forms.Form):
             hell_kml     = self.hells_kml,
             building_url = self.cleaned_data['buildings'],
             building_kml = self.buildings_kml,
-            public       = data['public']
+            public       = data['public'],
+            email        = self.cleaned_data['email'],
+            ip           = ip
         )
         return entry, created
 

@@ -2,3 +2,4 @@
 dropdb hazard
 createdb -T template_postgis hazard
 ./manage.py syncdb --noinput
+./manage.py migrate
