@@ -33,7 +33,7 @@ init_fancybox = () ->
             # TODO: link na loader
             $.fancybox({
                 title: 'Uno momento'
-                content: '<p><b>Vaše mapy se právě nahrávají na server a chvíli to potrvá</b></p><p><img src="/media/img/ajax-loader.gif"></p><p><em>Pro hrubou orientaci: Brno s cca 300 hernami trvá téměř 3 minuty.</em></p>'
+                content: '<p><b>Vaše mapy se právě nahrávají na server a chvíli to potrvá</b></p><p><img src="http://media.parkujujakcyp.cz/hazard/img/ajax-loader.gif"></p><p><em>Pro hrubou orientaci: Brno s cca 300 hernami trvá téměř 3 minuty.</em></p>'
                 modal: true
             })
 
