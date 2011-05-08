@@ -6,6 +6,7 @@ from django import forms
 from django.contrib.gis.geos import Polygon, Point
 from django.template.defaultfilters import iriencode
 from django.contrib.gis.gdal import CoordTransform, SpatialReference
+from django.forms.util import ErrorList
 
 from hazard.shared.czech import slugify
 from hazard.geo.parsers import parse_xml, KMLHandler, LinkHandler, MediaWikiHandler
@@ -19,6 +20,20 @@ logger = logging.getLogger(__name__)
 M100 = 100 # okoli budov v metrech
 
 
+class PbrErrorList(ErrorList):
+    """
+    Custom trida pro formatovani error hlasek ve formularich (<p>error1<br>
+    error2<br>...</p>).
+    """
+
+    def __unicode__(self):
+        return self.as_pbr()
+
+    def as_pbr(self):
+        if not self: return u''
+        return u'<p class="errorlist">%s</p>' % '<br>'.join(self)
+
+
 class KMLForm(forms.Form):
     """
     Formular pro zadani KML souboru s popisem obrysu verejnych budov a bodu
@@ -26,10 +41,13 @@ class KMLForm(forms.Form):
     """
     hells     = forms.URLField(label=u'Mapa heren')
     buildings = forms.URLField(label=u'Mapa budov')
-    email     = forms.EmailField(label=u'Kontaktní email', required=False)
+    email     = forms.EmailField(label=u'Kontaktní email', required=False, help_text=u"Kontaktní email není povinný, ale je dobré jej uvést, abychom se s Vámi mohli v případě další spolupráce spojit.")
 
     err_wrong = u"Hm... Se zadaným odkazem si neporadím. Je to skutečně odkaz na KML soubor?"
     err_down = u"Nepovedlo se mi stáhnout odkazovaný KML soubor. Zkuste prosím odeslat formulář znovu."
+
+    error_css_class = "error"
+    required_css_class = "required"
 
     def clean_buildings(self):
         """

@@ -90,6 +90,9 @@ tbody tr:nth-child(even) td, tbody tr.even td {
     padding-right:6px;
     padding-left:6px;
 }
+#nav a.nop {
+    padding-left:0px;
+}
 .group {
     position:absolute;
     background:url(http://media.parkujujakcyp.cz/hazard/img/percent.png);
@@ -111,3 +114,17 @@ tbody tr:nth-child(even) td, tbody tr.even td {
 .slide:hover {
     cursor:pointer;
 }
+.errorlist {
+    background:#fbe3e4;
+    color:#8a1f11;
+    margin:0;
+    padding:.8em;
+    font-style:italic;
+}
+.error {
+    border:none;
+}
+.helptext {
+    font-style:italic;
+}
+

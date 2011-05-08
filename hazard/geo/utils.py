@@ -12,15 +12,11 @@ def download_content(url):
     """
     Stahne obsah ze zadaneho URL.
     """
-    try:
-        opener = urllib2.Request(url, headers={'User-agent':'Mozilla/5.0'})
-        f = urllib2.urlopen(opener)
-        content = f.read()
-        f.close()
-        return content
-    except e:
-        logger.debug('Exception %s during downloading %s' % (e, url))
-        return None
+    opener = urllib2.Request(url, headers={'User-agent':'Mozilla/5.0'})
+    f = urllib2.urlopen(opener)
+    content = f.read()
+    f.close()
+    return content
 
 def get_unique_slug(title):
     """

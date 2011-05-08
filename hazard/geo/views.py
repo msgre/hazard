@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 
 from hazard.geo.models import Entry, Zone
-from hazard.geo.forms import KMLForm
+from hazard.geo.forms import KMLForm, PbrErrorList
 
 
 class EntryFormView(FormView):
@@ -31,6 +31,10 @@ class EntryFormView(FormView):
     #     'hells': 'http://maps.google.com/maps/ms?ie=UTF8&hl=cs&vps=1&jsv=332a&msa=0&output=nl&msid=217120881929273348625.0004a172ca42f5022bab1'
     # }
 
+    def get_form_kwargs(self):
+        out = super(EntryFormView, self).get_form_kwargs()
+        out.update(error_class=PbrErrorList)
+        return out
 
     def form_valid(self, form):
         """
