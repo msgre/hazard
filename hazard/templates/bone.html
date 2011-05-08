@@ -41,6 +41,14 @@
             <div id="info_box">
                 <a href="/"><img src="{{ MEDIA_URL }}img/herny4.png" width="300" height="82" title="MapyHazardu.cz -- mapujeme herny v českých městech"></a>
                 <p id="nav"><a class="nop" href="/">O projektu</a> / <a href="{% url entry-list %}">Hitparáda</a> / <a href="{% url entry-form %}">Přidat obec</a> / <a href="{% url contact %}">Kontakt</a></p>
+                {% if messages %}
+                    <p id="messages">
+                        {% for message in messages %}
+                            <span{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</span>
+                            {% if not forloop.last %}<br>{% endif %}
+                        {% endfor %}
+                    </p>
+                {% endif %}
                 <div id="inner_box">
                     {% block content %}{% endblock %}
                 </div>

@@ -10,6 +10,10 @@
                 <td><a href="{{ entry.get_absolute_url }}">{{ entry.title }}</a></td>
                 <td class="tright">{{ entry.dperc|floatformat:0 }}%</td>
             </tr>
+        {% empty %}
+            <tr>
+                <td><em>Před chvílí jsme stránky spustili a zatím nemáme co zobrazit. Navštivte nás prosím později.</em></td>
+            </tr>
         {% endfor %}
     </table>
     <p><em><strong>Poznámka</strong>: Číslo v tabulce vyjadřuje kolik procent

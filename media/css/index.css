@@ -121,10 +121,12 @@ tbody tr:nth-child(even) td, tbody tr.even td {
     padding:.8em;
     font-style:italic;
 }
-.error {
+.error, .success {
     border:none;
 }
 .helptext {
     font-style:italic;
 }
-
+#messages span {
+    display:block;
+}
