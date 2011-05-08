@@ -1,10 +1,8 @@
 ###
-TODO:
+Obecny kod, ktery je vyuzivan jak v detailech obci, tak i na ostatnich strankach.
 ###
 
-window.map = undefined
-
-# globalni promenne
+window.map = undefined  # googli mapa
 MAP_STYLE = undefined   # definice stylu pro nasi custom mapu
 
 
@@ -24,7 +22,24 @@ setup = () ->
 
 
 ###
-TODO:
+Inicializace fancyboxu (vrstvy pro zobrazovani vetsich obrazku a modalnich
+oken).
+###
+
+init_fancybox = () ->
+    $("a.fb").fancybox()
+    if $('#upload_maps').length
+        $('form').submit () ->
+            # TODO: link na loader
+            $.fancybox({
+                title: 'Uno momento'
+                content: '<p><b>Vaše mapy se právě nahrávají na server a chvíli to potrvá</b></p><p><img src="/media/img/ajax-loader.gif"></p><p><em>Pro hrubou orientaci: Brno s cca 300 hernami trvá téměř 3 minuty.</em></p>'
+                modal: true
+            })
+
+
+###
+Inicializace mapy.
 ###
 
 init_map = () ->

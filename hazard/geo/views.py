@@ -20,11 +20,11 @@ class EntryFormView(FormView):
     #     'buildings': 'http://maps.google.com/maps/ms?ie=UTF8&hl=cs&vps=2&jsv=334b&msa=0&output=nl&msid=217120881929273348625.0004a1ecb651553072cca',
     #     'hells': 'http://maps.google.com/maps/ms?ie=UTF8&hl=cs&vps=2&jsv=334b&msa=0&output=nl&msid=217120881929273348625.0004a1eca126d4f32052c'
     # }
-    # valmez
-    initial = {
-        'buildings': 'http://maps.google.com/maps/ms?ie=UTF8&hl=cs&vps=2&jsv=332a&msa=0&output=nl&msid=217120881929273348625.00049e61b09dabeb67157',
-        'hells': 'http://maps.google.com/maps/ms?ie=UTF8&hl=cs&vps=4&jsv=332a&msa=0&output=nl&msid=217120881929273348625.0004a13fa50f7e1dc6c22'
-    }
+    # # valmez
+    # initial = {
+    #     'buildings': 'http://maps.google.com/maps/ms?ie=UTF8&hl=cs&vps=2&jsv=332a&msa=0&output=nl&msid=217120881929273348625.00049e61b09dabeb67157',
+    #     'hells': 'http://maps.google.com/maps/ms?ie=UTF8&hl=cs&vps=4&jsv=332a&msa=0&output=nl&msid=217120881929273348625.0004a13fa50f7e1dc6c22'
+    # }
     # # brno jednodussi
     # initial = {
     #     'buildings': 'http://maps.google.com/maps/ms?ie=UTF8&hl=cs&vps=1&jsv=332a&msa=0&output=nl&msid=217120881929273348625.0004a1739eed3bb1f0f24',

@@ -349,5 +349,6 @@ $(document).ready () ->
     setup()
     setup_detail()
     init_map()
+    init_fancybox()
 
     draw_hells()

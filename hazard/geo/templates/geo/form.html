@@ -9,6 +9,6 @@
     <form method="post" action="."> {# TODO: #}
         {% csrf_token %}
         {{ form.as_p }}
-        <input type="submit" value="Nahrát mapy">
+        <input type="submit" id="upload_maps" value="Nahrát mapy">
     </form>
 {% endblock %}

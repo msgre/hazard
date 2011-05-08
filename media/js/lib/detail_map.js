@@ -1,7 +1,7 @@
 (function() {
   /*
-  TODO:
-  */  var BUBBLE_POLYGONS, BUILDINGS, FILL_OPTIONS, FILL_Z_INDEX, HOVERED_PIN_Z_INDEX, ICONS, IW, MAP_STYLE, MARKERS, MC_STYLE, OPENED, PIN_Z_INDEX, ZONES, clear_buildings, clear_zones, click_handler, dimm_hell, draw_buildings, draw_hells, draw_zones, init_map, mouseout_hell, mouseover_hell, setup, setup_detail, shine_hell;
+  Obecny kod, ktery je vyuzivan jak v detailech obci, tak i na ostatnich strankach.
+  */  var BUBBLE_POLYGONS, BUILDINGS, FILL_OPTIONS, FILL_Z_INDEX, HOVERED_PIN_Z_INDEX, ICONS, IW, MAP_STYLE, MARKERS, MC_STYLE, OPENED, PIN_Z_INDEX, ZONES, clear_buildings, clear_zones, click_handler, dimm_hell, draw_buildings, draw_hells, draw_zones, init_fancybox, init_map, mouseout_hell, mouseover_hell, setup, setup_detail, shine_hell;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   window.map = void 0;
   MAP_STYLE = void 0;
@@ -54,7 +54,23 @@
     ];
   };
   /*
-  TODO:
+  Inicializace fancyboxu (vrstvy pro zobrazovani vetsich obrazku a modalnich
+  oken).
+  */
+  init_fancybox = function() {
+    $("a.fb").fancybox();
+    if ($('#upload_maps').length) {
+      return $('form').submit(function() {
+        return $.fancybox({
+          title: 'Uno momento',
+          content: '<p><b>Vaše mapy se právě nahrávají na server a chvíli to potrvá</b></p><p><img src="/media/img/ajax-loader.gif"></p><p><em>Pro hrubou orientaci: Brno s cca 300 hernami trvá téměř 3 minuty.</em></p>',
+          modal: true
+        });
+      });
+    }
+  };
+  /*
+  Inicializace mapy.
   */
   init_map = function() {
     var center, map_options, styledMapType;
@@ -453,6 +469,7 @@
     setup();
     setup_detail();
     init_map();
+    init_fancybox();
     return draw_hells();
   });
 }).call(this);

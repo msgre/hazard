@@ -3,11 +3,11 @@
 {% block content %}
     <h3>Návod na vytvoření mapy heren</h3>
 
-    <p>Naše stránky ke své funkci vužívají aplikaci "Moje mapy" od společnosti
-    Google.  Princip je jednoduchý -- připravíte si dvě mapy, jednu s hernami,
-    druhou s budovami. Pak vložíte URL adresy obou map do <a href="{% url
-    entry-form %}">tohoto formuláře</a> a po jejich nahrání se vám zobrazí
-    situace ve vašem městě.</p>
+    <p><em>MapyHazardu.cz</em> ke své funkci využívají aplikaci "Moje mapy" od
+    společnosti Google. Princip je jednoduchý &mdash; připravíte si dvě mapy,
+    jednu s hernami, druhou s budovami. Pak vložíte URL adresy obou map do <a
+    href="{% url entry-form %}">tohoto formuláře</a> a po jejich nahrání se vám
+    zobrazí situace ve vašem městě.</p>
 
     <p>Pojďme na to.</p>
 
@@ -15,22 +15,29 @@
     <ul>
         <li>Navštivte adresu <a href="http://maps.google.com/">maps.google.com</a>
         <li>V levém sloupci klikněte na odkaz "Moje mapy".
+        <a href="{{ MEDIA_URL }}img/instruction/moje_mapy.png" class="fb" rel="instr" title="Aplikace Moje Mapy společnosti Google"><img src="{{ MEDIA_URL }}img/instruction/moje_mapy_t.png" width="250"></a>
         <li>Pokud využíváte některou ze služeb společnosti Google (GMail, Reader, apod.)
           a jste přihlášeni, můžete hned začít vytvářet novou mapu. V opačném případě
           uvidíte tlačítko "Začít". Klikněte na něj a buďto se přihlašte, nebo si
           zřiďte nový uživatelský účet.
-        <li>Po přihlášení se levý sloupeček změní (pokud neuvidíte podobný obsah jako je
-          na obrázku, klikněte na odkaz "Vytvořit novou mapu").
-        <li>Do políčka nadpis zadejte např. "Herny ve Vsetíně".
-        <li>Najděte v mapě svou obec, klikněte v levém horním rohu na ikonu špendlíku a
-          dalším kliknutím jej umístěte do mapy. Do políčka "Nadpis" v bublině zadejte
+          <a href="{{ MEDIA_URL }}img/instruction/zacit.png" class="fb" rel="instr" title="Tlačítko pro vytvoření první mapy"><img src="{{ MEDIA_URL }}img/instruction/zacit_t.png" width="250"></a>
+        <li>Po přihlášení uvidíte v levém sloupci buďto odkaz "Vytvořit novou mapu"
+          nebo tlačítko "Začít". Klikněte na ně.
+        <li>Do políčka nadpis zadejte např. "Herny ve Vsetíně". Ujistěte se, že
+          v "Nastavení soukromí a sdílení" máte vybránu volbu "Veřejná".
+        <li>Najděte v mapě svou obec (mapu přesunete stisknutím levého tlačítka myši), klikněte
+          v levém horním rohu na ikonu špendlíku a dalším kliknutím jej umístěte do mapy.
+          <a href="{{ MEDIA_URL }}img/instruction/zaznam2.png" class="fb" rel="instr" title="Vložení špendlíku do mapy"><img src="{{ MEDIA_URL }}img/instruction/zaznam2_t.png" width="250"></a>
+        <li>Do políčka "Nadpis" v bublině zadejte
           název herny. Pokud máte o ní máte zjištěny nějaké zajímavé informace,
           klikněte na "Formát RTF" a vložte je do políčka "Popis" (např. přesnější
           adresu, fotku, datum od kdy je herna v provozu, apod.). Pokud o herně žádné
           podrobnosti neznáte, můžete políčko "Popis" nechat prázdné. Klikněte na
           tlačítko "OK".
+          <a href="{{ MEDIA_URL }}img/instruction/bublina.png" class="fb" rel="instr" title="Bublina s podrobnými informacemi o herně"><img src="{{ MEDIA_URL }}img/instruction/bublina_t.png" width="250"></a>
         <li>Zaneste stejným způsobem do mapy všechny ostatní herny z vaší obce a nakonec
           klikněte na tlačítko "Hotovo" v levém sloupci.
+          <a href="{{ MEDIA_URL }}img/instruction/hotovo.png" class="fb" rel="instr" title="Ukončení kreslení mapy"><img src="{{ MEDIA_URL }}img/instruction/hotovo_t.png" width="250"></a>
     </ul>
 
     <h4>Nakreslení mapy budov</h4>
@@ -39,28 +46,31 @@
         <li>Do políčka nadpis zadejte např. "Budovy ve Vsetíně".
         <li>Stejně jako v případě heren můžete začít do mapy přidávat špendlíky označující
           konkrétní budovy v obci, v jejichž sousedství nesmějí být herny provozovány
-          (kompletní seznam).
+          (<a href="http://www.osbrneni.cz/regulace-hazardu/budovy">kompletní seznam</a>).
         <li>Přesnějších výsledků ale dosáhnete, pokud namísto špendlíků obkreslíte
-          půdorys budov s pomocí mnohoúhelníku -- stačí stisknout levé tlačítko myši
+          půdorys budov s pomocí mnohoúhelníku &mdash; stačí stisknout levé tlačítko myši
           nad ikonou lomené čáry, a vybrat položku "Nakreslit tvar". Pak jen stačí
           klikat na rohy budovy.
+          <a href="{{ MEDIA_URL }}img/instruction/obrysy.png" class="fb" rel="instr" title="Funkce 'Nakreslit tvar' pro vytvoření obrysu budovy"><img src="{{ MEDIA_URL }}img/instruction/obrysy_t.png" width="250"></a>
         <li>Do políčka "Nadpis" v bublině zadejte název budovy a pokud chcete, do pole
           "Popis" pak další doplňující údaje.
         <li>Až budete mít všechny budovy v mapě zaneseny, klikněte na tlačítko "Hotovo"
           v levém sloupci.
     </ul>
 
-    <h4>Získání URL adresy mapy</h4>
+    <h4>Vložení map do naší aplikace</h4>
     <ul>
         <li>V levém sloupci klikněte na odkaz "Moje mapy" a vyberte mapu s hernami.
         <li>Klikněte pravým tlačítkem myši nad odkazem "Zobrazit v aplikaci Google Earth"
           (modrý proužek nad mapou) a vyberte z kontextového menu položku "Kopírovat
           adresu odkazu".
-        <li>Otevřete si v prohlížeči novou záložku a navštivte adresu "?/pridat/". Klikněte
-          myší do políčka "Mapa heren" a stiskněte CTRL+V (příp. Cmd+V na Macu).
+          <a href="{{ MEDIA_URL }}img/instruction/kml.png" class="fb" rel="instr" title="Získání URL odkazu na vytvořenou mapu"><img src="{{ MEDIA_URL }}img/instruction/kml_t.png" width="250"></a>
+        <li>Otevřete si v prohlížeči novou záložku a navštivte adresu <a href="{% url entry-form %}">Přidat obec</a>. Klikněte
+          myší do políčka "Mapa heren" a stiskněte klávesy CTRL+V (příp. Cmd+V na Macu).
         <li>Vraťte se zpět do Google map, stejným postupem zjistěte URL adresu mapy budov
           a vložte ji do políčka "Mapa budov".
-        <li>Klikněte na tlačítko "Nahrát mapy" a chvíli počkejte.
+        <li>Vyplňte políčko s kontaktním emailem a klikněte na tlačítko "Nahrát
+          mapy" a chvíli počkejte.
         <li>Pokud někde nenastala chyba, zobrazí se vám po chvíli stránka s vaší obcí
           a podrobnostmi.
     </ul>

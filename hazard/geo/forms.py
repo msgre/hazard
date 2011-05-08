@@ -41,7 +41,7 @@ class KMLForm(forms.Form):
     """
     hells     = forms.URLField(label=u'Mapa heren')
     buildings = forms.URLField(label=u'Mapa budov')
-    email     = forms.EmailField(label=u'Kontaktní email', required=False, help_text=u"Kontaktní email není povinný, ale je dobré jej uvést, abychom se s Vámi mohli v případě další spolupráce spojit.")
+    email     = forms.EmailField(label=u'Kontaktní email', required=False)
 
     err_wrong = u"Hm... Se zadaným odkazem si neporadím. Je to skutečně odkaz na KML soubor?"
     err_down = u"Nepovedlo se mi stáhnout odkazovaný KML soubor. Zkuste prosím odeslat formulář znovu."

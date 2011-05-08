@@ -130,3 +130,11 @@ tbody tr:nth-child(even) td, tbody tr.even td {
 #messages span {
     display:block;
 }
+#fancybox-content {
+    text-align:center;
+}
+a.fb {
+    display:block;
+    padding-top:5px;
+    padding-bottom:5px;
+}

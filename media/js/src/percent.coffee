@@ -18,4 +18,5 @@ draw_entries = () ->
 $(document).ready () ->
     setup()
     init_map()
+    init_fancybox()
     draw_entries()

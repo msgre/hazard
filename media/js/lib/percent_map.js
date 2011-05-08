@@ -1,7 +1,7 @@
 (function() {
   /*
-  TODO:
-  */  var Group, MAP_STYLE, draw_entries, init_map, setup;
+  Obecny kod, ktery je vyuzivan jak v detailech obci, tak i na ostatnich strankach.
+  */  var Group, MAP_STYLE, draw_entries, init_fancybox, init_map, setup;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   window.map = void 0;
   MAP_STYLE = void 0;
@@ -54,7 +54,23 @@
     ];
   };
   /*
-  TODO:
+  Inicializace fancyboxu (vrstvy pro zobrazovani vetsich obrazku a modalnich
+  oken).
+  */
+  init_fancybox = function() {
+    $("a.fb").fancybox();
+    if ($('#upload_maps').length) {
+      return $('form').submit(function() {
+        return $.fancybox({
+          title: 'Uno momento',
+          content: '<p><b>Vaše mapy se právě nahrávají na server a chvíli to potrvá</b></p><p><img src="/media/img/ajax-loader.gif"></p><p><em>Pro hrubou orientaci: Brno s cca 300 hernami trvá téměř 3 minuty.</em></p>',
+          modal: true
+        });
+      });
+    }
+  };
+  /*
+  Inicializace mapy.
   */
   init_map = function() {
     var center, map_options, styledMapType;
@@ -247,6 +263,7 @@
   $(document).ready(function() {
     setup();
     init_map();
+    init_fancybox();
     return draw_entries();
   });
 }).call(this);
