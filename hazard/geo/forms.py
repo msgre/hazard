@@ -89,6 +89,10 @@ class KMLForm(forms.Form):
         data = self.cleaned_data.get(att)
 
         if data:
+            # kontrola URL
+            if 'output=nl' not in data:
+                data = data + '&output=nl'
+
             # stahneme KML soubor
             content = download_content(data)
             if content is None:
@@ -200,8 +204,8 @@ class KMLForm(forms.Form):
         entry, created = Entry.objects.get_or_create(
             title        = data['town'],
             slug         = slug,
-            population   = int(data['population']),
-            area         = int(data['area']),
+            population   = data['population'] and int(data['population']) or None,
+            area         = data['area'] and int(data['area']) or None,
             wikipedia    = data['wikipedia_url'],
             hell_url     = self.cleaned_data['hells'],
             hell_kml     = self.hells_kml,

@@ -63,6 +63,7 @@ class KMLHandler(xml.sax.handler.ContentHandler):
             self.starts[name] = 1
             self.initPlacemark()
         elif name in self.types:
+            if name == 'linestring': name = 'polygon' # NOTE: lidi to pletou, a kresli budovy linkama
             self.placemark['type'] = [name]
             self.starts[name] = 1
         elif name == 'name':
@@ -78,6 +79,7 @@ class KMLHandler(xml.sax.handler.ContentHandler):
             self.starts.pop(name)
             self.objects.append(self.placemark)
         elif name in self.types:
+            if name == 'linestring': name = 'polygon' # NOTE: lidi to pletou, a kresli budovy linkama
             self.starts.pop(name)
         elif name == 'name':
             self.starts.pop(name)

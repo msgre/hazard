@@ -31,6 +31,7 @@ class EntryFormView(FormView):
     #     'hells': 'http://maps.google.com/maps/ms?ie=UTF8&hl=cs&vps=1&jsv=332a&msa=0&output=nl&msid=217120881929273348625.0004a172ca42f5022bab1'
     # }
 
+
     def get_form_kwargs(self):
         out = super(EntryFormView, self).get_form_kwargs()
         out.update(error_class=PbrErrorList)
@@ -42,6 +43,8 @@ class EntryFormView(FormView):
         do databaze.
         """
         entry, created = form.create_entry(self.request.META.get('REMOTE_ADDR', ''))
+        # TODO: pokud neni public, presmerovat jinam...
+        # TODO: upravit hlasku v else
         if created:
             form.save(entry)
             messages.success(self.request, 'Hotovo. Díky!')

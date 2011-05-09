@@ -55,7 +55,7 @@ class Entry(models.Model):
         if counts:
             self.dhell_count = self.hell_set.count()
             self.dok_hell_count = self.hell_set.filter(zones__isnull=True).count()
-        if self.dhell_count > 0.0:
+        if self.dhell_count > 0.0 and self.population > 0.0:
             self.dperc = float(self.dhell_count - self.dok_hell_count) / self.dhell_count * 100
             self.dper_population = float(self.population) / self.dhell_count
         if self.area > 0.0:
