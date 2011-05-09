@@ -20,12 +20,15 @@ def download_content(url):
 
 def get_unique_slug(title):
     """
-    Vrati jedinecny slug pro zaznam Entry.
+    Vrati jedinecny slug pro zaznam Entry a priznak, jestli se musela "vypocitavat"
+    alternativni forma s cislem (protoze v DB uz stejny slug existuje).
     """
     from hazard.geo.models import Entry
 
     slug = slugify(title)
+    exists = False
     if Entry.objects.filter(slug=slug).exists():
         last_id = Entry.objects.all().order_by('-id').values_list('id', flat=True)[0]
         slug = "%s-%i" % (slug, last_id + 10)
-    return slug
+        exists = True
+    return slug, exists

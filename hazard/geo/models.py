@@ -30,12 +30,11 @@ class Entry(models.Model):
     email        = models.EmailField(u"Kontaktní email", blank=True)
     ip           = models.CharField(u"IP adresa", max_length=40, blank=True)
     # denormalizovane hodnoty
-    # TODO: popsat
-    dperc           = models.FloatField(editable=False, default=0)
-    dhell_count     = models.FloatField(editable=False, default=0)
+    dperc           = models.FloatField(u"% protiprávních", editable=False, default=0)
+    dhell_count     = models.FloatField(u"Počet heren", editable=False, default=0)
     dok_hell_count  = models.FloatField(editable=False, default=0)
-    dper_population = models.FloatField(editable=False, default=0)
-    dper_area       = models.FloatField(editable=False, default=0)
+    dper_population = models.FloatField(u"Obyvatel/hernu", editable=False, default=0)
+    dper_area       = models.FloatField(u"Heren/km", editable=False, default=0)
     dpoint          = geomodels.PointField(null=True, blank=True, editable=False)
 
     class Meta:
@@ -138,7 +137,7 @@ class Entry(models.Model):
             data = data_or_filename
 
         # zaznam Entry
-        slug = get_unique_slug(data['entry']['title'])
+        slug, exists = get_unique_slug(data['entry']['title'])
         entry = Entry.objects.create(
             title           = data['entry']['title'],
             slug            = slug,

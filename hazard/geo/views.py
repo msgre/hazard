@@ -42,16 +42,21 @@ class EntryFormView(FormView):
         V pripade ze zadane KML soubory jsou v poradku, ulozime vyparsovana data
         do databaze.
         """
-        entry, created = form.create_entry(self.request.META.get('REMOTE_ADDR', ''))
-        # TODO: pokud neni public, presmerovat jinam...
-        # TODO: upravit hlasku v else
-        if created:
+        ip = self.request.META.get('REMOTE_ADDR', self.request.META.get('HTTP_X_FORWARDED_FOR', ''))
+        entry, exists = form.create_entry(ip)
+        if not exists:
             form.save(entry)
-            messages.success(self.request, 'Hotovo. Díky!')
+            if entry.public:
+                messages.success(self.request, 'Hotovo. Díky!')
+            else:
+                messages.success(self.request, 'Hotovo. Vaše mapa byla uložena, \
+                ale musíme v ní ještě doplnit některé údaje. Až dáme věci do \
+                pořádku, zveřejníme ji. Díky!')
         else:
-            messages.warning(self.request, u'Záznam pro %s již existuje. Pokud \
-            chcete zde zobrazené informace změnit, postupujte \
-            <a href="#">následujícím způsobem</a>.' % entry.title)
+            messages.warning(self.request, u'Hotovo. Záznam pro %s ale \
+            v databázi již máme a Váš příspěvek musíme manuálně zkontrolovat. \
+            Pokud bude vše v pořádku, dosavadní informace dáme pryč a Vaše nová \
+            data zveřejníme. Díky!' % entry.title)
         return HttpResponseRedirect(reverse('entry-detail',
                                     kwargs={'slug': entry.slug}))
 
@@ -64,7 +69,16 @@ class EntryDetailView(DetailView):
     template_name = 'geo/detail.html'
 
     def get_queryset(self):
-        return Entry.objects.filter(public=True, slug=self.kwargs['slug'])
+        """
+        Poznamka: puvodne jsem tahal jen zverejnene zaznamy, ale v pripade
+        detailu budu zobrazovat i ty neverejne, protoze potrebuji uzivateli
+        zobrazit to co prave nahral.
+
+        Na ostatnich mistech (v mape na pozadi, hitparade) ale budeme zobrazovat
+        jen ty opravdu zverejnene.
+        """
+        #return Entry.objects.filter(public=True, slug=self.kwargs['slug'])
+        return Entry.objects.filter(slug=self.kwargs['slug'])
 
     def get_context_data(self, **kwargs):
         """

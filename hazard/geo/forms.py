@@ -198,10 +198,14 @@ class KMLForm(forms.Form):
         data = self.find_entry_information()
 
         # zajistime jedinecny slug
-        slug = get_unique_slug(data['town'][:99])
+        slug, exists = get_unique_slug(data['town'][:99])
+
+        # pokud uz v DB zaznam pro obec mame, nebudeme podnik zverejnovat
+        if exists:
+            data['public'] = False
 
         # vytvorime zaznam Entry
-        entry, created = Entry.objects.get_or_create(
+        entry, _ = Entry.objects.get_or_create(
             title        = data['town'],
             slug         = slug,
             population   = data['population'] and int(data['population']) or None,
@@ -215,7 +219,7 @@ class KMLForm(forms.Form):
             email        = self.cleaned_data['email'],
             ip           = ip
         )
-        return entry, created
+        return entry, exists
 
     def save(self, entry):
         """
