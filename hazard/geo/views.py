@@ -31,7 +31,6 @@ class EntryFormView(FormView):
     #     'hells': 'http://maps.google.com/maps/ms?ie=UTF8&hl=cs&vps=1&jsv=332a&msa=0&output=nl&msid=217120881929273348625.0004a172ca42f5022bab1'
     # }
 
-
     def get_form_kwargs(self):
         out = super(EntryFormView, self).get_form_kwargs()
         out.update(error_class=PbrErrorList)
@@ -44,19 +43,19 @@ class EntryFormView(FormView):
         """
         ip = self.request.META.get('REMOTE_ADDR', self.request.META.get('HTTP_X_FORWARDED_FOR', ''))
         entry, exists = form.create_entry(ip)
+        form.save(entry)
         if not exists:
-            form.save(entry)
             if entry.public:
                 messages.success(self.request, 'Hotovo. Díky!')
             else:
                 messages.success(self.request, 'Hotovo. Vaše mapa byla uložena, \
                 ale musíme v ní ještě doplnit některé údaje. Až dáme věci do \
-                pořádku, zveřejníme ji. Díky!')
+                pořádku, zveřejníme ji. Díky!', extra_tags='notice')
         else:
             messages.warning(self.request, u'Hotovo. Záznam pro %s ale \
             v databázi již máme a Váš příspěvek musíme manuálně zkontrolovat. \
             Pokud bude vše v pořádku, dosavadní informace dáme pryč a Vaše nová \
-            data zveřejníme. Díky!' % entry.title)
+            data zveřejníme. Díky!' % entry.title, extra_tags='notice')
         return HttpResponseRedirect(reverse('entry-detail',
                                     kwargs={'slug': entry.slug}))
 
