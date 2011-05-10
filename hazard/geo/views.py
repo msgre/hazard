@@ -109,12 +109,25 @@ class EntryDetailView(DetailView):
         return out
 
 
-TOP_ENTRIES_COUNT = 10
+TOP_ENTRIES_COUNT = 4
 
 class EntryListView(ListView):
     context_object_name = "entries"
     template_name = 'geo/list.html'
-    paginate_by = 5
 
     def get_queryset(self):
         return Entry.objects.filter(public=True).order_by('-dperc')[:TOP_ENTRIES_COUNT]
+
+    def get_context_data(self, **kwargs):
+        out = super(EntryListView, self).get_context_data(**kwargs)
+        out.update({
+            'show_next': Entry.objects.filter(public=True).count() > TOP_ENTRIES_COUNT
+        })
+        return out
+
+class FullEntryListView(ListView):
+    context_object_name = "entries"
+    template_name = 'geo/fulllist.html'
+
+    def get_queryset(self):
+        return Entry.objects.filter(public=True).order_by('-dperc')

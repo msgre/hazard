@@ -3,9 +3,14 @@
 {% load geo %}
 
 {% block content %}
-    <h3>Hitparáda</h3>
-    <p>Která města a obce jsou ta "nejlepší" v protizákonných povolováních
-    výherních automatů?</p>
+    <h3>Kompletní výpis obcí</h3>
+    <p>Údaj ve sloupci "Herny" vyjadřuje počet heren na
+    zakázaných místech (první číslo) a počet zanesených heren v dané obci
+    (druhé číslo).<br>
+    Informace v posledním sloupečku pak tyto hodnoty dává do poměru a vyjadřuje
+    kolik procent z heren, které lidé zanesli do mapy, je v dané v obci
+    provozováno na zakázaných místech.</p>
+
     {% if entries %}
         <table id="topici">
             <tr>
@@ -27,10 +32,4 @@
     {% else %}
         <p><i>Před chvílí jsme stránky spustili a zatím nemáme co zobrazit. Navštivte nás prosím později.</i></p>
     {% endif %}
-    <p><i><b>Poznámka:</b> Údaj ve sloupci "Herny" vyjadřuje počet heren na
-    zakázaných místech (první číslo) a počet zanesených heren v dané obci
-    (druhé číslo).<br>
-    Informace v posledním sloupečku pak tyto hodnoty dává do poměru a vyjadřuje
-    kolik procent z heren, které lidé zanesli do mapy, je v dané v obci
-    provozováno na zakázaných místech.</i></p>
 {% endblock %}
