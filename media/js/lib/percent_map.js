@@ -1,10 +1,11 @@
 (function() {
   /*
   Obecny kod, ktery je vyuzivan jak v detailech obci, tak i na ostatnich strankach.
-  */  var Group, MAP_STYLE, draw_entries, init_fancybox, init_map, setup;
+  */  var Group, MAP_STYLE, MEDIA_URL, draw_entries, init_fancybox, init_map, open_upload_fancybox, setup, submit, upload_fancybox_opened;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   window.map = void 0;
   MAP_STYLE = void 0;
+  MEDIA_URL = 'http://media.parkujujakcyp.cz/hazard/';
   /*
   Nakonfigurovani stylu mapy.
   */
@@ -54,18 +55,41 @@
     ];
   };
   /*
+  Serepeticky kvuli fancyboxu -- kdyz jsem ho volal na submit udalost, nestihl
+  si nacist obrazky z CSSka a progress bar uvnitr taky chybel. Proto to delam
+  tak ze submit nejprve nahodi fancybox, a teprve po sekunde dojde ke skutecnemu
+  odeslani formulare.
+  */
+  upload_fancybox_opened = false;
+  open_upload_fancybox = function() {
+    upload_fancybox_opened = true;
+    return $.fancybox({
+      title: 'Uno momento',
+      content: '<p><b>Vaše mapy se právě nahrávají na server a chvíli to potrvá</b></p><p><img src="' + MEDIA_URL + 'img/ajax-loader.gif"></p><p><em>Pro hrubou orientaci: Brno s cca 300 hernami trvá téměř 3 minuty.</em></p>',
+      modal: true
+    });
+  };
+  submit = function() {
+    return $('form').submit();
+  };
+  /*
   Inicializace fancyboxu (vrstvy pro zobrazovani vetsich obrazku a modalnich
   oken).
   */
   init_fancybox = function() {
+    var img;
     $("a.fb").fancybox();
     if ($('#upload_maps').length) {
+      img = $('<img>').attr('src', MEDIA_URL + 'img/ajax-loader.gif');
       return $('form').submit(function() {
-        return $.fancybox({
-          title: 'Uno momento',
-          content: '<p><b>Vaše mapy se právě nahrávají na server a chvíli to potrvá</b></p><p><img src="http://media.parkujujakcyp.cz/hazard/img/ajax-loader.gif"></p><p><em>Pro hrubou orientaci: Brno s cca 300 hernami trvá téměř 3 minuty.</em></p>',
-          modal: true
-        });
+        var t;
+        if (!upload_fancybox_opened) {
+          open_upload_fancybox();
+          t = setTimeout(submit, 1000);
+          return false;
+        } else {
+          return true;
+        }
       });
     }
   };
