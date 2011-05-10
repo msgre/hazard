@@ -76,7 +76,7 @@ table {
     border-top:1px dotted #eee;
     border-collapse: collapse;
 }
-td {
+td, th {
     border-bottom:1px dotted #eee;
 }
 tbody tr:nth-child(even) td, tbody tr.even td {
@@ -137,4 +137,7 @@ a.fb {
     display:block;
     padding-top:5px;
     padding-bottom:5px;
+}
+#topici td span {
+    cursor:help;
 }
