@@ -4,7 +4,7 @@
     <title>{% block title %}MapyHazardu.cz{% endblock %}</title>
 
     {# Meta uzitecne pro Google, Seznam, Facebook #}
-    <meta name="description" content="Mapujeme herny hazardu v českých městech">
+    {#<meta name="description" content="">#}
 
     {# Facebook OpenGraph #}
     <meta property="og:site_name" content="MapyHeren.cz">
@@ -41,7 +41,7 @@
         {# hlavni obsah #}
         <div id="content">
             <div id="info_box">
-                <a href="/"><img src="{{ MEDIA_URL }}img/herny4.png" width="300" height="82" title="MapyHazardu.cz -- mapujeme herny v českých městech"></a>
+                <a href="/"><img src="{{ MEDIA_URL }}img/herny4.png" width="300" height="82" title="MapyHazardu.cz"></a>
                 <p id="nav"><a class="nop" href="/">O projektu</a> / <a href="{% url entry-list %}">Hitparáda</a> / <a href="{% url entry-form %}">Přidat obec</a> / <a href="{% url contact %}">Kontakt</a></p>
                 {% if messages %}
                     <p id="messages">
