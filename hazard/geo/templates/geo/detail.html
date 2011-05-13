@@ -1,6 +1,6 @@
 {% extends "bone.html" %}
 
-{% load shared %}
+{% load shared geo %}
 
 {% block title %}Herny v obci {{ entry.title }}{% endblock %}
 
@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block content %}
-    <h3>{{ entry.title }}</h3>
+    <h2>{{ entry.title }}</h2>
 
     <p><strong class="percentage">{{ entry.dperc|floatformat:0 }}%</strong>
     heren v této v obci je <strong>provozováno protiprávně</strong>.</p>
@@ -21,12 +21,39 @@
         </div>
     {% endif %}
 
-    <p class="clear" id="detailed_info">Další zajímavosti</p>
-    <ul>
-        <li>Celkem {{ entry.dhell_count|floatformat:0 }}&nbsp;heren, {{ entry.dok_hell_count|floatformat:0 }} na povolených místech</li>
-        <li>{{ entry.dper_population|floatformat:0 }} obyvatel/hernu</li>
-        <li>{{ entry.dper_area|floatformat:2 }} herny/km<sup>2</sup></li>
-    </ul>
+    <p class="clear">Prohlédněte si <a href="#" id="detailed_info_anchor">další
+    zajímavosti</a> o mapě nebo se přímo <a href="#"
+    id="join_us_anchor">zapojte do její tvorby</a>.</p>
+
+    <div id="detailed_info">
+        <h4>Další zajímavosti</h4>
+        <ul>
+            <li>V obci je provozováno celkem {{ entry.dhell_count|floatformat:0 }}&nbsp;heren,
+            z toho {{ entry.dok_hell_count|floatformat:0 }} jich je na povolených
+            místech a {{ entry|prohibitted_hells|floatformat:0 }} na zakázaných</li>
+            <li>Na jednu hernu připadá {{ entry.dper_population|floatformat:0 }}
+            obyvatel obce a na jednom km<sup>2</sup> by jste mohli nalézt
+            {{ entry.dper_area|floatformat:2 }} herny</li>
+            <li>Mapa byla aktualizována dne {{ entry.created|date }}</li>
+        </ul>
+    </div>
+
+    <div id="join_us">
+        <h4>Spolupráce</h4>
+        <p>Pro vykreslení mapy byla použita tato zdrojová data:
+        <a href="{{ entry.hell_url|kml_to_www }}">Mapa heren</a> /
+        <a href="{{ entry.building_url|kml_to_www }}">Mapa budov</a>.</p>
+        <p>Pokud se Vám zdá, že zde prezentované informace nejsou aktuální,
+        spojte se s jejich autorem a mapu upravte. <a href="#">Je to jednodušší
+        než si myslíte</a>. Poté stačí kliknout na následující tlačítko:</p>
+        <form action="{% url entry-form %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="hells" value="{{ entry.hell_url }}">
+            <input type="hidden" name="buildings" value="{{ entry.building_url }}">
+            <input type="hidden" name="id" value="{{ entry.id }}">
+            <input type="submit" value="Aktualizovat mapu">
+        </form>
+    </div>
 {% endblock %}
 
 {% block inline_js %}

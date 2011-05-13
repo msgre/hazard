@@ -6,7 +6,7 @@
     připravte si s pomocí <a href="http://maps.google.com/">Google maps</a>
     seznam heren a budov, a vložte je do tohoto formuláře.</p>
     <p><a href="{% url instruction %}">Podrobný návod na výrobu mapy</a></p>
-    <form method="post" action="."> {# TODO: #}
+    <form method="post" action="{% url entry-form %}">
         {% csrf_token %}
         {{ form.as_p }}
         <input type="submit" id="upload_maps" value="Nahrát mapy">

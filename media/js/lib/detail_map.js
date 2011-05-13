@@ -190,12 +190,17 @@
       opt_textColor: '#ffffff',
       opt_textSize: 11
     };
-    $('#detailed_info').wrapInner('<a href="#" id="detailed_info_link"></a>').next().hide();
-    $('#detailed_info_link').click(function() {
-      $(this).closest('p').next().toggle();
+    $('#detailed_info, #join_us').hide();
+    $('#detailed_info_anchor').click(function() {
+      $('#join_us').hide();
+      $('#detailed_info').show();
       return false;
     });
-    return false;
+    return $('#join_us_anchor').click(function() {
+      $('#join_us').show();
+      $('#detailed_info').hide();
+      return false;
+    });
   };
   /*
   Vykresleni budov, ktere sousedi s hernou (znackou) `that`.

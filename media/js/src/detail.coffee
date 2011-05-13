@@ -110,12 +110,16 @@ setup_detail = () ->
         opt_textSize: 11
 
     # Inicializace prvku na strance s detailem konkretni obce.
-    $('#detailed_info').wrapInner('<a href="#" id="detailed_info_link"></a>').next().hide()
-    $('#detailed_info_link').click () ->
-        $(this).closest('p').next().toggle()
-        return false
+    $('#detailed_info, #join_us').hide()
+    $('#detailed_info_anchor').click () ->
+        $('#join_us').hide()
+        $('#detailed_info').show()
+        false
+    $('#join_us_anchor').click () ->
+        $('#join_us').show()
+        $('#detailed_info').hide()
+        false
 
-    false
 
 ###
 Vykresleni budov, ktere sousedi s hernou (znackou) `that`.
