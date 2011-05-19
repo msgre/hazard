@@ -21,12 +21,13 @@
           uvidíte tlačítko "Začít". Klikněte na něj a buďto se přihlašte, nebo si
           zřiďte nový uživatelský účet.
           <a href="{{ MEDIA_URL }}img/instruction/zacit.png" class="fb" rel="instr" title="Tlačítko pro vytvoření první mapy"><img src="{{ MEDIA_URL }}img/instruction/zacit_t.png" width="250"></a>
-        <li>Po přihlášení uvidíte v levém sloupci buďto odkaz "Vytvořit novou mapu"
+        <li>Po přihlášení uvidíte v levém sloupci odkaz "Vytvořit novou mapu"
           nebo tlačítko "Začít". Klikněte na ně.
         <li>Do políčka nadpis zadejte např. "Herny ve Vsetíně". Ujistěte se, že
-          v "Nastavení soukromí a sdílení" máte vybránu volbu "Veřejná".
+          v "Nastavení soukromí a sdílení" máte vybránu volbu "Veřejná" (jinak se nám nepovede mapu stáhnout).
         <li>Najděte v mapě svou obec (mapu přesunete stisknutím levého tlačítka myši), klikněte
-          v levém horním rohu na ikonu špendlíku a dalším kliknutím jej umístěte do mapy.
+          v levém horním rohu na ikonu špendlíku a dalším kliknutím jej v mapě
+          na místo, kde leží některá z heren.
           <a href="{{ MEDIA_URL }}img/instruction/zaznam2.png" class="fb" rel="instr" title="Vložení špendlíku do mapy"><img src="{{ MEDIA_URL }}img/instruction/zaznam2_t.png" width="250"></a>
         <li>Do políčka "Nadpis" v bublině zadejte
           název herny. Pokud máte o ní máte zjištěny nějaké zajímavé informace,
@@ -46,11 +47,11 @@
         <li>Do políčka nadpis zadejte např. "Budovy ve Vsetíně".
         <li>Stejně jako v případě heren můžete začít do mapy přidávat špendlíky označující
           konkrétní budovy v obci, v jejichž sousedství nesmějí být herny provozovány
-          (<a href="http://www.osbrneni.cz/regulace-hazardu/budovy">kompletní seznam</a>).
+          (<a href="http://www.osbrneni.cz/regulace-hazardu/budovy">kompletní seznam budov</a>).
         <li>Přesnějších výsledků ale dosáhnete, pokud namísto špendlíků obkreslíte
-          půdorys budov s pomocí mnohoúhelníku &mdash; stačí stisknout levé tlačítko myši
-          nad ikonou lomené čáry, a vybrat položku "Nakreslit tvar". Pak jen stačí
-          klikat na rohy budovy.
+          půdorys budov &mdash; stačí stisknout levé tlačítko myši
+          nad ikonou lomené čáry, a vybrat v menu položku "Nakreslit tvar". Poté
+          v mapě postupně klikejte na rohy budovy.
           <a href="{{ MEDIA_URL }}img/instruction/obrysy.png" class="fb" rel="instr" title="Funkce 'Nakreslit tvar' pro vytvoření obrysu budovy"><img src="{{ MEDIA_URL }}img/instruction/obrysy_t.png" width="250"></a>
         <li>Do políčka "Nadpis" v bublině zadejte název budovy a pokud chcete, do pole
           "Popis" pak další doplňující údaje.
@@ -58,7 +59,9 @@
           v levém sloupci.
     </ul>
 
-    <h4>Vložení map do naší aplikace</h4>
+    <h4>Vložení map na web MapyHazardu.cz</h4>
+    <p>Tak. Největší práce je za vámi. Teď už chybí poslední střípek &mdash;
+    vložit odkazy map do naší aplikace:</p>
     <ul>
         <li>V levém sloupci klikněte na odkaz "Moje mapy" a vyberte mapu s hernami.
         <li>Klikněte pravým tlačítkem myši nad odkazem "Zobrazit v aplikaci Google Earth"
@@ -70,9 +73,10 @@
         <li>Vraťte se zpět do Google map, stejným postupem zjistěte URL adresu mapy budov
           a vložte ji do políčka "Mapa budov".
         <li>Vyplňte políčko s kontaktním emailem a klikněte na tlačítko "Nahrát
-          mapy" a chvíli počkejte.
-        <li>Pokud někde nenastala chyba, zobrazí se vám po chvíli stránka s vaší obcí
-          a podrobnostmi.
+          mapy".
+        <li>Po chvíli se objeví stránka s vaší obcí. Sledujte prosím informační
+          hlášky v levém sloupci, ve které se dozvíte zda byla vaše data přijata
+          či nikoliv. V případě obtíží nás prosím <a href="{% url contact %}">zkontaktujte</a>.
     </ul>
 
 {% endblock %}

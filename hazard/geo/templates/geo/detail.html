@@ -22,8 +22,8 @@
     {% endif %}
 
     <p class="clear">Prohlédněte si <a href="#" id="detailed_info_anchor">další
-    zajímavosti</a> o mapě nebo se přímo <a href="#"
-    id="join_us_anchor">zapojte do její tvorby</a>.</p>
+    zajímavosti</a>&nbsp;&darr; o mapě nebo se přímo <a href="#"
+    id="join_us_anchor">zapojte do její tvorby</a>&nbsp;&darr;.</p>
 
     <div id="detailed_info">
         <h4>Další zajímavosti</h4>
@@ -44,8 +44,9 @@
         <a href="{{ entry.hell_url|kml_to_www }}">Mapa heren</a> /
         <a href="{{ entry.building_url|kml_to_www }}">Mapa budov</a>.</p>
         <p>Pokud se Vám zdá, že zde prezentované informace nejsou aktuální,
-        spojte se s jejich autorem a zdrojové mapy upravte. <a href="#">Je to jednodušší
-        než si myslíte</a>.<br>Poté stačí kliknout na následující tlačítko:</p>
+        spojte se s jejich autorem a <b>zdrojové mapy upravte</b>. <a href="#">Je to jednodušší
+        než si myslíte</a>.</p>
+        <p>Poté stačí kliknout na následující tlačítko:</p>
         <form action="{% url entry-form %}" method="post">
             {% csrf_token %}
             <input type="hidden" name="hells" value="{{ entry.hell_url }}">
