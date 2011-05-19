@@ -29,7 +29,6 @@ class Entry(models.Model):
     created         = models.DateTimeField(u"Datum vytvoření", auto_now_add=True, editable=False)
     email           = models.EmailField(u"Kontaktní email", blank=True)
     ip              = models.CharField(u"IP adresa", max_length=40, blank=True)
-    point           = geomodels.PointField(u"Přibližný střed obce", blank=True, null=True)
     # denormalizovane hodnoty
     dperc           = models.FloatField(u"% protiprávních", editable=False, default=0)
     dhell_count     = models.FloatField(u"Počet heren", editable=False, default=0)
@@ -37,6 +36,8 @@ class Entry(models.Model):
     dper_population = models.FloatField(u"Obyvatel/hernu", editable=False, default=0)
     dper_area       = models.FloatField(u"Heren/km", editable=False, default=0)
     dpoint          = geomodels.PointField(null=True, blank=True, editable=False)
+    # manager
+    objects         = geomodels.GeoManager()
 
     class Meta:
         verbose_name = u'Záznam obce'

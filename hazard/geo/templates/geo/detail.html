@@ -44,13 +44,13 @@
         <a href="{{ entry.hell_url|kml_to_www }}">Mapa heren</a> /
         <a href="{{ entry.building_url|kml_to_www }}">Mapa budov</a>.</p>
         <p>Pokud se Vám zdá, že zde prezentované informace nejsou aktuální,
-        spojte se s jejich autorem a mapu upravte. <a href="#">Je to jednodušší
-        než si myslíte</a>. Poté stačí kliknout na následující tlačítko:</p>
+        spojte se s jejich autorem a zdrojové mapy upravte. <a href="#">Je to jednodušší
+        než si myslíte</a>.<br>Poté stačí kliknout na následující tlačítko:</p>
         <form action="{% url entry-form %}" method="post">
             {% csrf_token %}
             <input type="hidden" name="hells" value="{{ entry.hell_url }}">
             <input type="hidden" name="buildings" value="{{ entry.building_url }}">
-            <input type="hidden" name="id" value="{{ entry.id }}">
+            <input type="hidden" name="slug" value="{{ entry.slug }}">
             <input type="submit" value="Aktualizovat mapu">
         </form>
     </div>

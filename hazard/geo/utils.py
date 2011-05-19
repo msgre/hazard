@@ -2,6 +2,7 @@
 
 import logging
 import urllib2
+import random
 
 from hazard.shared.czech import slugify
 
@@ -28,7 +29,6 @@ def get_unique_slug(title):
     slug = slugify(title)
     exists = False
     if Entry.objects.filter(slug=slug).exists():
-        last_id = Entry.objects.all().order_by('-id').values_list('id', flat=True)[0]
-        slug = "%s-%i" % (slug, last_id + 10)
+        slug = "%s-%s" % (slug, ''.join(random.sample(list('abcdefghjkmopqrstuvwxyz'), 10)))
         exists = True
     return slug, exists

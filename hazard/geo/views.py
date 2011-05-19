@@ -36,6 +36,17 @@ class EntryFormView(FormView):
         out.update(error_class=PbrErrorList)
         return out
 
+    def form_invalid(self, form):
+        if form.update_no_change_slug:
+            # v pripade, ze se mapy nezmenily a formik byl odeslan pres
+            # tlacitko v detailu stranky, zustaneme na strance s detailem
+            # a error hlasku z formulare pretransformuje na message
+            messages.warning(self.request, form.non_field_errors()[0], extra_tags='notice')
+            return HttpResponseRedirect(reverse('entry-detail',
+                                        kwargs={'slug': form.update_no_change_slug}))
+        else:
+            return super(EntryFormView, self).form_invalid(form)
+
     def form_valid(self, form):
         """
         V pripade ze zadane KML soubory jsou v poradku, ulozime vyparsovana data
@@ -48,14 +59,10 @@ class EntryFormView(FormView):
             if entry.public:
                 messages.success(self.request, 'Hotovo. Díky!')
             else:
-                messages.success(self.request, 'Hotovo. Vaše mapa byla uložena, \
-                ale musíme v ní ještě doplnit některé údaje. Až dáme věci do \
-                pořádku, zveřejníme ji. Díky!', extra_tags='notice')
+                messages.success(self.request, 'Hotovo. Vaše mapa byla uložena, ale musíme v ní ještě doplnit některé údaje. Až dáme věci do pořádku, zveřejníme ji. Díky!', extra_tags='notice')
         else:
-            messages.warning(self.request, u'Hotovo. Záznam pro %s ale \
-            v databázi již máme a Váš příspěvek musíme manuálně zkontrolovat. \
-            Pokud bude vše v pořádku, dosavadní informace dáme pryč a Vaše nová \
-            data zveřejníme. Díky!' % entry.title, extra_tags='notice')
+            if not form.update_no_change_slug:
+                messages.warning(self.request, u'Hotovo. Záznam pro %s ale v databázi již máme a Váš příspěvek musíme manuálně zkontrolovat. Pokud bude vše v pořádku, dosavadní informace dáme pryč a Vaše nová data zveřejníme. Díky!' % entry.title, extra_tags='notice')
         return HttpResponseRedirect(reverse('entry-detail',
                                     kwargs={'slug': entry.slug}))
 

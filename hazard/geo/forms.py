@@ -7,11 +7,12 @@ from django.contrib.gis.geos import Polygon, Point
 from django.template.defaultfilters import iriencode
 from django.contrib.gis.gdal import CoordTransform, SpatialReference
 from django.forms.util import ErrorList
+from django.contrib.gis.measure import D
 
 from hazard.shared.czech import slugify
 from hazard.geo.parsers import parse_xml, KMLHandler, LinkHandler, MediaWikiHandler
 from hazard.geo.utils import download_content, get_unique_slug
-from hazard.geo.models import Building, Hell
+from hazard.geo.models import Building, Hell, Entry
 from hazard.geo.geocoders.google import geocode
 from hazard.shared.cache import clear_cache
 
@@ -19,6 +20,7 @@ from hazard.shared.cache import clear_cache
 logger = logging.getLogger(__name__)
 
 M100 = 100 # okoli budov v metrech
+KM20 = 20  # pokud se zadava duplicitni zaznam pro obec kterou uz mame v DB, pak se kontroluje, jak daleko je novy zaznam od stareho. Pokud je moc blizko, pak se ulozi do DB jako neverejny
 
 
 class PbrErrorList(ErrorList):
@@ -43,12 +45,17 @@ class KMLForm(forms.Form):
     hells     = forms.URLField(label=u'Mapa heren')
     buildings = forms.URLField(label=u'Mapa budov')
     email     = forms.EmailField(label=u'Kontaktní email', required=False)
+    slug      = forms.CharField(required=False, widget=forms.HiddenInput)
 
     err_wrong = u"Hm... Se zadaným odkazem si neporadím. Je to skutečně odkaz na KML soubor?"
     err_down = u"Nepovedlo se mi stáhnout odkazovaný KML soubor. Zkuste prosím odeslat formulář znovu."
 
     error_css_class = "error"
     required_css_class = "required"
+
+    def __init__(self, *args, **kwargs):
+        super(KMLForm, self).__init__(*args, **kwargs)
+        self.update_no_change_slug = None
 
     def clean_buildings(self):
         """
@@ -137,6 +144,48 @@ class KMLForm(forms.Form):
 
         return data
 
+    def clean(self):
+        cleaned_data = self.cleaned_data
+
+        # vyzobneme podrobnejsi informace o zaznamu
+        self.ei = self.find_entry_information()
+
+        if not self.ei['pos'] or not self.ei['town']:
+            # nepovedlo se zjistit zakladni informace, od kterych se odvozuje
+            # vse ostatni -- tj. lat/lon pozici obce a nazev obce
+            raise forms.ValidationError(u"Nepodařilo se nám zjistit obec ze které pochází Vaše mapy.")
+
+        # zjistime o co jde, zda o update nebo vytvoreni noveho zaznamu
+        slug = cleaned_data.get('slug', None)
+        hell_url = cleaned_data.get('hells', None)
+        building_url = cleaned_data.get('buildings', None)
+
+        if hell_url and building_url:
+            if slug:
+                try:
+                    entry = Entry.objects.get(slug=slug)
+                except Entry.DoesNotExist:
+                    entry = None
+            else:
+                try:
+                    entry = Entry.objects.get(
+                        hell_url = hell_url,
+                        building_url = building_url
+                    )
+                except Entry.DoesNotExist:
+                    entry = None
+            self.old_entry = entry
+
+            # kontrola obsahu KML map
+            if entry and hasattr(self, 'buildings_kml') and hasattr(self, 'hells_kml'):
+                if entry.building_kml == self.buildings_kml.decode('utf-8') and \
+                   entry.hell_kml == self.hells_kml.decode('utf-8'):
+                    if cleaned_data.get('slug', None):
+                        self.update_no_change_slug = cleaned_data['slug']
+                    raise forms.ValidationError(u"Zdrojové mapy pro obec %s se nezměnily, záznam na našich stránkách je aktuální." % self.ei['town'])
+
+        return cleaned_data
+
     def find_center(self):
         """
         Vrati prumerny stred ze vsech heren. Ze ziskane pozice se pak snazim
@@ -153,7 +202,7 @@ class KMLForm(forms.Form):
         Pokusi se pres Google Geocode service zjistit kteremu mestu odpovida
         zadana pozice `pos`.
         """
-        json = geocode("%(lat)s, %(lon)s" % pos, '') # TODO: API key
+        json = geocode("%(lat)s, %(lon)s" % pos, '')
         try:
             town = json['Placemark'][0]['AddressDetails']['Country']['AdministrativeArea']['SubAdministrativeArea']['SubAdministrativeAreaName']
         except (KeyError, IndexError):
@@ -177,12 +226,11 @@ class KMLForm(forms.Form):
 
         Tyto informace slouzi pro naplneni zaznamu Entry.
         """
-        out = {'town': u'Neznámé místo', 'wikipedia_url': None, 'public': False}
-        pos = self.find_center()
-        town = self.find_town(pos)
-        if town:
-            out['town'] = town
-            out['wikipedia_url'] = self.guess_wikipedia_url(town)
+        out = {'wikipedia_url': None, 'public': False}
+        out['pos'] = self.find_center()
+        out['town'] = self.find_town(out['pos'])
+        if out['town']:
+            out['wikipedia_url'] = self.guess_wikipedia_url(out['town'])
             wikipedia_content = download_content(out['wikipedia_url'])
             if wikipedia_content:
                 out.update(parse_xml(MediaWikiHandler(), wikipedia_content))
@@ -195,31 +243,58 @@ class KMLForm(forms.Form):
         Vytvori zaznam Entry. Pro vytvoreni objektu pouzije informace ziskane
         prostrednictvim zadanych KML souboru (viz find_entry_information).
         """
-        from hazard.geo.models import Entry
-        data = self.find_entry_information()
 
-        # zajistime jedinecny slug
-        slug, exists = get_unique_slug(data['town'][:99])
+        ei = self.ei
+        old_entry = self.old_entry
 
-        # pokud uz v DB zaznam pro obec mame, nebudeme podnik zverejnovat
-        if exists:
-            data['public'] = False
+        if old_entry:
+            exists = True
+            # novy zaznam podedi nektere vlastnosti stareho zaznamu
+            slug = old_entry.slug # stejny slug
+            public = old_entry.public # viditelnost
 
-        # vytvorime zaznam Entry
-        entry, _ = Entry.objects.get_or_create(
-            title        = data['town'],
-            slug         = slug,
-            population   = data['population'] and int(data['population']) or None,
-            area         = data['area'] and int(data['area']) or None,
-            wikipedia    = data['wikipedia_url'],
-            hell_url     = self.cleaned_data['hells'],
-            hell_kml     = self.hells_kml,
-            building_url = self.cleaned_data['buildings'],
-            building_kml = self.buildings_kml,
-            public       = data['public'],
-            email        = self.cleaned_data['email'],
-            ip           = ip
-        )
+            # stary zaznam obce odstavime na vedlejsi kolej
+            old_entry.slug = "%s-%i" % (old_entry.slug, old_entry.id)
+            old_entry.public = False
+            old_entry.save()
+        else:
+            # pro novy zaznam vymyslime unikatni slug
+            slug, exists = get_unique_slug(ei['town'][:90]) # TODO: neopakuje se mi to? ta :90
+            if exists:
+                point = Point(ei['pos']['lon'], ei['pos']['lat'], srid=4326)
+                if Entry.objects.filter(slug__startswith=slugify(ei['town'][:90]), dpoint__distance_lte=(point, D(km=KM20))).exists():
+                    # duplicitni zaznam s jinym zdrojem dat; tohle skryjem
+                    public = False
+                else:
+                    # jde pouze o shodu jmena obce; normalne ji zverejnime
+                    # (slug sice bude mit cislo, ale jinak to stejne nejde)
+                    public = True
+            else:
+                public = True
+
+        # data pro vytvoreni zaznamu Entry
+        data = {
+            'title':        ei['town'],
+            'slug':         slug,
+            'population':   ei['population'] and int(ei['population']) or None,
+            'area':         ei['area'] and int(ei['area']) or None,
+            'wikipedia':    ei['wikipedia_url'],
+            'hell_url':     self.cleaned_data['hells'],
+            'hell_kml':     self.hells_kml,
+            'building_url': self.cleaned_data['buildings'],
+            'building_kml': self.buildings_kml,
+            'public':       public,
+            'email':        self.cleaned_data['email'],
+            'ip':           ip
+        }
+        if old_entry:
+            # pokud nam v "ei" datech neco chybi, doplnime to ze stareho zaznamu
+            data['population'] = data['population'] or old_entry.population
+            data['area'] = data['area'] or old_entry.area
+            data['wikipedia'] = data['wikipedia'] or old_entry.wikipedia
+
+        # ulozeni objektu do DB
+        entry = Entry.objects.create(**data)
         return entry, exists
 
     def save(self, entry):
