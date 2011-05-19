@@ -1,0 +1,15 @@
+{% extends "bone.html" %}
+
+{% load markup %}
+
+{% block content %}
+    <h3>{{ new.title }}</h3>
+
+    {% if new.annotation %}
+        <p>{{ new.created|date }} &mdash; <b>{{ new.annotation }}</b></p>
+    {% else %}
+        <p>{{ new.created|date }}</p>
+    {% endif %}
+
+    {{ new.content }} {# TODO: markdown #}
+{% endblock %}

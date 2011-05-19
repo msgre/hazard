@@ -26,88 +26,89 @@ Nakonfigurovani stylu a ikon.
 ###
 
 setup_detail = () ->
-    # nastylovani polygonu
-    FILL_OPTIONS['building'] =
-        strokeWeight: 0
-        strokeColor: '#000000'
-        strokeOpacity: .01
-        fillColor: '#ffffff'
-        fillOpacity: 1
-        zIndex: FILL_Z_INDEX
-    FILL_OPTIONS['zone'] =
-        strokeWeight: 0
-        strokeColor: '#000000'
-        strokeOpacity: .01
-        fillColor: '#000000'
-        fillOpacity: .7
-        zIndex: FILL_Z_INDEX - 1
-    FILL_OPTIONS['building_hovered'] =
-        strokeWeight: 0
-        strokeColor: '#000000'
-        strokeOpacity: .01
-        fillColor: '#000000'
-        fillOpacity: .9
-        zIndex: FILL_Z_INDEX + 2
-    FILL_OPTIONS['zone_hovered'] =
-        strokeWeight: 0
-        strokeColor: '#e53404'
-        strokeOpacity: .01
-        fillColor: '#e53404'
-        fillOpacity: .9
-        zIndex: FILL_Z_INDEX + 1
+    if 0
+        # nastylovani polygonu
+        FILL_OPTIONS['building'] =
+            strokeWeight: 0
+            strokeColor: '#000000'
+            strokeOpacity: .01
+            fillColor: '#ffffff'
+            fillOpacity: 1
+            zIndex: FILL_Z_INDEX
+        FILL_OPTIONS['zone'] =
+            strokeWeight: 0
+            strokeColor: '#000000'
+            strokeOpacity: .01
+            fillColor: '#000000'
+            fillOpacity: .7
+            zIndex: FILL_Z_INDEX - 1
+        FILL_OPTIONS['building_hovered'] =
+            strokeWeight: 0
+            strokeColor: '#000000'
+            strokeOpacity: .01
+            fillColor: '#000000'
+            fillOpacity: .9
+            zIndex: FILL_Z_INDEX + 2
+        FILL_OPTIONS['zone_hovered'] =
+            strokeWeight: 0
+            strokeColor: '#e53404'
+            strokeOpacity: .01
+            fillColor: '#e53404'
+            fillOpacity: .9
+            zIndex: FILL_Z_INDEX + 1
 
-    # definice custom spendlosu
-    ICONS['allowed'] = new google.maps.MarkerImage(
-        'http://media.parkujujakcyp.cz/hazard/img/yes.png'
-        new google.maps.Size(28, 28)
-        new google.maps.Point(0,0)
-        new google.maps.Point(14, 14)
-    )
-    ICONS['allowed_dimmed'] = new google.maps.MarkerImage(
-        'http://media.parkujujakcyp.cz/hazard/img/yes_dimmed.png'
-        new google.maps.Size(28, 28)
-        new google.maps.Point(0,0)
-        new google.maps.Point(14, 14)
-    )
-    ICONS['allowed_hovered'] = new google.maps.MarkerImage(
-        'http://media.parkujujakcyp.cz/hazard/img/yes_hovered.png'
-        new google.maps.Size(28, 28)
-        new google.maps.Point(0,0)
-        new google.maps.Point(14, 14)
-    )
-    ICONS['disallowed'] = new google.maps.MarkerImage(
-        'http://media.parkujujakcyp.cz/hazard/img/no.png'
-        new google.maps.Size(28, 28)
-        new google.maps.Point(0,0)
-        new google.maps.Point(14, 14)
-    )
-    ICONS['disallowed_dimmed'] = new google.maps.MarkerImage(
-        'http://media.parkujujakcyp.cz/hazard/img/no_dimmed.png'
-        new google.maps.Size(28, 28)
-        new google.maps.Point(0,0)
-        new google.maps.Point(14, 14)
-    )
-    ICONS['disallowed_hovered'] = new google.maps.MarkerImage(
-        'http://media.parkujujakcyp.cz/hazard/img/no_hovered.png'
-        new google.maps.Size(28, 28)
-        new google.maps.Point(0,0)
-        new google.maps.Point(14, 14)
-    )
-    ICONS['shadow'] = new google.maps.MarkerImage(
-        'http://media.parkujujakcyp.cz/hazard/img/shadow.png'
-        new google.maps.Size(27, 14)
-        new google.maps.Point(0,0)
-        new google.maps.Point(8, 0)
-    )
+        # definice custom spendlosu
+        ICONS['allowed'] = new google.maps.MarkerImage(
+            'http://media.parkujujakcyp.cz/hazard/img/yes.png'
+            new google.maps.Size(28, 28)
+            new google.maps.Point(0,0)
+            new google.maps.Point(14, 14)
+        )
+        ICONS['allowed_dimmed'] = new google.maps.MarkerImage(
+            'http://media.parkujujakcyp.cz/hazard/img/yes_dimmed.png'
+            new google.maps.Size(28, 28)
+            new google.maps.Point(0,0)
+            new google.maps.Point(14, 14)
+        )
+        ICONS['allowed_hovered'] = new google.maps.MarkerImage(
+            'http://media.parkujujakcyp.cz/hazard/img/yes_hovered.png'
+            new google.maps.Size(28, 28)
+            new google.maps.Point(0,0)
+            new google.maps.Point(14, 14)
+        )
+        ICONS['disallowed'] = new google.maps.MarkerImage(
+            'http://media.parkujujakcyp.cz/hazard/img/no.png'
+            new google.maps.Size(28, 28)
+            new google.maps.Point(0,0)
+            new google.maps.Point(14, 14)
+        )
+        ICONS['disallowed_dimmed'] = new google.maps.MarkerImage(
+            'http://media.parkujujakcyp.cz/hazard/img/no_dimmed.png'
+            new google.maps.Size(28, 28)
+            new google.maps.Point(0,0)
+            new google.maps.Point(14, 14)
+        )
+        ICONS['disallowed_hovered'] = new google.maps.MarkerImage(
+            'http://media.parkujujakcyp.cz/hazard/img/no_hovered.png'
+            new google.maps.Size(28, 28)
+            new google.maps.Point(0,0)
+            new google.maps.Point(14, 14)
+        )
+        ICONS['shadow'] = new google.maps.MarkerImage(
+            'http://media.parkujujakcyp.cz/hazard/img/shadow.png'
+            new google.maps.Size(27, 14)
+            new google.maps.Point(0,0)
+            new google.maps.Point(8, 0)
+        )
 
-    # nastylovani marker clusterer
-    MC_STYLE =
-        url: 'http://media.parkujujakcyp.cz/hazard/img/group.png'
-        height: 40
-        width: 40
-        opt_anchor: [20, 20]
-        opt_textColor: '#ffffff'
-        opt_textSize: 11
+        # nastylovani marker clusterer
+        MC_STYLE =
+            url: 'http://media.parkujujakcyp.cz/hazard/img/group.png'
+            height: 40
+            width: 40
+            opt_anchor: [20, 20]
+            opt_textColor: '#ffffff'
+            opt_textSize: 11
 
     # Inicializace prvku na strance s detailem konkretni obce.
     $('#detailed_info, #join_us').hide()

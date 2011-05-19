@@ -69,9 +69,11 @@ INSTALLED_APPS = (
     'django.contrib.webdesign',
     'django.contrib.gis',
     'django_extensions',
+    'django.contrib.markup',
     'south',
     'hazard.shared',
     'hazard.geo',
+    'hazard.news',
 )
 
 APPEND_SLASH = True

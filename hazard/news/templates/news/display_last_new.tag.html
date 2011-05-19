@@ -1,0 +1,13 @@
+{% if news.exists %}
+    <p>
+        <b>{{ news.0.title }}</b> /
+        {{ news.0.created|date }} &mdash;
+        {% if news.0.annotation %}
+            {{ news.0.annotation }}
+        {% else %}
+            {#{{ news.0.content|markdown|truncatewords_html:40 }}#}
+            {{ news.0.content|truncatewords_html:40 }}
+        {% endif %}<br>
+        <a href="{{ news.0.get_absolute_url }}">Číst celou zprávu</a> &rarr;
+    </p>
+{% endif %}

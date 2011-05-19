@@ -1,0 +1,13 @@
+{% extends "bone.html" %}
+
+{% load news %}
+
+{% block content %}
+    <h3>Zprávy</h3>
+
+    {% if news %}
+        {% display_news news %}
+    {% else %}
+        <p><em>Zatím nebyla publikována žádná zpráva.</em></p>
+    {% endif %}
+{% endblock %}
