@@ -84,6 +84,9 @@ Group.prototype.onAdd = () ->
     slide = document.createElement('DIV')
     slide.className = "slide"
     slide.style.display = "none"
+    $(slide).tipsy(
+        title: () => @data_['t']
+    )
 
     # kliknuti na ikonu nas dovede na detailni stranku
     google.maps.event.addDomListener slide, 'click', (ev) =>

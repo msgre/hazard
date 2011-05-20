@@ -97,7 +97,7 @@
   Inicializace mapy.
   */
   init_map = function() {
-    var center, map_options, styledMapType;
+    var center, map_options, open, speed, styledMapType;
     $('body').height($(window).height() + 'px');
     if (!(window.map != null)) {
       map_options = {
@@ -122,7 +122,26 @@
     }
     center = new google.maps.LatLng(49.38512, 14.61765);
     window.map.setCenter(center);
-    return window.map.setZoom(7);
+    window.map.setZoom(7);
+    open = true;
+    speed = 120;
+    return $('#hide a').click(function() {
+      var height, opacity;
+      $('#inner_box').slideToggle(speed);
+      if (open) {
+        height = '120px';
+        opacity = .8;
+      } else {
+        height = '80%';
+        opacity = 1;
+      }
+      $('#info_box').animate({
+        height: height,
+        opacity: opacity
+      }, speed);
+      open = !open;
+      return false;
+    });
   };
   /*
   Custom ikonka, ktera ve sve stredu zobrazuje procenta.
@@ -197,6 +216,11 @@
     slide = document.createElement('DIV');
     slide.className = "slide";
     slide.style.display = "none";
+    $(slide).tipsy({
+      title: __bind(function() {
+        return this.data_['t'];
+      }, this)
+    });
     google.maps.event.addDomListener(slide, 'click', __bind(function(ev) {
       return window.location = this.url;
     }, this));

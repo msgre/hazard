@@ -19,6 +19,7 @@ urlpatterns = patterns('',
     url(r'^d/(?P<slug>[-_0-9a-z]+)/$', cache_page(EntryDetailView.as_view(), 60 * 60), name="entry-detail"),
     url(r'^zpravy/$', NewListView.as_view(), name="new-list"),
     url(r'^zpravy/(?P<slug>[-_0-9a-z]+)/$', NewDetailView.as_view(), name="new-detail"),
+    url(r'^spoluprace/$', TemplateView.as_view(template_name="shared/cooperation.html"), name="cooperation"),
 )
 
 

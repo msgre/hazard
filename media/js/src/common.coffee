@@ -90,3 +90,18 @@ init_map = () ->
     center = new google.maps.LatLng(49.38512, 14.61765)
     window.map.setCenter(center)
     window.map.setZoom(7)
+
+    # zavirani boxu
+    open = true
+    speed = 120
+    $('#hide a').click () ->
+        $('#inner_box').slideToggle(speed)
+        if open
+            height = '120px'
+            opacity = .8
+        else
+            height = '80%'
+            opacity = 1
+        $('#info_box').animate {height: height, opacity:opacity}, speed
+        open = !open
+        false

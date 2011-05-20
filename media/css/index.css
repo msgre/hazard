@@ -74,9 +74,13 @@ body {
 
 table {
     border-top:1px dotted #eee;
-    border-collapse: collapse;
+    border-spacing:0;
+    border-collapse:collapse;
 }
 td, th {
+    border-spacing:0;
+}
+tr {
     border-bottom:1px dotted #eee;
 }
 tbody tr:nth-child(even) td, tbody tr.even td {
@@ -143,3 +147,7 @@ a.fb {
 }
 html {font-size:110.01%;}
 
+
+#hide {
+    float:right;
+}

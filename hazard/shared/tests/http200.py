@@ -38,3 +38,11 @@ class Http200TestCase(TestCase):
     def test_help(self):
         response = self.client.get('/navod/')
         self.assertEqual(response.status_code, 200)
+
+    def test_cooperation(self):
+        response = self.client.get('/spoluprace/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_news(self):
+        response = self.client.get('/zpravy/')
+        self.assertEqual(response.status_code, 200)

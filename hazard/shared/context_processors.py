@@ -23,7 +23,7 @@ def common(request):
                 'lat': entry.dpoint.coords[1],
                 'lon': entry.dpoint.coords[0],
                 'perc': '%i%%' % int(round(entry.dperc)),
-                'title': u"%s: %i%% protizákonných heren" % (entry.title, int(round(entry.dperc))),
+                'title': entry.title,
                 'url': entry.get_absolute_url()
             }
         cache.set(key, entries, TIMEOUT)
