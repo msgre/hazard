@@ -2,9 +2,10 @@
 
 from django.contrib import admin
 from hazard.news.models import New
+from hazard.shared.admin import ClearCacheMixin
 
 
-class NewAdmin(admin.ModelAdmin):
+class NewAdmin(ClearCacheMixin):
     list_display = ('title', 'created', 'public', )
     list_filter = ('public', )
     search_fields = ('title', 'slug')

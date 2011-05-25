@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib import admin
-from django.core.cache import cache
-
 from hazard.geo.models import Entry, Zone, Building, Hell
+from hazard.shared.admin import ClearCacheMixin
 
 
-class EntryAdmin(admin.ModelAdmin):
+class EntryAdmin(ClearCacheMixin):
     list_display = ('title', 'created', 'slug', 'public', 'dperc_display', 'dhell_count_display', 'dper_population_display', 'dper_area_display')
     list_filter = ('public', )
     list_editable = ('public', 'slug', )
@@ -32,8 +31,7 @@ class EntryAdmin(admin.ModelAdmin):
         Pri ulozeni objektu prepocitame
         """
         obj.recalculate_denormalized_values(counts=True)
-        obj.save()
-        cache.clear()
+        super(EntryAdmin, self).save_model(request, obj, form, change)
 
     def dperc_display(self, obj):
         return u"%i%%" % round(obj.dperc)
@@ -52,7 +50,17 @@ class EntryAdmin(admin.ModelAdmin):
     dper_area_display.short_description = u"Heren/km"
 
 
+class ZoneAdmin(ClearCacheMixin):
+    pass
+
+class BuildingAdmin(ClearCacheMixin):
+    pass
+
+class HellAdmin(ClearCacheMixin):
+    pass
+
+
 admin.site.register(Entry, EntryAdmin)
-admin.site.register(Zone)
-admin.site.register(Building)
-admin.site.register(Hell)
+admin.site.register(Zone, ZoneAdmin)
+admin.site.register(Building, BuildingAdmin)
+admin.site.register(Hell, HellAdmin)
