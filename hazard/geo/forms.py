@@ -8,13 +8,13 @@ from django.template.defaultfilters import iriencode
 from django.contrib.gis.gdal import CoordTransform, SpatialReference
 from django.forms.util import ErrorList
 from django.contrib.gis.measure import D
+from django.core.cache import cache
 
 from hazard.shared.czech import slugify
 from hazard.geo.parsers import parse_xml, KMLHandler, LinkHandler, MediaWikiHandler
 from hazard.geo.utils import download_content, get_unique_slug
 from hazard.geo.models import Building, Hell, Entry
 from hazard.geo.geocoders.google import geocode
-from hazard.shared.cache import clear_cache
 
 
 logger = logging.getLogger(__name__)
@@ -304,7 +304,7 @@ class KMLForm(forms.Form):
         """
         self.save_buildings(entry)
         self.save_hells(entry)
-        clear_cache()
+        cache.clear()
 
     def save_buildings(self, entry):
         """

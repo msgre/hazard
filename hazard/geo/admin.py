@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib import admin
+from django.core.cache import cache
+
 from hazard.geo.models import Entry, Zone, Building, Hell
-from hazard.shared.cache import clear_cache
+
 
 class EntryAdmin(admin.ModelAdmin):
     list_display = ('title', 'created', 'slug', 'public', 'dperc_display', 'dhell_count_display', 'dper_population_display', 'dper_area_display')
@@ -31,7 +33,7 @@ class EntryAdmin(admin.ModelAdmin):
         """
         obj.recalculate_denormalized_values(counts=True)
         obj.save()
-        clear_cache()
+        cache.clear()
 
     def dperc_display(self, obj):
         return u"%i%%" % round(obj.dperc)
