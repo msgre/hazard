@@ -159,7 +159,7 @@ class FormTestCase(TestCase):
         mox_args = [modified_kml, self.POLYGON_KML, self.WIKIPEDIA_XML]
         response = self._common(mox_args=mox_args, check_db=False,
                      form_data={'slug': 'valasske-mezirici'})
-        self.assertTrue(u'v databázi již máme a Váš příspěvek musíme manuálně zkontrolovat' in response.content.decode('utf-8'))
+        self.assertTrue(u'byl uspěšně aktualizován. Díky!' in response.content.decode('utf-8'))
 
         # kontrola DB
         entries = Entry.objects.all().order_by('-created')

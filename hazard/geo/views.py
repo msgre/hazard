@@ -61,8 +61,10 @@ class EntryFormView(FormView):
             else:
                 messages.success(self.request, 'Hotovo. Vaše mapa byla uložena, ale musíme v ní ještě doplnit některé údaje. Až dáme věci do pořádku, zveřejníme ji. Díky!', extra_tags='notice')
         else:
-            if not form.update_no_change_slug:
+            if not entry.public:
                 messages.warning(self.request, u'Hotovo. Záznam pro %s ale v databázi již máme a Váš příspěvek musíme manuálně zkontrolovat. Pokud bude vše v pořádku, dosavadní informace dáme pryč a Vaše nová data zveřejníme. Díky!' % entry.title, extra_tags='notice')
+            else:
+                messages.warning(self.request, u'Hotovo. Záznam pro %s byl uspěšně aktualizován. Díky!' % entry.title, extra_tags='notice')
         return HttpResponseRedirect(reverse('entry-detail',
                                     kwargs={'slug': entry.slug}))
 
