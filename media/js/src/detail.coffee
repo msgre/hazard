@@ -354,5 +354,6 @@ $(document).ready () ->
     setup_detail()
     init_map()
     init_fancybox()
+    hide_messages()
 
     draw_hells()

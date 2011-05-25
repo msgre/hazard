@@ -105,3 +105,15 @@ init_map = () ->
         $('#info_box').animate {height: height, opacity:opacity}, speed
         open = !open
         false
+
+
+###
+Kliknuti na jakykoliv odkaz v info_boxu skryje provozni hlasku.
+###
+
+hide_messages = () ->
+    $('#info_box a').click () ->
+        $messages = $('#messages')
+        if $messages.length
+            $messages.fadeOut 100, () ->
+                $messages.remove()

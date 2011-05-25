@@ -1,7 +1,7 @@
 (function() {
   /*
   Obecny kod, ktery je vyuzivan jak v detailech obci, tak i na ostatnich strankach.
-  */  var BUBBLE_POLYGONS, BUILDINGS, FILL_OPTIONS, FILL_Z_INDEX, HOVERED_PIN_Z_INDEX, ICONS, IW, MAP_STYLE, MARKERS, MC_STYLE, MEDIA_URL, OPENED, PIN_Z_INDEX, ZONES, clear_buildings, clear_zones, click_handler, dimm_hell, draw_buildings, draw_hells, draw_zones, init_fancybox, init_map, mouseout_hell, mouseover_hell, open_upload_fancybox, setup, setup_detail, shine_hell, submit, upload_fancybox_opened;
+  */  var BUBBLE_POLYGONS, BUILDINGS, FILL_OPTIONS, FILL_Z_INDEX, HOVERED_PIN_Z_INDEX, ICONS, IW, MAP_STYLE, MARKERS, MC_STYLE, MEDIA_URL, OPENED, PIN_Z_INDEX, ZONES, clear_buildings, clear_zones, click_handler, dimm_hell, draw_buildings, draw_hells, draw_zones, hide_messages, init_fancybox, init_map, mouseout_hell, mouseover_hell, open_upload_fancybox, setup, setup_detail, shine_hell, submit, upload_fancybox_opened;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   window.map = void 0;
   MAP_STYLE = void 0;
@@ -141,6 +141,20 @@
       }, speed);
       open = !open;
       return false;
+    });
+  };
+  /*
+  Kliknuti na jakykoliv odkaz v info_boxu skryje provozni hlasku.
+  */
+  hide_messages = function() {
+    return $('#info_box a').click(function() {
+      var $messages;
+      $messages = $('#messages');
+      if ($messages.length) {
+        return $messages.fadeOut(100, function() {
+          return $messages.remove();
+        });
+      }
     });
   };
   /*
@@ -518,6 +532,7 @@
     setup_detail();
     init_map();
     init_fancybox();
+    hide_messages();
     return draw_hells();
   });
 }).call(this);

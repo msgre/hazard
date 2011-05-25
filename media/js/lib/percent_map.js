@@ -1,7 +1,7 @@
 (function() {
   /*
   Obecny kod, ktery je vyuzivan jak v detailech obci, tak i na ostatnich strankach.
-  */  var Group, MAP_STYLE, MEDIA_URL, draw_entries, init_fancybox, init_map, open_upload_fancybox, setup, submit, upload_fancybox_opened;
+  */  var Group, MAP_STYLE, MEDIA_URL, draw_entries, hide_messages, init_fancybox, init_map, open_upload_fancybox, setup, submit, upload_fancybox_opened;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   window.map = void 0;
   MAP_STYLE = void 0;
@@ -141,6 +141,20 @@
       }, speed);
       open = !open;
       return false;
+    });
+  };
+  /*
+  Kliknuti na jakykoliv odkaz v info_boxu skryje provozni hlasku.
+  */
+  hide_messages = function() {
+    return $('#info_box a').click(function() {
+      var $messages;
+      $messages = $('#messages');
+      if ($messages.length) {
+        return $messages.fadeOut(100, function() {
+          return $messages.remove();
+        });
+      }
     });
   };
   /*
@@ -312,6 +326,7 @@
     setup();
     init_map();
     init_fancybox();
+    hide_messages();
     return draw_entries();
   });
 }).call(this);

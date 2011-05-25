@@ -19,4 +19,5 @@ $(document).ready () ->
     setup()
     init_map()
     init_fancybox()
+    hide_messages()
     draw_entries()
