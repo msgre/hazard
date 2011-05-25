@@ -50,7 +50,7 @@ oken).
 
 init_fancybox = () ->
     $("a.fb").fancybox()
-    if $('#upload_maps').length
+    if $('#upload_maps').length or $('#join_us').length
         img = $('<img>').attr('src', MEDIA_URL + 'img/ajax-loader.gif')
         $('form').submit () ->
             if not upload_fancybox_opened

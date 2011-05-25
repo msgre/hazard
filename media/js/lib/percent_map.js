@@ -79,7 +79,7 @@
   init_fancybox = function() {
     var img;
     $("a.fb").fancybox();
-    if ($('#upload_maps').length) {
+    if ($('#upload_maps').length || $('#join_us').length) {
       img = $('<img>').attr('src', MEDIA_URL + 'img/ajax-loader.gif');
       return $('form').submit(function() {
         var t;
