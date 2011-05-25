@@ -2,7 +2,7 @@
 
 {% load shared geo %}
 
-{% block title %}Herny v obci {{ entry.title }}{% endblock %}
+{% block title %}Herny v obci {{ entry.title }} &mdash; {{ block.super }}{% endblock %}
 
 {% block compress_js %}
     <script type="text/javascript" src="{{ MEDIA_URL }}js/markerclusterer.js"></script>
