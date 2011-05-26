@@ -11,5 +11,5 @@
         <p>{{ new.created|date }}</p>
     {% endif %}
 
-    {{ new.content }} {# TODO: markdown #}
+    {{ new.content|markdown }}
 {% endblock %}
