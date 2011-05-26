@@ -1,9 +1,40 @@
 {% extends "bone.html" %}
 
-{% block title %}Spolupráce &mdash; {{ block.super }}{% endblock %}
+{% block title %}Spolupráce při vytváření map &mdash; {{ block.super }}{% endblock %}
 
 {% block content %}
-    <h3>Spolupráce</h3>
+    <h3>Spolupráce při vytváření map</h3>
 
-    <p>TODO:</p>
+    <p><em>MapyHazardu.cz</em> ke své funkci využívají aplikaci "Moje mapy"
+    od společnosti Google. Ta nejenže umožňuje komukoliv vytvářet vlastní mapy,
+    ale má v sobě i zabudovánu podporu pro spolupráci více lidí nad jednou
+    mapou. Pokud chcete do existujících map doplnit nové či opravit nepřesné údaje,
+    postupujte prosím podle následujícího návodu:</p>
+
+    <ul>
+        <li>V detailu konkrétní obce klikněte na odkaz "zapojte do její tvorby" a pak
+        na některý z odkazů na zdrojová data (pokud např. chcete poupravit situaci
+        s hernami, klikněte na odkaz "Mapa heren"; nebo pokud zjistíte, že se v mapě
+        chybí informace o některé z budov, klikněte na odkaz "Mapa budov")
+        <a href="{{ MEDIA_URL }}img/cooperation/link_to_original.png" class="fb" rel="instr" title="Odkaz na zdrojové mapy"><img src="{{ MEDIA_URL }}img/cooperation/link_to_original_t.png" width="250"></a>
+
+        <li>Objeví se vám aplikace Moje mapy. Klikněte na tlačítko "Upravit" (pokud
+        na stránce není, napiště nám na <a href="mailto:brneni@gmail.com">brneni@gmail.com</a>)
+        <a href="{{ MEDIA_URL }}img/cooperation/upravit.png" class="fb" rel="instr" title="Tlačítko pro úpravu mapy"><img src="{{ MEDIA_URL }}img/cooperation/upravit_t.png" width="250"></a>
+
+        <li>Informace v mapě upravte (viz <a href="{% url instruction %}">návod na
+        vytvoření map</a>) a až budete hotovi, <b>klikněte na tlačítko "Hotovo"</b>.
+
+        <li>Vraťte se zpět na detail vaší obce v aplikaci <em>MapyHazardu.cz</em>,
+        znovu si rozbalte odkaz "zapojte do její tvorby" a na konci stránky klikněte
+        na tlačítko "Aktualizovat mapu".
+        <a href="{{ MEDIA_URL }}img/cooperation/submit.png" class="fb" rel="instr" title="Po úpravě zdrojových map stačí kliknout na tlačítko Aktualizovat mapu"><img src="{{ MEDIA_URL }}img/cooperation/submit_t.png" width="250"></a>
+
+        <li><em>MapyHazardu.cz</em> v tuto chvíli stáhnou aktuální verzi map heren
+        i budov a aktualizují informace o obci.
+    </ul>
+
+    <p>Pokud během úprav narazíte na nějaké problémy, neváhejte se nám ozvat
+    na email <a href="mailto:brneni@gmail.com">brneni@gmail.com</a> (ideálně
+    s co nejpřesnějším popisem nastalé situace)</p>
 {% endblock %}

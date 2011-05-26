@@ -32,6 +32,20 @@ class EntryFormView(FormView):
     #     'hells': 'http://maps.google.com/maps/ms?ie=UTF8&hl=cs&vps=1&jsv=332a&msa=0&output=nl&msid=217120881929273348625.0004a172ca42f5022bab1'
     # }
 
+    def post(self, request, *args, **kwargs):
+        """
+        Hack -- formularova policka URL nedelaji strip() a pokud nekdo do formiku
+        zada URL s nejakymi bilymi znaky, aplikace spadne. Proto zde, na urovni
+        view tesne pred tim nez predam rizeni generickym view stripnu zadana URL.
+        """
+        if hasattr(request, 'POST'):
+            request.POST = request.POST.copy()
+            if 'hells' in request.POST:
+                request.POST['hells'] = request.POST['hells'].strip()
+            if 'buildings' in request.POST:
+                request.POST['buildings'] = request.POST['buildings'].strip()
+        return super(EntryFormView, self).post(request, *args, **kwargs)
+
     def get_form_kwargs(self):
         out = super(EntryFormView, self).get_form_kwargs()
         out.update(error_class=PbrErrorList)

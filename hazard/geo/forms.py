@@ -100,6 +100,7 @@ class KMLForm(forms.Form):
             # kontrola URL
             if 'output=nl' not in data:
                 data = data + '&output=nl'
+            data = data.strip()
 
             # stahneme KML soubor
             content = download_content(data)

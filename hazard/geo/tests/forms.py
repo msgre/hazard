@@ -203,6 +203,14 @@ class FormTestCase(TestCase):
         self.assertFalse(entries[1].public)
         self.assertEqual(entries[1].slug, 'valasske-mezirici-%i' % entries[1].id)
 
+    def test_whitechars_in_url(self):
+        """
+        Overime, ze bile znaky v URL aplikaci nepolozi (stavalo se to).
+        """
+        self._common(
+            hell_url='http://fake-hell.com/?p=1 ',
+            building_url='http://fake-building.com/?p=1 '
+        )
 
     # ---[ pomocne metody ]----------------------------------------------------
 
