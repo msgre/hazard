@@ -57,9 +57,9 @@ class EntryFormView(FormView):
         form.save(entry)
         if not exists:
             if entry.public:
-                messages.success(self.request, 'Hotovo. Díky!')
+                messages.success(self.request, u'Hotovo. Díky!')
             else:
-                messages.success(self.request, 'Hotovo. Vaše mapa byla uložena, ale musíme v ní ještě doplnit některé údaje. Až dáme věci do pořádku, zveřejníme ji. Díky!', extra_tags='notice')
+                messages.success(self.request, u'Hotovo. Vaše mapa byla uložena, ale musíme v ní ještě doplnit některé údaje. Až dáme věci do pořádku, zveřejníme ji. Díky!', extra_tags='notice')
         else:
             if not entry.public:
                 messages.warning(self.request, u'Hotovo. Záznam pro %s ale v databázi již máme a Váš příspěvek musíme manuálně zkontrolovat. Pokud bude vše v pořádku, dosavadní informace dáme pryč a Vaše nová data zveřejníme. Díky!' % entry.title, extra_tags='notice')
