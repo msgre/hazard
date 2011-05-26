@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.views.generic import DetailView, FormView, ListView
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.core.cache import cache
 
 from hazard.geo.models import Entry, Zone
 from hazard.geo.forms import KMLForm, PbrErrorList
@@ -37,6 +38,7 @@ class EntryFormView(FormView):
         return out
 
     def form_invalid(self, form):
+        cache.clear() # musime maznout cache, protoze jinak by se nezobrazila message
         if form.update_no_change_slug:
             # v pripade, ze se mapy nezmenily a formik byl odeslan pres
             # tlacitko v detailu stranky, zustaneme na strance s detailem
@@ -54,7 +56,7 @@ class EntryFormView(FormView):
         """
         ip = self.request.META.get('REMOTE_ADDR', self.request.META.get('HTTP_X_FORWARDED_FOR', ''))
         entry, exists = form.create_entry(ip)
-        form.save(entry)
+        form.save(entry) # soucasti save je i promazani cache
         if not exists:
             if entry.public:
                 messages.success(self.request, 'Hotovo. Díky!')
