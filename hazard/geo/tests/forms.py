@@ -18,8 +18,10 @@ import urllib2
 
 from django.test import TestCase
 from django.test.client import Client
+from django.utils import translation
+from django.conf import settings
 
-from hazard.geo.models import Entry
+from hazard.geo.models import Entry, Hell, Building
 
 
 
@@ -27,10 +29,14 @@ class FormTestCase(TestCase):
 
     def setUp(self):
         self.client = Client()
+        # force prepnuti na cestinu, bo jinak budou error hlasky ve formiku anglicky
+        translation.activate(settings.LANGUAGE_CODE)
 
     def tearDown(self):
-        self.mox.UnsetStubs()
-        self.mox.VerifyAll()
+        if hasattr(self, 'mox'):
+            self.mox.UnsetStubs()
+            self.mox.VerifyAll()
+        translation.deactivate()
 
     # -----------------------------------------------------------
 
@@ -212,10 +218,33 @@ class FormTestCase(TestCase):
             building_url='http://fake-building.com/?p=1 '
         )
 
+    def test_void_form(self):
+        """
+        Overime, ze odeslani prazdneho formiku nedopadne katastrofou.
+        """
+        response = self._common(hell_url='', building_url='', email='',
+                                mox_args=[], check_response=False, check_db=False)
+
+        # k redirectu nedoslo
+        self.assertEqual(len(response.redirect_chain), 0)
+        self.assertEqual(response.status_code, 200)
+
+        # ve strance se vyskytuji error hlasky
+        self.assertTrue(u'Pole je povinné.' in response.content.decode('utf-8'))
+
+        # db se nezmenila
+        entries_count = Entry.objects.count()
+        hells_count = Hell.objects.count()
+        buildings_count = Building.objects.count()
+        self.assertEqual(entries_count, 0)
+        self.assertEqual(hells_count, 0)
+        self.assertEqual(buildings_count, 0)
+
+
     # ---[ pomocne metody ]----------------------------------------------------
 
     def _common(self, mox_args=None, hell_url='http://fake-hell.com/?p=1', \
-                building_url='http://fake-building.com/?p=1', \
+                building_url='http://fake-building.com/?p=1', email="m@seznam.cz", \
                 slug='valasske-mezirici', check_response=True, check_db=True,
                 form_data={}):
         """
@@ -229,7 +258,8 @@ class FormTestCase(TestCase):
         # odesleme formik s pridanim nove obce
         form_data.update({
             'hells': hell_url, # viz setup_mox
-            'buildings': building_url # viz setup_mox
+            'buildings': building_url, # viz setup_mox
+            'email': email
         })
         response = self.client.post('/pridat/', form_data, follow=True)
 
@@ -262,6 +292,9 @@ class FormTestCase(TestCase):
         """
         Ofejkovani knihoven urllib2 a urllib tak, aby vracely moje data.
         """
+        if not args:
+            return
+
         self.mox = mox.Mox()
 
         # fejk na download KML map a XML wikipedie

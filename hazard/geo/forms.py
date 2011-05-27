@@ -148,20 +148,22 @@ class KMLForm(forms.Form):
     def clean(self):
         cleaned_data = self.cleaned_data
 
-        # vyzobneme podrobnejsi informace o zaznamu
-        self.ei = self.find_entry_information()
-
-        if not self.ei['pos'] or not self.ei['town']:
-            # nepovedlo se zjistit zakladni informace, od kterych se odvozuje
-            # vse ostatni -- tj. lat/lon pozici obce a nazev obce
-            raise forms.ValidationError(u"Nepodařilo se nám zjistit obec ze které pochází Vaše mapy.")
-
-        # zjistime o co jde, zda o update nebo vytvoreni noveho zaznamu
+        # vyzobneme udaje z formiku
         slug = cleaned_data.get('slug', None)
         hell_url = cleaned_data.get('hells', None)
         building_url = cleaned_data.get('buildings', None)
+        email = cleaned_data.get('email', None)
 
-        if hell_url and building_url:
+        if hell_url and building_url and email:
+
+            # vyzobneme podrobnejsi informace o zaznamu
+            self.ei = self.find_entry_information()
+
+            if not self.ei['pos'] or not self.ei['town']:
+                # nepovedlo se zjistit zakladni informace, od kterych se odvozuje
+                # vse ostatni -- tj. lat/lon pozici obce a nazev obce
+                raise forms.ValidationError(u"Nepodařilo se nám zjistit obec ze které pochází Vaše mapy.")
+
             if slug:
                 try:
                     entry = Entry.objects.get(slug=slug)
