@@ -151,3 +151,7 @@ html {font-size:110.01%;}
 #hide {
     float:right;
 }
+
+form p {
+    margin-bottom:5px;
+}
