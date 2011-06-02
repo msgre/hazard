@@ -58,6 +58,7 @@ class KMLForm(forms.Form):
     required_css_class = "required"
 
     def __init__(self, *args, **kwargs):
+        self.ip = kwargs.pop('ip', None)
         super(KMLForm, self).__init__(*args, **kwargs)
         self.update_no_change_slug = None
 
@@ -179,7 +180,7 @@ class KMLForm(forms.Form):
                 raise forms.ValidationError(msg_later)
 
             # zaradime task do fronty
-            value = "%s\n%s\n%s" % (hell_url, building_url, email)
+            value = "\n".join((hell_url, building_url, email, self.ip))
             if not director.add(self.qkey, value):
                 raise forms.ValidationError(msg_later)
 

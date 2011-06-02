@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
 
+import socket
+
 from django.contrib import messages
 from django.views.generic import DetailView, FormView, ListView
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.core.cache import cache
+from django.core.validators import ipv4_re
 
 from hazard.geo.models import Entry, Zone
 from hazard.geo.forms import KMLForm, PbrErrorList
 from hazard.shared.director import director
-
 
 class EntryFormView(FormView):
     """
@@ -49,7 +51,7 @@ class EntryFormView(FormView):
 
     def get_form_kwargs(self):
         out = super(EntryFormView, self).get_form_kwargs()
-        out.update(error_class=PbrErrorList)
+        out.update(error_class=PbrErrorList, ip=self.get_ip())
         return out
 
     def form_invalid(self, form):
@@ -66,12 +68,31 @@ class EntryFormView(FormView):
         else:
             return super(EntryFormView, self).form_invalid(form)
 
+    def get_ip(self):
+        return self.request.META.get('REMOTE_ADDR', self.request.META.get('HTTP_X_FORWARDED_FOR', ''))
+
     def form_valid(self, form):
         """
         V pripade ze zadane KML soubory jsou v poradku, ulozime vyparsovana data
         do databaze.
         """
-        ip = self.request.META.get('REMOTE_ADDR', self.request.META.get('HTTP_X_FORWARDED_FOR', ''))
+        # ip adresu vytahneme primarne z HTTP hlavicek
+        ip = self.get_ip()
+
+        # pokud ale ip adresa odpovida serveru, na kterem bezi nase aplikace,
+        # mrkneme se do GETu, jestli tam neni IP adresa explicitne uvedena
+        # (timto zpusobem se totiz prenasi IP v pripade, ze pozadavek o zpracovani
+        # map prichazi z cronjobu)
+        server_name = self.request.META.get('SERVER_NAME', '')
+        if ip and server_name:
+            try:
+                server_ip = socket.gethostbyaddr(server_name)[2]
+                if ip in server_ip and 'ip' in self.request.GET and ipv4_re.match(self.request.GET['ip']):
+                    ip = request.GET['ip']
+            except:
+                pass
+
+        # ulozeni
         entry, exists = form.save(ip)
         if not exists:
             if entry.public:
