@@ -35,7 +35,7 @@ open_upload_fancybox = () ->
     upload_fancybox_opened = true
     $.fancybox({
         title: 'Uno momento'
-        content: '<p><b>Vaše mapy se právě nahrávají na server a chvíli to potrvá</b></p><p><img src="' + MEDIA_URL + 'img/ajax-loader.gif"></p><p><em>Pro hrubou orientaci: Brno s cca 300 hernami trvá téměř 3 minuty.</em></p>'
+        content: '<p><b>Vaše mapy se právě nahrávají na server a chvíli to potrvá. Vydržte!</b></p><p><img src="' + MEDIA_URL + 'img/ajax-loader.gif"></p>'
         modal: true
     })
 

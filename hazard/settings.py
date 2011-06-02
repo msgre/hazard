@@ -74,6 +74,7 @@ INSTALLED_APPS = (
     'hazard.shared',
     'hazard.geo',
     'hazard.news',
+    'django_concurrent_test_server',
 )
 
 APPEND_SLASH = True
@@ -138,12 +139,14 @@ TEMPLATE_CONTEXT_PROCESSORS = [
 
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': os.path.join(PROJECT_PATH, '../cache/'),
-        'TIMEOUT': 60 * 60 # 1 hodina
-    }
+        'BACKEND': 'redis_cache.RedisCache',
+        'LOCATION': 'localhost:6379',
+        'TIMEOUT': 600,
+        'OPTIONS': {
+            'DB': 0,
+        },
+    },
 }
-
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"

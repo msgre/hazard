@@ -8,6 +8,7 @@ from django.core.cache import cache
 
 from hazard.geo.models import Entry, Zone
 from hazard.geo.forms import KMLForm, PbrErrorList
+from hazard.shared.director import director
 
 
 class EntryFormView(FormView):
@@ -52,6 +53,8 @@ class EntryFormView(FormView):
         return out
 
     def form_invalid(self, form):
+        if hasattr(form, 'qkey'):
+            director.done(form.qkey)
         cache.clear() # musime maznout cache, protoze jinak by se nezobrazila message
         if form.update_no_change_slug:
             # v pripade, ze se mapy nezmenily a formik byl odeslan pres
@@ -69,8 +72,7 @@ class EntryFormView(FormView):
         do databaze.
         """
         ip = self.request.META.get('REMOTE_ADDR', self.request.META.get('HTTP_X_FORWARDED_FOR', ''))
-        entry, exists = form.create_entry(ip)
-        form.save(entry) # soucasti save je i promazani cache
+        entry, exists = form.save(ip)
         if not exists:
             if entry.public:
                 messages.success(self.request, u'Hotovo. Díky!')
@@ -81,6 +83,7 @@ class EntryFormView(FormView):
                 messages.warning(self.request, u'Hotovo. Záznam pro %s ale v databázi již máme a Váš příspěvek musíme manuálně zkontrolovat. Pokud bude vše v pořádku, dosavadní informace dáme pryč a Vaše nová data zveřejníme. Díky!' % entry.title, extra_tags='notice')
             else:
                 messages.warning(self.request, u'Hotovo. Záznam pro %s byl uspěšně aktualizován. Díky!' % entry.title, extra_tags='notice')
+        director.done(form.qkey)
         return HttpResponseRedirect(reverse('entry-detail',
                                     kwargs={'slug': entry.slug}))
 
@@ -130,6 +133,8 @@ class EntryDetailView(DetailView):
             # slovnik okolnich zon
             'zones': dict([(i.id, {'polygon': i.poly.coords[0]}) \
                            for i in Zone.objects.filter(id__in=zone_ids)]),
+            # povoleni/zakazani aktualizace mapy
+            'should_be_updated': KMLForm.should_be_updated(self.object.hell_url, self.object.building_url)
         })
         return out
 
@@ -141,7 +146,7 @@ class EntryListView(ListView):
     template_name = 'geo/list.html'
 
     def get_queryset(self):
-        return Entry.objects.filter(public=True).order_by('-dperc')[:TOP_ENTRIES_COUNT]
+        return Entry.objects.filter(public=True)[:TOP_ENTRIES_COUNT]
 
     def get_context_data(self, **kwargs):
         out = super(EntryListView, self).get_context_data(**kwargs)
@@ -155,4 +160,4 @@ class FullEntryListView(ListView):
     template_name = 'geo/fulllist.html'
 
     def get_queryset(self):
-        return Entry.objects.filter(public=True).order_by('-dperc')
+        return Entry.objects.filter(public=True)

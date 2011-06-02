@@ -42,6 +42,7 @@ class Entry(models.Model):
     class Meta:
         verbose_name = u'Záznam obce'
         verbose_name_plural = u'Záznamy obcí'
+        ordering = ('-dhell_count', )
 
     def __unicode__(self):
         return self.title
@@ -267,7 +268,7 @@ class Hell(CommonInfo):
         verbose_name = u'Herna'
         verbose_name_plural = u'Herny'
 
-    def calculate_conflicts(self):
+    def calculate_conflicts(self, buildings=None):
         """
         Zjisti, do kterych oblasti herna zasahuje a ulozi je do atributu `zones`.
         """
@@ -276,7 +277,9 @@ class Hell(CommonInfo):
         self.zones_calculated = False
         self.save()
 
-        for building in self.entry.building_set.all():
+        if not buildings:
+            buildings = self.entry.building_set.all()
+        for building in buildings:
             if building.zone.poly.contains(self.point):
                 zones.append(building.zone)
 
@@ -304,5 +307,3 @@ class Hell(CommonInfo):
             return None
         return self.zones.count() > 0
     in_conflict = property(is_in_conflict)
-
-#import signals

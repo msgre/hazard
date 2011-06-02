@@ -40,20 +40,27 @@
 
     <div id="join_us">
         <h4>Spolupráce</h4>
-        <p>Pro vykreslení mapy byla použita tato zdrojová data:
-        <a href="{{ entry.hell_url|kml_to_www }}">Mapa heren</a> /
-        <a href="{{ entry.building_url|kml_to_www }}">Mapa budov</a>.</p>
         <p>Pokud se Vám zdá, že zde prezentované informace nejsou aktuální,
         spojte se s jejich autorem a <b>zdrojové mapy upravte</b>.
         <a href="{% url cooperation %}">Je to jednodušší než si myslíte</a>.</p>
-        <p>Poté stačí kliknout na následující tlačítko:</p>
-        <form action="{% url entry-form %}" method="post">
-            {% csrf_token %}
-            <input type="hidden" name="hells" value="{{ entry.hell_url }}">
-            <input type="hidden" name="buildings" value="{{ entry.building_url }}">
-            <input type="hidden" name="slug" value="{{ entry.slug }}">
-            <input type="submit" value="Aktualizovat mapu">
-        </form>
+
+        <p>Pro vykreslení mapy byla použita tato zdrojová data:
+        <a href="{{ entry.hell_url|kml_to_www }}">Mapa heren</a> /
+        <a href="{{ entry.building_url|kml_to_www }}">Mapa budov</a>.</p>
+
+        {% if should_be_updated %}
+            <p>Poté stačí kliknout na následující tlačítko:</p>
+            <form action="{% url entry-form %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="hells" value="{{ entry.hell_url }}">
+                <input type="hidden" name="buildings" value="{{ entry.building_url }}">
+                <input type="hidden" name="slug" value="{{ entry.slug }}">
+                <input type="submit" value="Aktualizovat mapu">
+            </form>
+        {% else %}
+            <p><i>Poznámka: Mapy pro tuto obec se právě v tuto
+            chvíli zpracovávají. Stavte se později.</i></p>
+        {% endif %}
     </div>
 {% endblock %}
 
