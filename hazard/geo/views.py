@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import socket
-
 from django.contrib import messages
 from django.views.generic import DetailView, FormView, ListView
 from django.http import HttpResponseRedirect
@@ -11,7 +9,7 @@ from django.core.validators import ipv4_re
 
 from hazard.geo.models import Entry, Zone
 from hazard.geo.forms import KMLForm, PbrErrorList
-from hazard.shared.director import director
+
 
 class EntryFormView(FormView):
     """
@@ -55,8 +53,6 @@ class EntryFormView(FormView):
         return out
 
     def form_invalid(self, form):
-        if hasattr(form, 'qkey'):
-            director.done(form.qkey)
         cache.clear() # musime maznout cache, protoze jinak by se nezobrazila message
         if form.update_no_change_slug:
             # v pripade, ze se mapy nezmenily a formik byl odeslan pres
@@ -76,23 +72,7 @@ class EntryFormView(FormView):
         V pripade ze zadane KML soubory jsou v poradku, ulozime vyparsovana data
         do databaze.
         """
-        # ip adresu vytahneme primarne z HTTP hlavicek
         ip = self.get_ip()
-
-        # pokud ale ip adresa odpovida serveru, na kterem bezi nase aplikace,
-        # mrkneme se do GETu, jestli tam neni IP adresa explicitne uvedena
-        # (timto zpusobem se totiz prenasi IP v pripade, ze pozadavek o zpracovani
-        # map prichazi z cronjobu)
-        server_name = self.request.META.get('SERVER_NAME', '')
-        if ip and server_name:
-            try:
-                server_ip = socket.gethostbyaddr(server_name)[2]
-                if ip in server_ip and 'ip' in self.request.GET and ipv4_re.match(self.request.GET['ip']):
-                    ip = request.GET['ip']
-            except:
-                pass
-
-        # ulozeni
         entry, exists = form.save(ip)
         if not exists:
             if entry.public:
@@ -104,7 +84,6 @@ class EntryFormView(FormView):
                 messages.warning(self.request, u'Hotovo. Záznam pro %s ale v databázi již máme a Váš příspěvek musíme manuálně zkontrolovat. Pokud bude vše v pořádku, dosavadní informace dáme pryč a Vaše nová data zveřejníme. Díky!' % entry.title, extra_tags='notice')
             else:
                 messages.warning(self.request, u'Hotovo. Záznam pro %s byl uspěšně aktualizován. Díky!' % entry.title, extra_tags='notice')
-        director.done(form.qkey)
         return HttpResponseRedirect(reverse('entry-detail',
                                     kwargs={'slug': entry.slug}))
 
@@ -154,8 +133,6 @@ class EntryDetailView(DetailView):
             # slovnik okolnich zon
             'zones': dict([(i.id, {'polygon': i.poly.coords[0]}) \
                            for i in Zone.objects.filter(id__in=zone_ids)]),
-            # povoleni/zakazani aktualizace mapy
-            'should_be_updated': KMLForm.should_be_updated(self.object.hell_url, self.object.building_url)
         })
         return out
 

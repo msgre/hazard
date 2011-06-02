@@ -22,7 +22,6 @@ from django.utils import translation
 from django.conf import settings
 
 from hazard.geo.models import Entry, Hell, Building
-from hazard.shared.director import director
 
 
 
@@ -32,7 +31,6 @@ class FormTestCase(TestCase):
         self.client = Client()
         # force prepnuti na cestinu, bo jinak budou error hlasky ve formiku anglicky
         translation.activate(settings.LANGUAGE_CODE)
-        director.select_db(2)
 
     def tearDown(self):
         if hasattr(self, 'mox'):

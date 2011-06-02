@@ -18,7 +18,6 @@ from hazard.geo.parsers import parse_xml, KMLHandler, LinkHandler, MediaWikiHand
 from hazard.geo.utils import download_content, get_unique_slug
 from hazard.geo.models import Building, Hell, Entry
 from hazard.geo.geocoders.google import geocode
-from hazard.shared.director import director
 
 
 logger = logging.getLogger(__name__)
@@ -173,17 +172,6 @@ class KMLForm(forms.Form):
         url_fields_ok = False
         msg_later = u"Mapy pro tuto obec budou za chvíli aktualizovány. Stavte se později."
         if hell_url and building_url:
-            # overime frontu
-            self.qkey = KMLForm.make_qkey(hell_url, building_url)
-            if self.qkey in director.current or director.is_waiting(self.qkey):
-                self.update_no_change_slug = slug
-                raise forms.ValidationError(msg_later)
-
-            # zaradime task do fronty
-            value = "\n".join((hell_url, building_url, email, self.ip))
-            if not director.add(self.qkey, value):
-                raise forms.ValidationError(msg_later)
-
             # overime (a vyzobneme) informace z odkazovanych URL
             hell_url, err1 = self._clean_hells()
             if err1:
@@ -430,21 +418,3 @@ class KMLForm(forms.Form):
             # zjistime zony se kterymi ma podnik konflikt
             b.calculate_conflicts(buildings)
             b.calculate_uzone()
-
-    @staticmethod
-    def make_qkey(hell_url, building_url):
-        """
-        Vrati klic do redise, odvozeny z URL adres na mapy
-        """
-        return hashlib.sha256("%s\n%s" % (hell_url, building_url)).hexdigest()
-
-    @staticmethod
-    def should_be_updated(hell_url, building_url):
-        """
-        Vrati True, pokud je mozne zaznamy o obci aktualizovat. Vrati False,
-        pokud to mozne neni (nastava v pripadech, ze se prave ted aktualizuje
-        nebo ceka ve fronte na aktualizaci).
-        """
-        qkey = KMLForm.make_qkey(hell_url, building_url)
-        out = qkey in director.current or director.is_waiting(qkey)
-        return not out
