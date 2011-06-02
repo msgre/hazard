@@ -5,6 +5,7 @@ import redis
 import logging
 
 from django.conf import settings
+from django.utils.datastructures import SortedDict
 
 QKEY = 'queue'
 PREFIX = 'k_'
@@ -54,6 +55,9 @@ class Director(object):
             score = -1 * score
         return score
 
+    def get_task_score(self, task):
+        return self.client.zscore(QKEY, task)
+
     def get_current(self):
         """
         Vrati seznam aktualne zpracovavanych tasku.
@@ -65,15 +69,30 @@ class Director(object):
         return tasks
     current = property(get_current)
 
+    def get_queue(self):
+        """
+        Vrati seznam tasku cekajicich na zpracovani.
+        """
+        task = self.client.zrangebyscore(QKEY, 0, '+Inf')
+        values = self.client.mget([PREFIX + i for i in task]) if task else []
+        tasks = SortedDict(zip(task, values))
+        logger.debug('Waiting tasks: %s' % tasks)
+        return tasks
+    queue = property(get_queue)
+
     def done(self, task):
         """
         Dokonci zadany ukol (odstrani jej z fronty).
         """
-        pipe = self.client.pipeline()
-        pipe.zrem(QKEY, task).delete(PREFIX + task)
-        results = pipe.execute()
-        logger.debug('Task %s is done' % task)
-        return reduce(lambda a, b: a or b, results)
+        score = self.get_task_score(task)
+        if score < 0:
+            pipe = self.client.pipeline()
+            pipe.zrem(QKEY, task).delete(PREFIX + task)
+            results = pipe.execute()
+            logger.debug('Task %s is done' % task)
+            return reduce(lambda a, b: a or b, results)
+        else:
+            return False
 
     def next(self):
         """
@@ -101,7 +120,11 @@ class Director(object):
         return self.next()
 
     def is_waiting(self, task):
-        score = self.client.zscore(QKEY, task)
+        score = self.get_task_score(task)
         return score > 0 and score is not None
+
+    def is_queued(self):
+        task = self.client.zrangebyscore(QKEY, 0, '+Inf')
+        return len(task) > 0
 
 director = Director()
