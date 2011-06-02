@@ -9,6 +9,7 @@ from django.core.validators import ipv4_re
 
 from hazard.geo.models import Entry, Zone
 from hazard.geo.forms import KMLForm, PbrErrorList
+from hazard.geo.utils import connect_redis
 
 
 class EntryFormView(FormView):
@@ -73,7 +74,15 @@ class EntryFormView(FormView):
         do databaze.
         """
         ip = self.get_ip()
-        entry, exists = form.save(ip)
+        redis = connect_redis()
+        redis.incr('processing')
+        try:
+            entry, exists = form.save(ip)
+        except:
+            pass
+        finally:
+            redis.decr('processing')
+
         if not exists:
             if entry.public:
                 messages.success(self.request, u'Hotovo. Díky!')

@@ -31,6 +31,7 @@ class FormTestCase(TestCase):
         self.client = Client()
         # force prepnuti na cestinu, bo jinak budou error hlasky ve formiku anglicky
         translation.activate(settings.LANGUAGE_CODE)
+        settings.BYPASS_AE_MIDDLEWARE = True
 
     def tearDown(self):
         if hasattr(self, 'mox'):

@@ -3,6 +3,9 @@
 import logging
 import urllib2
 import random
+import redis
+
+from django.conf import settings
 
 from hazard.shared.czech import slugify
 
@@ -32,3 +35,18 @@ def get_unique_slug(title):
         slug = "%s-%s" % (slug, ''.join(random.sample(list('abcdefghjkmopqrstuvwxyz'), 10)))
         exists = True
     return slug, exists
+
+def connect_redis(db=None):
+    r = None
+    try:
+        backend = settings.CACHES['default']['BACKEND']
+    except IndexError:
+        backend = ''
+    if 'redis' in backend:
+        host, port = settings.CACHES['default']['LOCATION'].split(':')
+        # NOTE: pozor, zamerne se pripojuji na DB+1
+        # DB totiz obsahuje napr. nakesovane HTML stranky, ktere se po postnuti
+        # dat mazou (a s nimi by mi zmizly i redis hodnoty)
+        db = db or settings.CACHES['default']['OPTIONS']['DB'] + 1
+        r = redis.Redis(host=host, port=int(port), db=db)
+    return r
