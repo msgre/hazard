@@ -215,11 +215,12 @@ class KMLForm(forms.Form):
 
             # kontrola obsahu KML map
             if entry and hasattr(self, 'buildings_kml') and hasattr(self, 'hells_kml'):
-                if entry.building_kml == self.buildings_kml.decode('utf-8') and \
-                   entry.hell_kml == self.hells_kml.decode('utf-8'):
-                    if slug:
-                        self.update_no_change_slug = slug
-                    raise forms.ValidationError(u"Zdrojové mapy pro obec %s se nezměnily, záznam na našich stránkách je aktuální." % self.ei['town'])
+                # if entry.building_kml == self.buildings_kml.decode('utf-8') and \
+                #    entry.hell_kml == self.hells_kml.decode('utf-8'):
+                #     if slug:
+                #         self.update_no_change_slug = slug
+                #     raise forms.ValidationError(u"Zdrojové mapy pro obec %s se nezměnily, záznam na našich stránkách je aktuální." % self.ei['town'])
+                pass
 
         return cleaned_data
 
@@ -371,6 +372,12 @@ class KMLForm(forms.Form):
         """
         Ulozi vyparsovane obrysy budov. Ke kazde budove vypocita jeji obrys.
         """
+        from django.contrib.gis.gdal import CoordTransform
+        import time
+        ct1 = CoordTransform(SpatialReference('WGS84'), SpatialReference(102065))
+        ct2 = CoordTransform(SpatialReference(102065), SpatialReference('WGS84'))
+
+        times = []
         for building in self.buildings_data:
             # vytvorime polygon
             coords = [(i['lon'], i['lat']) for i in building['coordinates']]
@@ -392,7 +399,10 @@ class KMLForm(forms.Form):
             )
 
             # vypocteme okoli budovy
-            b.calculate_zone(M100)
+            t1 = time.time()
+            b.calculate_zone(M100, ct1, ct2)
+            times.append(time.time() - t1)
+            print sum(times)/len(times)
 
     def save_hells(self, entry):
         """

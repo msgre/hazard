@@ -231,7 +231,7 @@ class Building(CommonInfo):
         verbose_name = u'Veřejná budova'
         verbose_name_plural = u'Veřejné budovy'
 
-    def calculate_zone(self, distance):
+    def calculate_zone(self, distance, ct1=None, ct2=None):
         """
         Vypocita okoli budovy a ulozi jej do self.zone.
         """
@@ -240,14 +240,16 @@ class Building(CommonInfo):
             self.zone.delete()
 
         # prepocteme WGS84 souradnice obrysu budovy do krovaka
-        ct1 = CoordTransform(SpatialReference('WGS84'), SpatialReference(102065))
+        if ct1 is None:
+            ct1 = CoordTransform(SpatialReference('WGS84'), SpatialReference(102065))
         m_poly = self.poly.transform(ct1, clone=True)
 
         # vypocitame okoli/sousedstvi budovy
         zone = m_poly.buffer(distance)
 
         # prevedeme okoli zpet na WGS84
-        ct2 = CoordTransform(SpatialReference(102065), SpatialReference('WGS84'))
+        if ct2 is None:
+            ct2 = CoordTransform(SpatialReference(102065), SpatialReference('WGS84'))
         zone.transform(ct2)
 
         # vytvorime v DB novy objekt
