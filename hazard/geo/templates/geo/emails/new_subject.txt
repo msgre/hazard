@@ -1,0 +1,1 @@
+Nová obec na mapách! ({{ entry.title }})

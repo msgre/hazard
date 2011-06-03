@@ -1,0 +1,9 @@
+Góóóóóóóóól!
+
+Máme na webu záznam pro novou obec: {{ entry.title }}
+http://www.mapyhazardu.cz{{ url }}
+
+* Počet heren: {{ entry.dhell_count }}
+* Z toho protiprávních: {{ entry.dperc }}
+
+No sleduj, honem!

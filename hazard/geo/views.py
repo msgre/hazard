@@ -6,6 +6,9 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.core.cache import cache
 from django.core.validators import ipv4_re
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.conf import settings
 
 from hazard.geo.models import Entry, Zone
 from hazard.geo.forms import KMLForm, PbrErrorList
@@ -83,18 +86,31 @@ class EntryFormView(FormView):
         finally:
             redis.decr('processing')
 
+        email_template = None
         if not exists:
             if entry.public:
+                email_template = 'new'
                 messages.success(self.request, u'Hotovo. Díky!')
             else:
+                email_template = 'wiki'
                 messages.success(self.request, u'Hotovo. Vaše mapa byla uložena, ale musíme v ní ještě doplnit některé údaje. Až dáme věci do pořádku, zveřejníme ji. Díky!', extra_tags='notice')
         else:
             if not entry.public:
+                email_template = 'manual_check'
                 messages.warning(self.request, u'Hotovo. Záznam pro %s ale v databázi již máme a Váš příspěvek musíme manuálně zkontrolovat. Pokud bude vše v pořádku, dosavadní informace dáme pryč a Vaše nová data zveřejníme. Díky!' % entry.title, extra_tags='notice')
             else:
+                email_template = 'new' # TODO: pouze pro debugovani
                 messages.warning(self.request, u'Hotovo. Záznam pro %s byl uspěšně aktualizován. Díky!' % entry.title, extra_tags='notice')
-        return HttpResponseRedirect(reverse('entry-detail',
-                                    kwargs={'slug': entry.slug}))
+
+        url = reverse('entry-detail', kwargs={'slug': entry.slug})
+
+        # odeslani notifikacniho emailu
+        if email_template and hasattr(settings, 'NOTIFICATION_EMAILS') and settings.NOTIFICATION_EMAILS:
+            subject = render_to_string("geo/emails/%s_subject.txt" % email_template, {'entry': entry, 'url': url})
+            body = render_to_string("geo/emails/%s_body.txt" % email_template, {'entry': entry, 'url': url})
+            send_mail(subject.strip(), body.strip(), 'info@mapyhazardu.cz', settings.NOTIFICATION_EMAILS, fail_silently=False)
+
+        return HttpResponseRedirect(url)
 
 
 class EntryDetailView(DetailView):
