@@ -108,7 +108,7 @@ class EntryFormView(FormView):
         if email_template and hasattr(settings, 'NOTIFICATION_EMAILS') and settings.NOTIFICATION_EMAILS:
             subject = render_to_string("geo/emails/%s_subject.txt" % email_template, {'entry': entry, 'url': url})
             body = render_to_string("geo/emails/%s_body.txt" % email_template, {'entry': entry, 'url': url})
-            send_mail(subject.strip(), body.strip(), 'info@mapyhazardu.cz', settings.NOTIFICATION_EMAILS, fail_silently=False)
+            send_mail(subject.strip(), body.strip(), 'info@mapyhazardu.cz', settings.NOTIFICATION_EMAILS, fail_silently=True)
 
         return HttpResponseRedirect(url)
 
