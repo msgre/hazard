@@ -8,16 +8,21 @@ from hazard.shared.admin import ClearCacheMixin
 class EntryAdmin(ClearCacheMixin):
     list_display = ('title', 'created', 'slug', 'public', 'dperc_display', 'dhell_count_display', 'dper_population_display', 'dper_area_display')
     list_filter = ('public', )
-    list_editable = ('public', 'slug', )
+    list_editable = ('public', )
     readonly_fields = ('wikipedia', 'hell_url', 'building_url', 'ip')
     search_fields = ('title', 'slug')
     date_hierarchy = 'created'
+    ordering = ('-created',)
+
+    class Media:
+        js = ("js/lib/entry_admin.js",)
 
     fieldsets = (
         (None, {
             'fields': ('title', 'slug', 'description', 'email', 'public')
         }),
         (u'Informace vysosnuté z Wikipedie', {
+            'classes': ('collapse',),
             'fields': ('population', 'area', 'wikipedia')
         }),
         (u'Doplňující informace', {

@@ -40,6 +40,9 @@ appFiles  = {
     'map_group'
     'percent'
   ]
+  'entry_admin': [
+    'entry_admin'
+  ]
 }
 
 # buffer s nactenymi obsahy souboru
