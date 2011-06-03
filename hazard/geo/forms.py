@@ -215,12 +215,11 @@ class KMLForm(forms.Form):
 
             # kontrola obsahu KML map
             if entry and hasattr(self, 'buildings_kml') and hasattr(self, 'hells_kml'):
-                # if entry.building_kml == self.buildings_kml.decode('utf-8') and \
-                #    entry.hell_kml == self.hells_kml.decode('utf-8'):
-                #     if slug:
-                #         self.update_no_change_slug = slug
-                #     raise forms.ValidationError(u"Zdrojové mapy pro obec %s se nezměnily, záznam na našich stránkách je aktuální." % self.ei['town'])
-                pass
+                if entry.building_kml == self.buildings_kml.decode('utf-8') and \
+                   entry.hell_kml == self.hells_kml.decode('utf-8'):
+                    if slug:
+                        self.update_no_change_slug = slug
+                    raise forms.ValidationError(u"Zdrojové mapy pro obec %s se nezměnily, záznam na našich stránkách je aktuální." % self.ei['town'])
 
         return cleaned_data
 
