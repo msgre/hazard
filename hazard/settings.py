@@ -116,6 +116,10 @@ LOGGING = {
             #'formatter': 'simple'
             'formatter': 'verbose'
         },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+        }
     },
     'loggers': {
         'django': {

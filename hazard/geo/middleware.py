@@ -18,7 +18,7 @@ PERIOD = 120
 POSTS_PER_PERIOD = 8
 IP_PERIOD = 60
 POSTS_PER_IP_AND_PERIOD = 2
-PROCESSING_LIMIT = 2
+PROCESSING_LIMIT = getattr(settings, 'PROCESSING_LIMIT', 2)
 
 
 class HttpResponseRequestTimeout(HttpResponse):
