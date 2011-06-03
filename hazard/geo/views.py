@@ -99,7 +99,6 @@ class EntryFormView(FormView):
                 email_template = 'manual_check'
                 messages.warning(self.request, u'Hotovo. Záznam pro %s ale v databázi již máme a Váš příspěvek musíme manuálně zkontrolovat. Pokud bude vše v pořádku, dosavadní informace dáme pryč a Vaše nová data zveřejníme. Díky!' % entry.title, extra_tags='notice')
             else:
-                email_template = 'new' # TODO: pouze pro debugovani
                 messages.warning(self.request, u'Hotovo. Záznam pro %s byl uspěšně aktualizován. Díky!' % entry.title, extra_tags='notice')
 
         url = reverse('entry-detail', kwargs={'slug': entry.slug})
