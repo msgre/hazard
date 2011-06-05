@@ -155,3 +155,6 @@ html {font-size:110.01%;}
 form p {
     margin-bottom:5px;
 }
+#info_box .shy, #info_box .shy a {
+    color:#aaa;
+}
