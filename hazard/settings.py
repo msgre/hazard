@@ -123,12 +123,12 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers':['null'],
+            'handlers':['null', 'mail_admins'],
             'propagate': True,
             'level':'INFO',
         },
         'hazard': {
-            'handlers': ['console'],
+            'handlers': ['console', 'mail_admins'],
             'level': 'DEBUG',
         },
     }
