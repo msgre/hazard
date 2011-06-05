@@ -82,7 +82,7 @@ class EntryFormView(FormView):
         try:
             entry, exists = form.save(ip)
         except:
-            pass
+            raise
         finally:
             redis.decr('processing')
 

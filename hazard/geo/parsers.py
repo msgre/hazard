@@ -53,7 +53,7 @@ class KMLHandler(xml.sax.handler.ContentHandler):
         self.placemark = {
             'name': [],
             'description': [],
-            'coordinates': [],
+            'coordinates': [''],
             'type': ['unknown']
         }
 
@@ -91,7 +91,7 @@ class KMLHandler(xml.sax.handler.ContentHandler):
             if 'name' in self.starts:
                 self.placemark['name'].append(data)
             elif 'coordinates' in self.starts:
-                self.placemark['coordinates'].append(data)
+                self.placemark['coordinates'][0] = "%s%s" % (self.placemark['coordinates'][0], data)
             elif 'description' in self.starts:
                 self.placemark['description'].append(data)
 
@@ -118,7 +118,7 @@ class KMLHandler(xml.sax.handler.ContentHandler):
                 item['type'] = item['type'][0].strip()
             if 'coordinates' in item and item['coordinates']:
                 item['coordinates'] = [[float(y.strip()) for y in i.split(',')[:2]] \
-                                       for i in item['coordinates']]
+                                       for i in item['coordinates'][0].split('\n')]
                 item['coordinates'] = [dict(zip(['lon', 'lat'], i)) for i in item['coordinates']]
 
             if filter and item['type'] in filter:
