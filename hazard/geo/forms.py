@@ -12,6 +12,7 @@ from django.contrib.gis.gdal import CoordTransform, SpatialReference
 from django.forms.util import ErrorList
 from django.contrib.gis.measure import D
 from django.core.cache import cache
+from django.core.mail import send_mail
 
 from hazard.shared.czech import slugify
 from hazard.geo.parsers import parse_xml, KMLHandler, LinkHandler, MediaWikiHandler
@@ -421,3 +422,31 @@ class KMLForm(forms.Form):
             # zjistime zony se kterymi ma podnik konflikt
             b.calculate_conflicts(buildings)
             b.calculate_uzone()
+
+
+class EmailForm(forms.Form):
+    """
+    Administracni formular pro odeslani vzkazu autorovi map.
+    """
+    DEFAULT_EMAIL_MESSAGE = u"""Dobrý den,
+děkujeme za Váš příspěvek do mapovaní hazardu v ČR.
+
+Musíme Vás ale upozornit, že obec %(title)s je v naší aplikaci už evidována. Pokud chcete informace o hernách či budovách aktualizovat, prostudujte si podrobně tento návod: http://www.mapyhazardu.cz/spoluprace/
+
+Děkujeme
+
+--
+
+Tým MapyHazardu.cz"""
+
+    subject = forms.CharField(label=u"Předmět", max_length=80, widget=forms.TextInput(attrs={'style': 'width:320px'}))
+    content = forms.CharField(label=u"Vzkaz", widget=forms.Textarea(attrs={'cols':'70', 'rows':'20'}))
+
+    def send_email(self, to):
+        send_mail(
+            self.cleaned_data['subject'],
+            self.cleaned_data['content'],
+            'info@mapyhazardu.cz',
+            [to],
+            fail_silently=False
+        )
