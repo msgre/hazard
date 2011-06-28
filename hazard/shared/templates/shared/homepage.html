@@ -13,6 +13,8 @@
     href="{% url instruction %}">pomůžete zmapovat</a> situaci i ve vašem
     městě.</p>
 
+    <p>Aktuálně evidujeme celkem<br><strong class="percentage">{{ total_hell_count|floatformat:0 }} heren</strong> v {{ perc_entries|length }} obcích České republiky.</p>
+
     <p><i>MapyHazardu.cz</i> provozuje <a href="{% url contact %}">Občanské sdružení
     Brnění</a>, které se problematice regulace hazardu v ČR dlouhodobě věnuje.
     Zdrojový kód projektu je <a href="https://github.com/msgre/hazard">volně

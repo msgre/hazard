@@ -8,11 +8,8 @@ from hazard.geo.models import Entry
 TIMEOUT = 60 * 5 # 5 minut
 
 def common(request):
-    """
-    Vlozi do kontextu vsech sablon slovnik se zaznamy Entry, ktere se
-    pak reprezentuji jako oranzove ikony v mape na pozadi. Pouziva se to
-    na vsech strankach s vyjimkou detailu konkretni obce.
-    """
+    # obce, jejich souradnice a pocet heren v nich
+    # (slouzi pro zobrazeni oranzovych kolecek na mape)
     key = 'perc_entries'
     if key in cache:
         entries = cache.get(key)
@@ -22,9 +19,22 @@ def common(request):
             entries[entry.id] = {
                 'lat': entry.dpoint.coords[1],
                 'lon': entry.dpoint.coords[0],
-                'perc': '%i%%' % int(round(entry.dperc)),
+                #'perc': '%i%%' % int(round(entry.dperc)),
+                'perc': entry.dhell_count,
                 'title': entry.title,
                 'url': entry.get_absolute_url()
             }
         cache.set(key, entries, TIMEOUT)
-    return {'perc_entries': entries}
+
+    # celkovy pocet heren
+    key = 'total_hell_count'
+    if key in cache:
+        total_hell_count = cache.get(key)
+    else:
+        total_hell_count = sum(Entry.objects.filter(public=True).values_list('dhell_count', flat=True))
+        cache.set(key, total_hell_count, TIMEOUT)
+
+    return {
+        'perc_entries': entries,
+        'total_hell_count': total_hell_count
+    }
