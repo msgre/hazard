@@ -1,0 +1,39 @@
+{% extends "admin/change_form.html" %}
+{% load adminmedia i18n %}
+
+{% comment %}
+    Admin sablona pro odeslani vzkazu autorovi map.
+{% endcomment %}
+
+{% block title %}Odeslání vzkazu autorovi mapových podkladů pro obec {{ obj.title }}{{ block.super }}{% endblock %}
+{% block bodyclass %}change-list{% endblock %}
+
+{% if not is_popup %}
+    {% block breadcrumbs %}
+        <div class="breadcrumbs">
+            <a href="../../../../">{% trans "Home" %}</a> &rsaquo;
+            <a href="../../../">Geo</a> &rsaquo;
+            <a href="../../">Záznamy obcí</a> &rsaquo;
+            <a href="../">{{ obj.title }}</a> &rsaquo; Poslat vzkaz
+        </div>
+    {% endblock %}
+{% endif %}
+
+{% block coltype %}flex{% endblock %}
+
+{% block content %}
+    <div id="content-main">
+        <h1>Odeslání vzkazu autorovi mapových podkladů pro obec {{ obj.title }}</h1>
+        <form enctype="multipart/form-data" method="post" action="{{ request.path_info }}">
+            {% csrf_token %}
+            {% for fieldset in adminform %}
+                {% include "admin/includes/fieldset.html" %}
+            {% endfor %}
+
+            <div class="submit-row">
+                <input type="submit" value="Odeslat email" class="default" name="_save" />
+            </div>
+        </form>
+    </div>
+{% endblock %}
+{# vim: set et si ts=4 sw=4 syn=django: #}
