@@ -75,15 +75,18 @@ class EntryAdmin(ClearCacheMixin):
                 self.message_user(request, u"Neoznačil jsi nový, dosud nepublikovaný záznam.")
             else:
                 old, new = old[0], new[0]
-                # stary zaznam schovame a pridame ke slugu ID
-                old.slug = "%s-%i" % (old.slug, old.id)
-                old.public = False
-                old.save()
-                # novy zaznam zverejnime a slug zpeknime
-                new.slug = "-".join(new.slug.split('-')[:-1])
-                new.public = True
-                new.save()
-                self.message_user(request, u"Novější záznam byl zveřejněn, starý utlumen.")
+                if old.title != new.title:
+                    self.message_user(request, u"Asi jsi označil 2 záznamy z různých měst, protože názvy obcí v označených řádcích se neshodují.")
+                else:
+                    # stary zaznam schovame a pridame ke slugu ID
+                    old.slug = "%s-%i" % (old.slug, old.id)
+                    old.public = False
+                    old.save()
+                    # novy zaznam zverejnime a slug zpeknime
+                    new.slug = "-".join(new.slug.split('-')[:-1])
+                    new.public = True
+                    new.save()
+                    self.message_user(request, u"Novější záznam byl zveřejněn, starý utlumen.")
     publish_new_one.short_description = u"Publikovat novější záznam"
 
 
