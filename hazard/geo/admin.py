@@ -30,6 +30,7 @@ class EntryAdmin(ClearCacheMixin):
             'fields': ('hell_url', 'building_url', 'ip')
         }),
     )
+    actions = ['publish_new_one']
 
     def save_model(self, request, obj, form, change):
         """
@@ -53,6 +54,37 @@ class EntryAdmin(ClearCacheMixin):
     def dper_area_display(self, obj):
         return u"%.3f" % obj.dper_area
     dper_area_display.short_description = u"Heren/km"
+
+    def publish_new_one(self, request, queryset):
+        """
+        Pomocna action metoda, ktera slouzi k rychlemu zverejneni cerstvejsiho
+        zaznamu. Stava se, ze v systemu mame vice zaznamu pro teze mesto
+        a potrebujem rychle stary zaznam skryt (a pridat ke slugu ID), a rychle
+        zverejnit novy zaznam (a ufiknout mu skaredy suffix u slugu).
+
+        No a presne k tomuto ucelu slouzi tato metoda.
+        """
+        if queryset.count() != 2:
+            self.message_user(request, u"Označ 2 záznamy, starý publikovaný a nový nepublikovaný.")
+        else:
+            old = queryset.filter(public=True)
+            new = queryset.filter(public=False)
+            if not old:
+                self.message_user(request, u"Neoznačil jsi starý publikovaný záznam.")
+            elif not new:
+                self.message_user(request, u"Neoznačil jsi nový, dosud nepublikovaný záznam.")
+            else:
+                old, new = old[0], new[0]
+                # stary zaznam schovame a pridame ke slugu ID
+                old.slug = "%s-%i" % (old.slug, old.id)
+                old.public = False
+                old.save()
+                # novy zaznam zverejnime a slug zpeknime
+                new.slug = "-".join(new.slug.split('-')[:-1])
+                new.public = True
+                new.save()
+                self.message_user(request, u"Novější záznam byl zveřejněn, starý utlumen.")
+    publish_new_one.short_description = u"Publikovat novější záznam"
 
 
 class ZoneAdmin(ClearCacheMixin):
