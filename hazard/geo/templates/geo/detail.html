@@ -1,6 +1,6 @@
 {% extends "bone.html" %}
 
-{% load shared geo %}
+{% load shared geo markup %}
 
 {% block title %}Herny v obci {{ entry.title }} &mdash; {{ block.super }}{% endblock %}
 
@@ -17,7 +17,7 @@
 
     {% if entry.description %}
         <div class="clear">
-            {{ entry.description|safe }}
+            {{ entry.description|markdown }}
         </div>
     {% endif %}
 
