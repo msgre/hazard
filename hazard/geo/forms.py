@@ -343,6 +343,7 @@ class KMLForm(forms.Form):
             data['population'] = data['population'] or old_entry.population
             data['area'] = data['area'] or old_entry.area
             data['wikipedia'] = data['wikipedia'] or old_entry.wikipedia
+            data['description'] = data['description'] or old_entry.description
 
         # ulozeni objektu do DB
         for k, v in data.iteritems():
