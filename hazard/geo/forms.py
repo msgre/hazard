@@ -337,6 +337,7 @@ class KMLForm(forms.Form):
             'wikipedia':    ei['wikipedia_url'],
             'public':       public,
             'email':        self.cleaned_data['email'],
+            'description':  ei['description']
         }
         if old_entry:
             # pokud nam v "ei" datech neco chybi, doplnime to ze stareho zaznamu
