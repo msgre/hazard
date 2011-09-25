@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.2">
+<Document>
+  <name>{{ main_title }}</name>
+  <description><![CDATA[
+  {{ main_description|fix_ampersands|safe }}
+  ]]></description>
+  {% for street, entry in entries.items %}
+      <Placemark>
+        <name>{{ street|fix_ampersands }}</name>
+        <description><![CDATA[
+        {{ entry.description|fix_ampersands|safe }}
+        ]]></description>
+        <Point>
+          <coordinates>{{ entry.point }}</coordinates>
+        </Point>
+      </Placemark>
+  {% endfor %}
+</Document>
+</kml>
