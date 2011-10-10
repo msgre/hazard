@@ -5,7 +5,7 @@ Pozor! Vzhled ikony je treba definovat na urovni CSS, napr.:
 
     .group {
         position:absolute;
-        background:url(http://media.parkujujakcyp.cz/hazard/img/percent.png);
+        background:url(http://media.mapyhazardu.cz/img/percent.png);
         width:40px;
         height:40px;
         font-size:11px;

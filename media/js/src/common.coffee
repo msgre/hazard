@@ -4,7 +4,7 @@ Obecny kod, ktery je vyuzivan jak v detailech obci, tak i na ostatnich strankach
 
 window.map = undefined  # googli mapa
 MAP_STYLE = undefined   # definice stylu pro nasi custom mapu
-MEDIA_URL = 'http://media.parkujujakcyp.cz/hazard/'
+MEDIA_URL = 'http://media.mapyhazardu.cz/'
 
 
 ###

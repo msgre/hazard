@@ -5,7 +5,7 @@
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   window.map = void 0;
   MAP_STYLE = void 0;
-  MEDIA_URL = 'http://media.parkujujakcyp.cz/hazard/';
+  MEDIA_URL = 'http://media.mapyhazardu.cz/';
   /*
   Nakonfigurovani stylu mapy.
   */
@@ -164,7 +164,7 @@
 
       .group {
           position:absolute;
-          background:url(http://media.parkujujakcyp.cz/hazard/img/percent.png);
+          background:url(http://media.mapyhazardu.cz/img/percent.png);
           width:40px;
           height:40px;
           font-size:11px;
