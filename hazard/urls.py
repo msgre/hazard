@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, RedirectView
 from django.views.decorators.cache import cache_page
 
 from hazard.geo.views import EntryDetailView, EntryFormView, EntryListView, FullEntryListView
@@ -22,6 +22,10 @@ urlpatterns = patterns('',
     url(r'^zpravy/(?P<slug>[-_0-9a-z]+)/$', NewDetailView.as_view(), name="new-detail"),
     url(r'^spoluprace/$', TemplateView.as_view(template_name="shared/cooperation.html"), name="cooperation"),
     url(r'^kml/$', TemplateView.as_view(template_name="shared/kml_list.html"), name="kml-list"),
+    # google developer day 2011
+    url(r'^gdd/$', RedirectView.as_view(url="/kml/")),
+    url(r'^gdd2011/$', RedirectView.as_view(url="/kml/")),
+    url(r'^gdd-2011/$', RedirectView.as_view(url="/kml/")),
 )
 
 

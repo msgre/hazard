@@ -85,4 +85,4 @@ def show_kml_list():
             continue
         out.append((name.group(1), filename))
 
-    return {'items': sorted(out, cmp=lambda a, b: dumb_czech_cmp(a, b))}
+    return {'items': sorted(out, cmp=lambda a, b: dumb_czech_cmp(a, b)), 'MEDIA_URL': settings.MEDIA_URL}
