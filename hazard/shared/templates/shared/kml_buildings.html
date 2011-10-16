@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.2">
+<Document>
+    <name>{{ main_title }}</name>
+    <description><![CDATA[
+    {{ main_description|fix_ampersands|safe }}
+    ]]></description>
+    {% for street, entry in entries.items %}
+        {% if entry.points|length == 1 %}
+            <Placemark>
+                <name>{{ street|fix_ampersands }}</name>
+                <description><![CDATA[
+                {{ entry.description|fix_ampersands|safe }}
+                ]]></description>
+                <styleUrl>#red</styleUrl>
+                <Point>
+                    <coordinates>{{ entry.points.0 }}</coordinates>
+                </Point>
+            </Placemark>
+        {% else %}
+          <Placemark>
+              <name>{{ street|fix_ampersands }}</name>
+              <description><![CDATA[
+              {{ entry.description|fix_ampersands|safe }}
+              ]]></description>
+              <Polygon>
+                  <outerBoundaryIs>
+                      <LinearRing>
+                          <tessellate>1</tessellate>
+                          <coordinates>
+                              {% for gps in entry.points %}{{ gps }}
+                              {% endfor %}
+                          </coordinates>
+                      </LinearRing>
+                  </outerBoundaryIs>
+              </Polygon>
+          </Placemark>
+        {% endif %}
+    {% endfor %}
+</Document>
+</kml>

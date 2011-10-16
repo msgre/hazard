@@ -5,12 +5,20 @@
   <description><![CDATA[
   {{ main_description|fix_ampersands|safe }}
   ]]></description>
+  <Style id="red">
+    <IconStyle>
+      <Icon>
+        <href>http:////maps.gstatic.com/mapfiles/ms2/micons/red-dot.png</href>
+      </Icon>
+    </IconStyle>
+  </Style>
   {% for street, entry in entries.items %}
       <Placemark>
         <name>{{ street|fix_ampersands }}</name>
         <description><![CDATA[
         {{ entry.description|fix_ampersands|safe }}
         ]]></description>
+        <styleUrl>#red</styleUrl>
         <Point>
           <coordinates>{{ entry.point }}</coordinates>
         </Point>

@@ -1,0 +1,7 @@
+<ul>
+{% for item in items %}
+    <li><a href="{{ MEDIA_URL }}kml/{{ item.1 }}">{{ item.0 }}</a></li>
+{% endfor %}
+</ul>
+<p>Nenašli jste v seznamu {{ items|length }} obcí tu svou?
+<a href="{% url contact %}">Napiště nám</a>.</p>

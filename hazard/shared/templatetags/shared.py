@@ -2,10 +2,12 @@
 # vim: set et si ts=4 sw=4:
 
 import re
+import os
 
 from django import template
 from django.utils import simplejson
 from django.utils.safestring import mark_safe
+from django.conf import settings
 
 register = template.Library()
 
@@ -45,3 +47,42 @@ def shorten_latlon(text):
     prilis presny.
     """
     return LATLNG_RE.sub(do_shorten_latlon, text)
+
+
+KML_NAME_RE = re.compile(r'<name>Herny v obci ([^<]+)</name>')
+CZECH_ALPHABET = list(u'aábcčdďeéěfghiíjklmnňoóprřsštťuúůvwxyýzž')
+
+def dumb_czech_cmp(a, b):
+    a = a[0].decode('utf-8')
+    b = b[0].decode('utf-8')
+    for i in range(min([len(a), len(b)])):
+        a1 = a[i].lower()
+        a1 = a1 in CZECH_ALPHABET and CZECH_ALPHABET.index(a1) + 1 or 1000
+        b1 = b[i].lower()
+        b1 = b1 in CZECH_ALPHABET and CZECH_ALPHABET.index(b1) + 1 or 1000
+        ret = cmp(a1, b1)
+        if ret != 0:
+            return ret
+    return -1 and len(a) < len(b) or 1
+
+@register.inclusion_tag('shared/show_kml_list.html')
+def show_kml_list():
+    """
+    Projede obsah adresare KML_OUTPUT_DIR, vyparsuje z kazdeho KML souboru
+    nazev obce a zobrazi dlouhy seznam obci s odkazy na KML data.
+    """
+    out = []
+
+    for filename in os.listdir(settings.KML_OUTPUT_DIR):
+        path = os.path.join(settings.KML_OUTPUT_DIR, filename)
+        if os.path.isdir(path):
+            continue
+        f = open(path)
+        content = f.read(300)
+        f.close()
+        name = KML_NAME_RE.search(content)
+        if not name:
+            continue
+        out.append((name.group(1), filename))
+
+    return {'items': sorted(out, cmp=lambda a, b: dumb_czech_cmp(a, b))}
