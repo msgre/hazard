@@ -22,7 +22,7 @@ urlpatterns = patterns('',
     url(r'^zpravy/(?P<slug>[-_0-9a-z]+)/$', NewDetailView.as_view(), name="new-detail"),
     url(r'^spoluprace/$', TemplateView.as_view(template_name="shared/cooperation.html"), name="cooperation"),
     url(r'^kml/$', cache_page(TemplateView.as_view(template_name="shared/kml_list.html"), 60 * 20), name="kml-list"),
-    url(r'^gdd-?(2011)?/$', RedirectView.as_view(url="/kml/")), # google developer day
+    url(r'^gdd-?(2011|11)?/$', RedirectView.as_view(url="/kml/")), # google developer day
 )
 
 
