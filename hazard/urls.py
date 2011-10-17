@@ -17,11 +17,11 @@ urlpatterns = patterns('',
     url(r'^kontakt/$', TemplateView.as_view(template_name="shared/contact.html"), name="contact"),
     url(r'^navod/$', TemplateView.as_view(template_name="shared/instruction.html"), name="instruction"),
     url(r'^sousedstvi/$', TemplateView.as_view(template_name="shared/neighborhood.html"), name="neighborhood"),
-    url(r'^d/(?P<slug>[-_0-9a-z]+)/$', cache_page(EntryDetailView.as_view(), 60 * 60), name="entry-detail"),
+    url(r'^d/(?P<slug>[-_0-9a-z]+)/$', cache_page(EntryDetailView.as_view(), 60 * 20), name="entry-detail"),
     url(r'^zpravy/$', NewListView.as_view(), name="new-list"),
     url(r'^zpravy/(?P<slug>[-_0-9a-z]+)/$', NewDetailView.as_view(), name="new-detail"),
     url(r'^spoluprace/$', TemplateView.as_view(template_name="shared/cooperation.html"), name="cooperation"),
-    url(r'^kml/$', TemplateView.as_view(template_name="shared/kml_list.html"), name="kml-list"),
+    url(r'^kml/$', cache_page(TemplateView.as_view(template_name="shared/kml_list.html"), 60 * 20), name="kml-list"),
     url(r'^gdd-?(2011)?/$', RedirectView.as_view(url="/kml/")), # google developer day
 )
 
