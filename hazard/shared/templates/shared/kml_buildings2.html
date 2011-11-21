@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.2">
+<Document>
+    <name>{{ main_title }}</name>
+    <description><![CDATA[
+    {{ main_description|fix_ampersands|safe }}
+    ]]></description>
+    {% for building in buildings %}
+        <Placemark>
+            <name>{{ building.title|fix_ampersands }} ({{ building.type|fix_ampersands }})</name>
+            <description><![CDATA[
+            {{ building.street|fix_ampersands|safe }} {{ building.number|fix_ampersands|safe }}
+            {{ building.town|fix_ampersands|safe }}
+            ]]></description>
+            <styleUrl>#yellow</styleUrl>
+            <Point>
+                <coordinates>{{ building.lon }},{{ building.lat }},0.000000</coordinates>
+            </Point>
+        </Placemark>
+    {% endfor %}
+</Document>
+</kml>
