@@ -77,6 +77,10 @@ INSTALLED_APPS = (
     'hazard.geo',
     'hazard.news',
     'django_concurrent_test_server',
+    # remake
+    'hazard.territories',
+    'hazard.addresses',
+    'hazard.gobjects',
 )
 
 APPEND_SLASH = True
