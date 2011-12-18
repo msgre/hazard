@@ -1,0 +1,49 @@
+{% extends "mf/base.html" %}
+
+{% block text_content %}
+    <h2>Herna {{ hell.title }}</h2>
+
+    <h3>Základní informace</h3>
+    <table>
+        <tr>
+            <th>Název</th>
+            <td>{{ hell.title }}</td>
+        </tr>
+        <tr>
+            <th>Adresa</th>
+            <td>{{ hell.address }}<br />{{ town }}</td>
+        </tr>
+        {% if hell.description %}
+            <tr>
+                <th>Popis</th>
+                <td>{{ hell.description }}</td>
+            </tr>
+        {% endif %}
+        <tr>
+            <th>Celkem automatů</th>
+            <td>{{ hell.total }}</td>
+        </tr>
+    </table>
+
+    <h3>Podrobnosti o automatech</h3>
+    <table>
+        <tr>
+            <th>Typ</th>
+            <th style="text-align:right">Počet</th>
+            <th>Poznámka</th>
+        </tr>
+        {% for count in counts %}
+            <tr>
+                <td>{{ count.type }}</td>
+                <td style="text-align:right">{{ count.count }}</td>
+                <td>{{ count.note }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
+
+{% block map %}
+    <p class="todo">TODO: spendlik do mapy, fotka herny, <b>EDITACE!</b></p>
+{% endblock %}
+
+{# vim: set et si ts=4 sw=4 syn=django: #}

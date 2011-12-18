@@ -3,64 +3,25 @@
     <meta charset="UTF-8">
     <title>{% block title %}MapyHazardu.cz{% endblock %}</title>
 
-    {# Meta uzitecne pro Google, Seznam, Facebook #}
-    {#<meta name="description" content="">#}
-
     {# Facebook OpenGraph #}
-    <meta property="og:site_name" content="MapyHeren.cz">
+    <meta property="og:site_name" content="MapyHazardu.cz">
 
-    {#{% load compress %}#}
-    {#{% compress js %}#}
-        <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&language=cs&region=CZ"></script>
-        <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.4.2.js"></script>
-        <script type="text/javascript" src="{{ MEDIA_URL }}js/fancybox/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
-        <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.tipsy.js"></script>
-        {% block compress_js %}
-            <script type="text/javascript" src="{{ MEDIA_URL }}js/lib/percent_map.js"></script>
-        {% endblock %}
-    {#{% endcompress %}#}
-    {#{% compress css %}#}
-        <link rel="stylesheet" href="{{ MEDIA_URL }}css/blueprint/screen.css" type="text/css" media="screen">
-        <link rel="stylesheet" href="{{ MEDIA_URL }}css/index.css" type="text/css" media="screen">
-        <link rel="stylesheet" href="{{ MEDIA_URL }}js/fancybox/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen">
-        <link rel="stylesheet" href="{{ MEDIA_URL }}css/tipsy.css" type="text/css" media="screen">
-    {#{% endcompress %}#}
-
-    {# Google Analytics #}
-    <script type="text/javascript">
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-222140-13']);
-        _gaq.push(['_trackPageview']);
-        (function() {
-            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-        })();
-    </script>
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/blueprint/screen.css" type="text/css" media="screen">
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/index.css" type="text/css" media="screen">
+    {% block css %}{% endblock %}
 </head>
 <body id="body">
     <div class="container">
-        {# hlavni obsah #}
-        <div id="content">
-            <div id="info_box">
-                <div id="hide"><a href="#"> ↕ </a></div>
-                <a href="/"><img src="{{ MEDIA_URL }}img/herny4.png" width="300" height="60" title="MapyHazardu.cz"></a>
-                <p id="nav"><a class="nop" href="/">Úvod</a> / <a href="{% url entry-list %}">Hitparáda</a> / <a href="{% url entry-form %}">Přidat obec</a> / <a href="{% url kml-list %}">KML</a> / <a href="{% url new-list %}">Zprávy</a> / <a href="{% url contact %}">Kontakt</a> / <a href="{% url support %}">Podporují nás</a></p>
-                {% if messages %}
-                    <p id="messages">
-                        {% for message in messages %}
-                            <span{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</span>
-                            {% if not forloop.last %}<br>{% endif %}
-                        {% endfor %}
-                    </p>
-                {% endif %}
-                <div id="inner_box">
-                    {% block content %}{% endblock %}
-                </div>
-            </div>
-        </div>
-        <div id="map"></div>
+        {% include "header.html" %}
+        {% block main %}{% endblock %}
+        {% include "footer.html" %}
     </div>
+    {% block js %}
+        <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&language=cs&region=CZ"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.4.2.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}js/underscore-min.js"></script>
+    {% endblock %}
+    {% comment %}
     <script type="text/javascript">
         {% load shared %}
         {% filter shorten_latlon %}
@@ -69,6 +30,24 @@
             {% endblock %}
         {% endfilter %}
     </script>
+    {% endcomment %}
+    {# TODO: #}
+    <script type="text/javascript">
+        $(document).ready(function(){$('#map-fullscreen').click(function(){$('#map').addClass('fullscreen');return false;})})
+    </script>
+    {# Google Analytics #}
+    {% if not debug %}
+        <script type="text/javascript">
+            var _gaq = _gaq || [];
+            _gaq.push(['_setAccount', 'UA-222140-13']);
+            _gaq.push(['_trackPageview']);
+            (function() {
+                var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+            })();
+        </script>
+    {% endif %}
 </body>
 </html>
 {# vim: set et si ts=4 sw=4 syn=django: #}

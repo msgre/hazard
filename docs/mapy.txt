@@ -1,0 +1,14 @@
+Tabulkova data o krajich/okresech/obcich CR. Vyborny zdroj!
+
+obce
+http://www.google.com/fusiontables/DataSource?dsrcid=2121188
+
+okresy
+http://www.google.com/fusiontables/DataSource?dsrcid=2121470
+
+kraje
+http://www.google.com/fusiontables/DataSource?dsrcid=2121559
+
+
+spolecna tabulka, starsi verze (podrobnejsi zdroje jsou ty vyse)
+http://www.google.com/fusiontables/DataSource?dsrcid=2119349

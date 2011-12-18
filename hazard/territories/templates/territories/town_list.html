@@ -1,0 +1,20 @@
+{% extends "territories/base.html" %}
+
+{% block main_header %}
+    <p><a href="/">Česká republika</a> &raquo; <a href="{% url region region=region.slug %}">{{ region.title }}</a></p>
+    <h1>{{ district.title }}</h1>
+{% endblock %}
+
+{% block main_content %}
+    <h2>Obce</h2>
+    <ul>
+    {% for town in towns %}
+        <li><a href="{{ town.get_absolute_url }}">{{ town.title }}</a></li>
+    {% endfor %}
+    </ul>
+{% endblock %}
+
+{% block map %}
+    <p class="todo">mapa okresu, mesta jako ikony s nejakou informaci</p>
+{% endblock %}
+{# vim: set et si ts=4 sw=4 syn=django: #}

@@ -1,0 +1,26 @@
+{% extends "mf/base.html" %}
+
+{% block main_content %}
+    <h3>Seznam heren</h3>
+    <table>
+        <tr>
+            <th>Název</th>
+            <th>Adresa</th>
+            <th class="text-right">Počet automatů</th>
+            <th>Platné ke dni</th>
+        </tr>
+        {% for hell in object_list %}
+            <tr>
+                <td><a href="{% url mf-town-hell-detail region=region.slug district=district.slug town=town.slug type="mf" id=hell.id %}">{{ hell.title }}</a></td>
+                <td>{{ hell.address }}</td>
+                <td class="text-right">{{ hell.total }}</td>
+                <td>{{ hell.updated|date }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    {# strankovatko #}
+    {% include "mf/paginator.html" %}
+{% endblock %}
+
+{# vim: set et si ts=4 sw=4 syn=django: #}

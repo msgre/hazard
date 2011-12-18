@@ -1,0 +1,23 @@
+.text-right {
+    text-align:right;
+}
+.todo {
+    background: yellow;
+    padding:2px 4px;
+}
+ul.local-menu {
+    list-style:none;
+    margin-left:0;
+    padding-left:0;
+    border-top:1px solid #eee;
+}
+ul.local-menu li {
+    padding-top:4px;
+    padding-bottom:4px;
+    margin-left:0;
+    padding-left:0;
+    border-bottom:1px solid #eee;
+}
+ul.local-menu li a {
+    display:block;
+}

@@ -1,0 +1,36 @@
+{% extends "territories/base.html" %}
+
+{% block main_header %}
+    <p><a href="/">Česká republika</a> &raquo; <a href="{% url region region=region.slug %}">{{ region.title }}</a> &raquo; <a href="{% url district region=region.slug district=district.slug %}">{{ district.title }}</a></p>
+    <h1>{{ town }}</h1>
+{% endblock %}
+
+{% block main_content %}
+    <p>herny</p>
+    <ul>
+    {% for hell in hells %}
+        <li><a href="{{ hell.get_absolute_url }}">{{ hell.title }}</a></li>
+    {% endfor %}
+    </ul>
+
+    <p>budovy</p>
+    <ul>
+    {% for building in buildings %}
+        <li><a href="{{ building.get_absolute_url }}">{{ building.title }}</a></li>
+    {% endfor %}
+    </ul>
+
+    {% comment %}
+    <p>adresy</p>
+    <ul>
+    {% for address in addresses %}
+        <li><a href="{{ address.get_absolute_url }}">{{ address.title }}</a></li>
+    {% endfor %}
+    </ul>
+    {% endcomment %}
+{% endblock %}
+
+{% block map %}
+    <p>mapa mesta, v podstate to co je ted na mh.cz</p>
+{% endblock %}
+{# vim: set et si ts=4 sw=4 syn=django: #}

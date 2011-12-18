@@ -1,0 +1,27 @@
+{% extends "mf/base.html" %}
+
+{% block text_content %}
+    <h2>{{ building.title }}</h2>
+
+    <h3>Základní informace</h3>
+    <table>
+        <tr>
+            <th>Název</th>
+            <td>{{ building.title }}</td>
+        </tr>
+        <tr>
+            <th>Adresa</th>
+            <td>{{ building.address }}<br />{{ town }}</td>
+        </tr>
+        <tr>
+            <th>Typ budovy</th>
+            <td>{{ building.type }}</td>
+        </tr>
+    </table>
+{% endblock %}
+
+{% block map %}
+    <p class="todo">TODO: spendlik do mapy, fotka herny, <b>EDITACE!</b></p>
+{% endblock %}
+
+{# vim: set et si ts=4 sw=4 syn=django: #}

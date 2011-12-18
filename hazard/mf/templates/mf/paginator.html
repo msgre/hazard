@@ -1,0 +1,24 @@
+{# strankovatko #}
+{% if page_obj.paginator.num_pages > 1 %}
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <span class="arrow">
+                    ←&nbsp;<a href="?p={{ page_obj.previous_page_number }}">Předchozí</a>
+                </span>
+            {% endif %}
+
+            <span class="current">
+                Strana {{ page_obj.number }} z {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+                <span class="arrow">
+                    <a href="?p={{ page_obj.next_page_number }}">Další</a>&nbsp;→
+                </span>
+            {% endif %}
+        </span>
+    </div>
+{% endif %}
+
+{# vim: set et si ts=4 sw=4 syn=django: #}

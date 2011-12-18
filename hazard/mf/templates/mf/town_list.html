@@ -1,0 +1,132 @@
+{% extends "mf/base.html" %}
+
+{% load shared %}
+
+{% block main_header %}
+    <h1>{{ district }}</h1>
+{% endblock %}
+
+{% block text_content %}
+    <div id="perex">
+        <div id="absolute-perex" class="block">
+            <div class="span-2">
+                <img src="http://chart.googleapis.com/chart?chs=70x70&cht=p&chd=t:{{ total_statistics.conflicts_hells_perc|floatformat:0 }},{{ total_statistics.nonconflicts_hells_perc|floatformat:0 }}&chco=FF0000,00FF00"/>
+            </div>
+            <div class="span-8 last">
+                <h2 style="line-height:110%">V okrese <b>{{ district.title }}</b> je provozováno
+                <b>{{ total_statistics.conflicts_hells_total }}&nbsp;heren</b>
+                ({{ total_statistics.conflicts_hells_perc|floatformat:1 }}%)
+                v rozporu se <a href="#">zákonem</a>.</h2>
+
+                <p><a href="#">Přepočet na automaty</a></p>
+            </div>
+        </div>
+
+        <div id="percentual-perex" class="block">
+            <div class="span-2">
+                <img src="http://chart.googleapis.com/chart?chs=70x70&cht=p&chd=t:{{ total_statistics.conflicts_machines_perc|floatformat:0 }},{{ total_statistics.nonconflicts_machines_perc|floatformat:0 }}&chco=FF0000,00FF00"/>
+            </div>
+            <div class="span-8 last">
+                <h2 style="line-height:110%">V okrese <b>{{ district.title }}</b> je provozováno
+                <b>{{ total_statistics.conflicts_machines_total }}&nbsp;automatů</b>
+                ({{ total_statistics.conflicts_machines_perc|floatformat:1 }}%)
+                v rozporu se <a href="#">zákonem</a>.</h2>
+
+                <p><a href="#">Přepočet na herny</a></p>
+            </div>
+        </div>
+    </div>
+
+    <hr />
+    <h3>Situace v ostatních okresech kraje</h3>
+    <table>
+        <tr>
+            <td><a href="">Kroměříž</a></td>
+            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:45%;height:28px;display:block;float:left">&nbsp;</b></td>
+        </tr>
+        <tr>
+            <td><a href="">Uherské&nbsp;Hradiště</a></td>
+            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:35%;height:28px;display:block;float:left">&nbsp;</b></td>
+        </tr>
+        <tr>
+            <td>Zlín</td>
+            <td style="background:#f00;width:100%;padding:0;"><b style="background:#0f0;width:65%;height:28px;display:block;float:left">&nbsp;</b></td>
+        </tr>
+        <tr>
+            <td><a href="">Vsetín</a></td>
+            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:65%;height:28px;display:block;float:left">&nbsp;</b></td>
+        </tr>
+    </table>
+
+    {% comment %}
+    <hr />
+    <table id="table-data">
+        <tr>
+            <th></th>
+            <th class="text-right">Heren</th>
+            <th class="text-right">Automatů</th>
+        </tr>
+        <tr>
+            <th>Celkem</th>
+            <td class="text-right">{{ total_statistics.hells_total }}</td>
+            <td class="text-right">{{ total_statistics.machines_total }}</td>
+        </tr>
+        <tr>
+            <th>Konfliktní</th>
+            <td class="text-right">{{ total_statistics.conflicts_hells_total }}{% if total_statistics.conflicts_hells_perc %}<br/><span class="small">{{ total_statistics.conflicts_hells_perc|floatformat:-1 }}%</span>{% endif %}</td>
+            <td class="text-right">{{ total_statistics.conflicts_machines_total }}{% if total_statistics.conflicts_machines_perc %}<br/><span class="small">{{ total_statistics.conflicts_machines_perc|floatformat:-1 }}%</span>{% endif %}</td>
+        </tr>
+        <tr>
+            <th>Nekonfliktí</th>
+            <td class="text-right">{{ total_statistics.nonconflicts_hells_total }}{% if total_statistics.nonconflicts_hells_perc %}<br/><span class="small">{{ total_statistics.nonconflicts_hells_perc|floatformat:-1 }}%</span>{% endif %}</td>
+            <td class="text-right">{{ total_statistics.nonconflicts_machines_total }}{% if total_statistics.nonconflicts_machines_perc %}<br/><span class="small">{{ total_statistics.nonconflicts_machines_perc|floatformat:-1 }}%</span>{% endif %}</td>
+        </tr>
+        {% if district.surface %}
+            <tr>
+                <th>Hustota na km<sup>2</sup></th>
+                <td class="text-right">{{ total_statistics.hells_per_km|floatformat:2 }}</td>
+                <td class="text-right">{{ total_statistics.machines_per_km|floatformat:2 }}</td>
+            </tr>
+        {% endif %}
+        {% if district.population %}
+            <tr>
+                <th>Lidí na jednu hernu</th>
+                <td class="text-right">{{ total_statistics.persons_per_hell|floatformat:0 }}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <th>Lidí na jeden automat</th>
+                <td></td>
+                <td class="text-right">{{ total_statistics.persons_per_machines|floatformat:0 }}</td>
+            </tr>
+        {% endif %}
+    </table>
+    {% endcomment %}
+{% endblock %}
+
+{% block map %}
+    {{ block.super }}
+    <div class="todo">
+        <p>zaostreno na kraj, polygony okresu, vybrany okres nejak zvyraznen;<br>
+        hover nad kterymkoliv jinym okresem ho zvyrazni, kliknuti prejde na detail okresu;<br>
+        mohlo by dojit k propojeni mezi tabulkovym seznamem a mapou (zvyraznovani po hoveru);<br>
+        barevne rozliseni polygonu podle poctu heren/matu</p>
+    </div>
+{% endblock %}
+
+{% block js %}
+    {{ block.super }}
+    <script type="text/javascript">
+        {% filter shorten_latlon %}
+        window.hells = {{ js_hells|json }};
+        window.gobjects = {{ js_gobjects|json }};
+        window.conflicts = {{ js_conflicts|json }};
+        window.addresses = {{ js_addresses|json }};
+        {% endfilter %}
+    </script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/underscore-min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDw1uicJmcKKdEIvLS9XavLO0RPFvIpOT4&v=3&sensor=false" type="text/javascript"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/mf.js"></script>
+{% endblock %}
+
+{# vim: set et si ts=4 sw=4 syn=django: #}

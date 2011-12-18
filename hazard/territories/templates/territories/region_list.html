@@ -1,0 +1,30 @@
+{% extends "territories/base.html" %}
+
+{% load shared %}
+
+{% block main_header %}
+    <p> </p>
+    <h1>Česká republika</h1>
+{% endblock %}
+
+{% block main_content %}
+    <h2>Kraje</h2>
+    <ul>
+    {% for region in regions %}
+        <li><a href="{{ region.get_absolute_url }}">{{ region.title }}</a></li>
+    {% endfor %}
+    </ul>
+{% endblock %}
+
+{% block js %}
+    {{ block.super }}
+    <script type="text/javascript">
+        window.shapes = {
+        {% for region in regions %}
+            '{{ region.slug }}': {{ region.shape.0.coords|json }}{% if not forloop.last %},{% endif %}
+        {% endfor %}
+        };
+    </script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/region.js"></script>
+{% endblock %}
+{# vim: set et si ts=4 sw=4 syn=django: #}

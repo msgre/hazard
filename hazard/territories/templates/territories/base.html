@@ -1,0 +1,42 @@
+{% extends "bone.html" %}
+
+{% block js %}
+    {{ block.super }}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/territories.js"></script>
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/territories.css" type="text/css" media="screen">
+{% endblock %}
+
+{% block main %}
+    {# drobeckova navigace #}
+    <p>{% block breadcrumb %}{% endblock %}</p>
+
+    {# nadpis #}
+    {% block main_header %}{% endblock %}
+
+    {# zalozky kampani #}
+    <p>
+        {% for campaign in campaigns %}
+            <a class="box" style="padding:10px;text-decoration:none;{% if forloop.first %}color:#E5ECF9;background:#06c;{% endif %}" href="{{ campaign.slug }}">{{ campaign.title }}</a>
+        {% endfor %}
+    </p>
+    {% block submenu %}{% endblock %}
+    <hr />
+
+    {# obsah stranky #}
+    {% block content %}
+        <div class="span-10">
+            {% block main_content %}{% endblock %}
+        </div>
+
+        {# mapa #}
+        <div class="span-14 last">
+            {% block map %}
+                <div id="map"></div>
+            {% endblock %}
+        </div>
+    {% endblock %}
+{% endblock %}
+{# vim: set et si ts=4 sw=4 syn=django: #}

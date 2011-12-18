@@ -6,7 +6,7 @@ from django.contrib.gis.db import models as geomodels
 from hazard.territories.models import Region, District, Town
 
 
-class Address(models.Model):
+class Address(geomodels.Model):
     """
     Adresa.
     """
@@ -17,6 +17,7 @@ class Address(models.Model):
     # denormalizace
     region   = models.ForeignKey(Region, verbose_name=u"Kraj", editable=False)
     district = models.ForeignKey(District, verbose_name=u"Okres", editable=False)
+    objects  = geomodels.GeoManager()
 
     class Meta:
         verbose_name = u'Adresa'
@@ -40,7 +41,7 @@ class AltAddress(models.Model):
     Alternativni adresa.
     """
     title   = models.CharField(u"Ulice", max_length=200)
-    town    = models.ForeignKey(Address, verbose_name=u"Adresa")
+    address = models.ForeignKey(Address, verbose_name=u"Adresa")
 
     class Meta:
         verbose_name = u'Alternativní adresa'

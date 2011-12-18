@@ -1,0 +1,28 @@
+{% extends "mf/base.html" %}
+
+{% load shared %}
+
+{% block main_header %}
+    <h1>Obec {{ town }}</h1>
+{% endblock %}
+
+{% block content %}
+    <div id="map" class="detail-map" style="height:500px"></div>
+{% endblock %}
+
+{% block js %}
+    {{ block.super }}
+    <script type="text/javascript">
+        {% filter shorten_latlon %}
+        window.hells = {{ js_hells|json }};
+        window.gobjects = {{ js_gobjects|json }};
+        window.conflicts = {{ js_conflicts|json }};
+        window.addresses = {{ js_addresses|json }};
+        {% endfilter %}
+    </script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/underscore-min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDw1uicJmcKKdEIvLS9XavLO0RPFvIpOT4&v=3&sensor=false" type="text/javascript"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/mf.js"></script>
+{% endblock %}
+
+{# vim: set et si ts=4 sw=4 syn=django: #}

@@ -1,0 +1,60 @@
+{% extends "territories/base.html" %}
+
+{% block css %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/mf.css" type="text/css" media="screen">
+{% endblock %}
+
+{% block breadcrumb %}
+    <a href="/">Česká republika</a> {% if district %}&raquo; <a href="{% url region region=region.slug %}">{{ region.title }}</a> {% if town %}&raquo; <a href="{% url district region=region.slug district=district.slug %}">{{ district.title }}</a>{% endif %}{% endif %}
+{% endblock %}
+
+{% block submenu %}
+    {% if town %}
+        <div class="box" style="margin-bottom:0;position:relative;top:-13px;padding:10px;text-decoration:none;color:#E5ECF9;background:#06c;">
+            {% url mf-town region=region.slug district=district.slug town=town.slug type="mf" as town_url %}
+            {% url mf-town-map region=region.slug district=district.slug town=town.slug type="mf" as town_map_url %}
+            {% url mf-town-hells-list region=region.slug district=district.slug town=town.slug type="mf" as hells_list_url %}
+            {% url mf-town-buildings-list region=region.slug district=district.slug town=town.slug type="mf" as buildings_list_url %}
+            <a style="color:#E5ECF9;text-decoration:none;padding-right:1em;" href="{{ town_url }}">Základní přehled</a>
+            <a style="color:#E5ECF9;text-decoration:none;padding-right:1em;" href="{{ town_map_url }}">Podrobná mapa</a>
+            <a style="color:#E5ECF9;text-decoration:none;padding-right:1em;" href="{{ hells_list_url }}">Seznam heren</a>
+            <a style="color:#E5ECF9;text-decoration:none;padding-right:1em;" href="{{ buildings_list_url }}">Seznam budov</a>
+            <a style="color:#E5ECF9;text-decoration:none;padding-right:1em;" href="#">Export</a>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    {% block main_content %}
+        <div class="span-10">
+            {% block text_content %}{% endblock %}
+        </div>
+
+        {# mapa #}
+        <div class="span-14 last">
+            {% block map %}
+                <div id="map"></div>
+            {% endblock %}
+            <p class="todo">mapa by se mohla zasekavat na hornim okraji prohlizece, pokud by se odrolovalo moc dolu</p>
+        </div>
+    {% endblock %}
+
+    {% comment %}
+    <div class="span-4 last">
+        {% block local_menu %}
+            {% url mf-town region=region.slug district=district.slug town=town.slug type="mf" as town_url %}
+            {% url mf-town-hells-list region=region.slug district=district.slug town=town.slug type="mf" as hells_list_url %}
+            {% url mf-town-buildings-list region=region.slug district=district.slug town=town.slug type="mf" as buildings_list_url %}
+            <h3>Menu</h3>
+            <ul class="local-menu">
+                <li><a href="{{ town_url }}">Úvod</a></li>
+                <li><a href="{{ hells_list_url }}">Herny</a></li>
+                <li><a href="{{ buildings_list_url }}">Budovy</a></li>
+            </ul>
+        {% endblock %}
+    </div>
+    {% endcomment %}
+{% endblock %}
+
+{# vim: set et si ts=4 sw=4 syn=django: #}
