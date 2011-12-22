@@ -1,3 +1,11 @@
 #map {
-  height: 300px;
+  height: 400px;
+}
+#campaign-menu a {
+    padding:10px;
+    text-decoration:none;
+}
+#campaign-menu a.active {
+    color:#E5ECF9;
+    background:#06c;
 }

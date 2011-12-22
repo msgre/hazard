@@ -1,241 +1,49 @@
 {% extends "mf/base.html" %}
 
-{% load shared %}
+{% load shared mf %}
 
 {% block main_header %}
-    <h1>Obec {{ town }}</h1>
+    <h1>Obec {{ town.title }}</h1>
 {% endblock %}
 
 {% block text_content %}
     {# uvodni text se zakladnimi udaji a kolacovym grafem #}
-    <div id="perex">
-        <div id="absolute-perex" class="block">
+    <div id="primer">
+        {# udaje o hernach #}
+        <div class="hells">
             <div class="span-2">
-                <img src="http://chart.googleapis.com/chart?chs=70x70&cht=p&chd=t:{{ conflicts_hells_perc|floatformat:0 }},{{ nonconflicts_hells_perc|floatformat:0 }}&chco=FF0000,00FF00"/>
+                {% variable statistics.conflict_hell_perc|key:town.id as chells %}
+                {% variable statistics.nonconflict_hell_perc|key:town.id as nchells %}
+                <img title="Poměr nezákonně (červená výseč) a zákonně (zelená) povolených automatů" alt="Poměr nezákonně/zákonně povolených automatů" src="http://chart.googleapis.com/chart?chs=70x70&cht=p&chd=t:{{ chells|floatformat:0 }},{{ nchells|floatformat:0 }}&chco=FF0000,00FF00"/>
             </div>
             <div class="span-8 last">
-                <h2 style="line-height:110%;">V obci <b>{{ town.title }}</b> je provozováno
-                <b>{{ conflicts_hells_total }}&nbsp;heren</b> ({{ conflicts_hells_perc|floatformat:1 }}%)
-                v rozporu se <a href="#">zákonem</a>.</h2>
-
-                <p><a href="#">Přepočet na automaty</a></p>
+                {% mf_primer_text town "hells" %}
             </div>
         </div>
 
-        <div id="percentual-perex" class="block">
+        {# udaje o automatech #}
+        <div class="machines">
             <div class="span-2">
-                <img src="http://chart.googleapis.com/chart?chs=70x70&cht=p&chd=t:{{ conflicts_machines_perc|floatformat:0 }},{{ nonconflicts_machines_perc|floatformat:0 }}&chco=FF0000,00FF00"/>
+                {% variable statistics.conflict_machine_perc|key:town.id as cmachines %}
+                {% variable statistics.nonconflict_machine_perc|key:town.id as ncmachines %}
+                <img title="Poměr nezákonně (červená výseč) a zákonně (zelená) povolených automatů" alt="Poměr nezákonně/zákonně povolených automatů" src="http://chart.googleapis.com/chart?chs=70x70&cht=p&chd=t:{{ cmachines|floatformat:0 }},{{ ncmachines|floatformat:0 }}&chco=FF0000,00FF00"/>
             </div>
             <div class="span-8 last">
-
-                <h2 style="line-height:110%">V obci <b>{{ town.title }}</b> je provozováno
-                <b>{{ conflicts_machines_total }}&nbsp;automatů</b>
-                ({{ conflicts_machines_perc|floatformat:1 }}%)
-                v rozporu se <a href="">zákonem</a>.</h2>
-
-                <p><a href="#">Přepočet na herny</a></p>
+                {% mf_primer_text town "machines" %}
             </div>
         </div>
     </div>
 
     <hr />
-    <h3>Situace v ostatních městech okresu</h3>
-    <table>
-        <tr>
-<td><a href="">Branky</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:45%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Bystřička</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:35%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Choryně</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:65%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Dolní&nbsp;Bečva</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:65%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
 
-        <tr>
-<td><a href="">Francova&nbsp;Lhota</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:45%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Halenkov</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:35%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Horní&nbsp;Bečva</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:65%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Horní&nbsp;Lideč</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:65%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Hovězí</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:45%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Hošťálková</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:35%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Hošťálková&nbsp;u&nbsp;Vsetína</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:65%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Huslenky</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:65%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Hutisko&nbsp;-&nbsp;Solanec</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:45%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Jablůnka</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:35%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Janovice&nbsp;nad&nbsp;Úhlavou</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:65%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Karolinka</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:65%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Kelč</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:45%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Lešná</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:35%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Liptál</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:65%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Loučka</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:65%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Nový&nbsp;Hrozenkov</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:45%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Prostřední&nbsp;Bečva</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:35%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Pržno</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:65%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Ratiboř</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:65%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Rožnov&nbsp;pod&nbsp;Radhoštěm</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:65%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Růžďka</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:45%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Střítež&nbsp;nad&nbsp;Bečvou</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:35%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Valašská&nbsp;Bystřice</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:65%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Valašská&nbsp;Polanka</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:65%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Valašské&nbsp;Meziříčí</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:65%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Velká&nbsp;Lhota</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:45%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Velké&nbsp;Karlovice</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:35%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Vidče</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:65%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Vsetín</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:65%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Zašová</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:45%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Zděchov</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:35%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-        <tr>
-<td><a href="">Zubří</a></td>
-            <td style="background:#faa;width:100%;padding:0;"><b style="background:#afa;width:65%;height:28px;display:block;float:left">&nbsp;</b></td>
-        </tr>
-    </table>
+    <h3>Situace v ostatních obcích okresu</h3>
+    <div class="outer-wrapper">
+        {% mf_table "town" "hells" %}
+    </div>
+    <div class="outer-wrapper">
+        {% mf_table "town" "machines" %}
+    </div>
 
-    {% comment %}
-    {# tabulka s podrobnymi udaji #}
-    <table id="table-data">
-        <tr>
-            <th></th>
-            <th class="text-right">Heren</th>
-            <th class="text-right">Automatů</th>
-        </tr>
-        <tr>
-            <th>Celkem</th>
-            <td class="text-right">{{ hells_total }}</td>
-            <td class="text-right">{{ machines_total }}</td>
-        </tr>
-        <tr>
-            <th>Konfliktní</th>
-            <td class="text-right">{{ conflicts_hells_total }}{% if conflicts_hells_perc %}<br/><span class="small">{{ conflicts_hells_perc|floatformat:-1 }}%</span>{% endif %}</td>
-            <td class="text-right">{{ conflicts_machines_total }}{% if conflicts_machines_perc %}<br/><span class="small">{{ conflicts_machines_perc|floatformat:-1 }}%</span>{% endif %}</td>
-        </tr>
-        <tr>
-            <th>Nekonfliktí</th>
-            <td class="text-right">{{ nonconflicts_hells_total }}{% if nonconflicts_hells_perc %}<br/><span class="small">{{ nonconflicts_hells_perc|floatformat:-1 }}%</span>{% endif %}</td>
-            <td class="text-right">{{ nonconflicts_machines_total }}{% if nonconflicts_machines_perc %}<br/><span class="small">{{ nonconflicts_machines_perc|floatformat:-1 }}%</span>{% endif %}</td>
-        </tr>
-        {% if town.surface %}
-            <tr>
-                <th>Hustota na km<sup>2</sup></th>
-                <td class="text-right">{{ hells_per_km|floatformat:2 }}</td>
-                <td class="text-right">{{ machines_per_km|floatformat:2 }}</td>
-            </tr>
-        {% endif %}
-        {% if town.population %}
-            <tr>
-                <th>Lidí na jednu hernu</th>
-                <td class="text-right">{{ persons_per_hell|floatformat:0 }}</td>
-                <td></td>
-            </tr>
-            <tr>
-                <th>Lidí na jeden automat</th>
-                <td></td>
-                <td class="text-right">{{ persons_per_machines|floatformat:0 }}</td>
-            </tr>
-        {% endif %}
-    </table>
-    {% endcomment %}
 {% endblock %}
 
 {% block map %}

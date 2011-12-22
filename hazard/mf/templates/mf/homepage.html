@@ -1,0 +1,80 @@
+{% extends "territories/base.html" %}
+
+{% load webdesign %}
+
+{% block breadcrumb %}
+    <a href="/kampan/">Kampane</a>
+{% endblock %}
+
+{% block campaign_menu %}{% endblock %}
+
+{% block main_header %}
+    <h1>{{ campaign.title }}</h1>
+{% endblock %}
+
+{% block submenu %}
+    <p>
+        <a href="#">Podrobnejsi popis</a> |
+        <a href="#">Zebricky</a> |
+        <a href="#">Casova osa</a> |
+        <a href="#">Media</a> |
+        <a href="#">Navod</a> |
+        <a href="#">Data</a>
+    </p>
+{% endblock %}
+
+{% block content %}
+    <div class="span-12">
+            <h2>
+                Strucne o cem to tu je. Zaseknuti drapku. Treba neco ve smyslu
+                ze se MF vedomne v urcitem obdobi chovalo nezakonne, a
+                povolilo provoz <b>1.000&nbsp;heren</b> s <b>10.000&nbsp;automaty</b>.
+                Nebo tak neco...
+            </h2>
+            <p>
+                Tady pak muze byt nejaky suchoparnejsi kratky rozbor. V cem
+                byla ta nezakonnost, jak to ze se MF do toho vubec micha.
+                Z ceho vychazime.
+                Opet by melo jit o par zakladnich dat, doplneny prolinky
+                hloubeji do webu (kde uz je prostor probrat veci dopodrobna).
+            </p>
+            <h4>Casovy vyvoj</h4>
+            <div class="box">
+                <p>Bude uz tady prostor pro casovou osu? (jak se co vyvijelo,
+                ze i po upozorneni a ombudsmanovi MF fici dal...)</p>
+            </div>
+            <h4>Zapojeni verejnosti</h4>
+            <p>
+                Neco jako ze se muzou regnout, a pak data editovat. Vime ze
+                jsou v nich nepresnosti. V pripade kampane MF by asi mely
+                jit editovat jen budovy, data o hernach mame z ofiko zdroje
+                a asi bych na ne nesahal (snad jen co se tyce jejich pozice
+                na mape, tam chyby byt muzou).
+            </p>
+    </div>
+    <div class="span-12 last">
+        <h4>Co oko uvidi, to i srdce zaboli</h4>
+        <div class="box"><a href="/zlinsky/">mapa</a><br><br><br><br><br><br><br><br><br><br><br><br></div>
+        <p>Ziskana data jsme prechroustali do vizualni podoby</p>
+        <ul>
+            <li>Zajima vas kolik je kde heren?</li>
+            <li>V kterem okrese maji nejvetsi pocet nelegalne povolenych matu?</li>
+            <li>Mate predstavu jaka je situace ve vasi obci?</li>
+        </ul>
+        <p>Kliknete do mapy na vas kraj a vse se dozvite (pokud by jste se
+        v nasi aplikaci ztraceli, zde je <a href="">navod</a>)</p>
+        <p>Bacha! mel by tu byt i staticky link do nejakeho kraje, at se toho
+        chytnou roboti a proindexuji to...</p>
+        <h4>Zdrojova data</h4>
+        <p>
+            Strucne z ceho vychazime (Google docs tabulka od Mirzy a MF,
+            koupena data pres Mateje, Google Geocode, FreeGeodataCZ - Klokan
+            Petr Pridal). Prolink na stranku s exportem a podrobnym popisem
+            zdroju.
+        </p>
+    </div>
+
+    <div class="clear"></div>
+{% endblock %}
+
+{# vim: set et si ts=4 sw=4 syn=django: #}

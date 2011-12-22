@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from django.db import models
+import itertools
+
+from django.db import models, connections
 from django.contrib.gis.db import models as geomodels
 from django.contrib.gis.gdal import CoordTransform, SpatialReference
+from django.db.models.loading import get_model
 
 from hazard.territories.models import Region, District, Town
 from hazard.addresses.models import Address
@@ -122,7 +125,7 @@ class BuildingConflict(AbstractConflict):
                 )
 
     @staticmethod
-    def statistics(town):
+    def old_statistics(town):
         """
         Vrati zakladni statisticke udaje o hernach v danem meste.
         """
@@ -165,6 +168,97 @@ class BuildingConflict(AbstractConflict):
         if town.population:
             out['persons_per_hell'] = town.population / out['hells_total']
             out['persons_per_machines'] = town.population / out['machines_total']
+
+        return out
+
+    @staticmethod
+    def statistics(obj, group_by='town'):
+        """
+        Vypocita statisticke udaje o hernach v zadanem meste/okrese/kraji.
+        Vysledky seskupi do slovniku podle parametru group_by
+        (opet mesto/okres/kraj).
+
+        Priklad:
+            # statistika pro jedine mesto
+            BuildingConflict.statistics(Town.objects.get(slug='vsetin'), 'town')
+
+            # statistika pro okres, vysledky seskupene podle mest
+            BuildingConflict.statistics(District.objects.get(slug='okres-vsetin'), 'town')
+        """
+        # zajimaji nas pouze herny ze setu MF
+        campaigns = Campaign.objects.filter(app='mf')
+
+        # vytahneme si herny
+        hells_kwargs = {
+            'campaigns__in': campaigns
+        }
+        if obj:
+            hells_kwargs[obj.__class__.__name__.lower()] = obj
+        flat_hells_qs = Hell.objects.filter(**hells_kwargs)
+
+        # celkove mnozstvi heren, seskupenych dle group_by
+        # => hell_counts = {ID: pocet}
+        hell_counts_qs = flat_hells_qs.values_list(group_by, 'id').order_by(group_by)
+        hell_counts = dict([(k, len(list(g))) \
+                            for k, g in itertools.groupby(hell_counts_qs, lambda a: a[0])])
+
+        # celkove mnozstvi automatu v hernach, seskupenych dle group_by
+        # => machine_counts = {ID: pocet}
+        machine_counts_qs = flat_hells_qs.values_list(group_by, 'total').order_by(group_by)
+        machine_counts = dict([(k, sum([i[1] for i in g])) \
+                                for k, g in itertools.groupby(machine_counts_qs, lambda a: a[0])])
+
+        # pocet konfliktnich heren, seskupenych dle group_by
+        # => conflict_hell_counts = {ID: pocet}
+        flat_conflicts_qs = BuildingConflict.objects.filter(hell__id__in=flat_hells_qs.values_list('id', flat=True))
+        flat_conflict_hell_qs = flat_hells_qs.filter(id__in=set(flat_conflicts_qs.values_list('hell', flat=True)))
+        conflict_hell_counts_qs = flat_conflict_hell_qs.values_list(group_by, 'id').order_by(group_by)
+        conflict_hell_counts = dict([(k, len(list(g))) \
+                                     for k, g in itertools.groupby(conflict_hell_counts_qs, lambda a: a[0])])
+
+        # pocet konfliktnich automatu, seskupenych dle group_by
+        # => conflict_machine_counts = {ID: pocet}
+        conflict_machine_counts_qs = flat_conflict_hell_qs.values_list(group_by, 'total').order_by(group_by)
+        conflict_machine_counts = dict([(k, sum([i[1] for i in g])) \
+                                        for k, g in itertools.groupby(conflict_machine_counts_qs, lambda a: a[0])])
+
+        # pocty nekonfliktnich heren/automatu
+        nonconflict_hell_counts = dict([(k, hell_counts[k] - conflict_hell_counts[k]) for k in conflict_hell_counts])
+        nonconflict_machine_counts = dict([(k, machine_counts[k] - conflict_machine_counts[k]) for k in conflict_machine_counts])
+
+        # procentualni vyjadreni poctu heren/automatu
+        conflict_hell_perc = dict([(k, 100 * conflict_hell_counts[k] / float(hell_counts[k])) for k in conflict_hell_counts])
+        conflict_machine_perc = dict([(k, 100 * conflict_machine_counts[k] / float(machine_counts[k])) for k in conflict_machine_counts])
+        nonconflict_hell_perc = dict([(k, 100 - conflict_hell_perc[k]) for k in conflict_hell_perc])
+        nonconflict_machine_perc = dict([(k, 100 - conflict_machine_perc[k]) for k in conflict_machine_perc])
+
+        out = {
+            # absolutni celkove pocty
+            'hell_counts': hell_counts,
+            'machine_counts': machine_counts,
+            # absolutni pocty konfliktu
+            'conflict_hell_counts': conflict_hell_counts,
+            'conflict_machine_counts': conflict_machine_counts,
+            # absolutni pocty ne-konfliktu
+            'nonconflict_hell_counts': nonconflict_hell_counts,
+            'nonconflict_machine_counts': nonconflict_machine_counts,
+            # procentualni pocty konfliktu
+            'conflict_hell_perc': conflict_hell_perc,
+            'conflict_machine_perc': conflict_machine_perc,
+            # procentualni pocty ne-konfliktu
+            'nonconflict_hell_perc': nonconflict_hell_perc,
+            'nonconflict_machine_perc': nonconflict_machine_perc,
+        }
+
+        model = get_model('territories', group_by)
+        data = dict([(i['id'], i) for i in model.objects.all().values('id', 'surface', 'population')])
+        # hustota heren/matu
+        out['hell_density'] = dict([(k, out['hell_counts'][k] / data[k]['surface']) for k in data if data[k]['surface']])
+        out['machine_density'] = dict([(k, out['machine_counts'][k] / data[k]['surface']) for k in data if data[k]['surface']])
+
+        # lidi na hernu/mat
+        out['hell_per_resident'] = dict([(k, data[k]['population'] / out['hell_counts'][k]) for k in data if data[k]['population']])
+        out['machine_per_resident'] = dict([(k, data[k]['population'] / out['machine_counts'][k]) for k in data if data[k]['population']])
 
         return out
 

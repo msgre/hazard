@@ -33,3 +33,7 @@ class Campaign(models.Model):
 
     def get_title(self):
         return self.short_title or self.title
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('campaign-detail', [], {'campaign': self.slug})

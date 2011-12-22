@@ -1,0 +1,55 @@
+{% load shared mf %}
+
+<div class="wrapper">
+    <table class="statistics {{ type }}">
+        <thead>
+            <tr>
+                <th>
+                    {{ object_title }}
+                </th>
+                <th class="counts">
+                    Celkem {{ type_title }}
+                </th>
+                <th class="conflict_counts">
+                    Počet konfliktních {{ type_title }}
+                </th>
+                <th class="conflict_perc">
+                    Poměr konfliktních/nekonfliktích {{ type_title }}
+                </th>
+                <th class="density">
+                    Hustota na km2
+                </th>
+                <th class="per_resident">
+                    Počet obyvatel na jednu {{ type_title }}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for id, object in objects.items %}
+                <tr class="{{ object.slug }} {% if object.id == actual_object.id %}active{% endif %}">
+                    {% mf_table_url object as url %}
+                    <td>
+                        <a href="{{ url }}">{{ object.title|space2nbsp }}</a>
+                    </td>
+                    <td class="counts">
+                        {{ counts|key:object.id|default:"" }}
+                    </td>
+                    <td class="conflict_counts">
+                        {{ conflict_counts|key:object.id|default:"" }}
+                    </td>
+                    <td class="conflict_perc">
+                        {% if conflict_perc|key:object.id %}
+                            {{ conflict_perc|key:object.id|floatformat:1 }}%
+                        {% endif %}
+                    </td>
+                    <td class="density">
+                        {{ density|key:object.id|floatformat:3 }}
+                    </td>
+                    <td class="per_resident">
+                        {{ per_resident|key:object.id|floatformat:0 }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

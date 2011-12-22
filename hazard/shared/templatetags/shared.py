@@ -9,6 +9,8 @@ from django.utils import simplejson
 from django.utils.safestring import mark_safe
 from django.conf import settings
 
+import ttag
+
 register = template.Library()
 
 FLOAT_AS_STRING_RE = re.compile(r'"(\d+(\.\d+))"')
@@ -86,3 +88,44 @@ def show_kml_list():
         out.append((name.group(1), filename))
 
     return {'items': sorted(out, cmp=lambda a, b: dumb_czech_cmp(a, b)), 'MEDIA_URL': settings.MEDIA_URL}
+
+
+@register.filter
+def key(dictionary, key):
+    return dictionary.get(key, None)
+
+@register.filter
+def space2nbsp(value):
+    return mark_safe(value.replace(u' ', u'&nbsp;'))
+
+
+class Variable(ttag.helpers.AsTag):
+    """
+    Vlozi vyraz do kontextu sablony pod zadanym nazvem.
+
+    Priklad:
+        {% variable product_variants|numkey:form.variant_id.value as product_variant %}
+
+        V kontextu se objevi promenna {{ product_variant }} jejiz obsah bude
+        roven {{ product_variants|numkey:form.variant_id.value }}
+    """
+    expression = ttag.Arg()
+
+    def output(self, data):
+        return data['expression']
+
+register.tag(Variable)
+
+
+@register.filter
+def grammar(count, variants):
+    """
+    TODO:
+    """
+    variants = [[y.strip() for y in i.strip().split('=')] for i in variants.split(',')]
+    variants = dict([(i[0] == '?' and i[0] or int(i[0]), i[1]) for i in variants])
+    for k in sorted(variants.keys()):
+        if k == '?':
+            return variants[k]
+        elif count <= k:
+            return variants[k]

@@ -10,6 +10,9 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^$', TemplateView.as_view(template_name='homepage.html')),
+    url(r'^kampane/$', RedirectView.as_view(url='/kampan/')),
+    url(r'^kampan/', include('hazard.campaigns.urls')),
     url(r'^', include('hazard.territories.urls')),
 )
 

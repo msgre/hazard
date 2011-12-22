@@ -33,7 +33,7 @@ class ImporterBase(object):
         except:
             self.data = None
 
-    def load_csv_source(self, recipe, delimiter=',', quotechar='"', infinite_last=False):
+    def load_csv_source(self, recipe, delimiter=',', quotechar='"', infinite_last=False, ignore_first_lines=0):
         """
         Nacte zadany CSV soubor a kazdy radek v nem prevede na slovnik (nazvy
         klicu/sloupecku jsou definovany v `recipe`). Pokud se posledni sloupecek
@@ -44,7 +44,9 @@ class ImporterBase(object):
         """
         out = []
         rows = csv.reader(open(self.source, 'rb'), delimiter=delimiter, quotechar=quotechar)
-        for row in rows:
+        for line_no, row in enumerate(rows):
+            if line_no < ignore_first_lines:
+                continue
             row = [i.strip() for i in row]
             if len([i for i in row if i]) == 0:
                 continue

@@ -19,8 +19,12 @@ class Region(geomodels.Model):
     """
     title       = models.CharField(u"Název", max_length=200)
     slug        = models.SlugField(u"Webové jméno", max_length=100, unique=True)
+    lokativ     = models.CharField(u"Lokativ", max_length=200, blank=True, null=True, help_text=u"6.pád, 'O kom, o čem', včetně vyskloňovaného slova 'kraj'.")
     description = models.TextField(u"Popis", blank=True)
     shape       = geomodels.PolygonField(u"Tvar", null=True, blank=True)
+    # doplnujici informace o kraji
+    surface     = models.FloatField(u"Katastrální výměra", null=True, blank=True, help_text="V km<sup>2</sup>")
+    population  = models.IntegerField(u"Počet obyvatel", null=True, blank=True)
     objects     = geomodels.GeoManager()
 
     class Meta:
@@ -33,8 +37,10 @@ class Region(geomodels.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        out = ('region', [], {'region': self.slug})
-        return out
+        return ('region', [], {'region': self.slug})
+
+    def get_lokativ(self):
+        return self.lokativ or self.title
 
 
 class District(geomodels.Model):
@@ -48,6 +54,9 @@ class District(geomodels.Model):
     description = models.TextField(u"Popis", blank=True)
     region      = models.ForeignKey(Region, verbose_name=u"Kraj")
     shape       = geomodels.PolygonField(u"Tvar", null=True, blank=True)
+    # doplnujici informace o kraji
+    surface     = models.FloatField(u"Katastrální výměra", null=True, blank=True, help_text="V km<sup>2</sup>")
+    population  = models.IntegerField(u"Počet obyvatel", null=True, blank=True)
     objects     = geomodels.GeoManager()
 
     class Meta:

@@ -12,10 +12,10 @@
 {% block submenu %}
     {% if town %}
         <div class="box" style="margin-bottom:0;position:relative;top:-13px;padding:10px;text-decoration:none;color:#E5ECF9;background:#06c;">
-            {% url mf-town region=region.slug district=district.slug town=town.slug type="mf" as town_url %}
-            {% url mf-town-map region=region.slug district=district.slug town=town.slug type="mf" as town_map_url %}
-            {% url mf-town-hells-list region=region.slug district=district.slug town=town.slug type="mf" as hells_list_url %}
-            {% url mf-town-buildings-list region=region.slug district=district.slug town=town.slug type="mf" as buildings_list_url %}
+            {% url mf-town region=region.slug district=district.slug town=town.slug campaign="mf" as town_url %}
+            {% url mf-town-map region=region.slug district=district.slug town=town.slug campaign="mf" as town_map_url %}
+            {% url mf-town-hells-list region=region.slug district=district.slug town=town.slug campaign="mf" as hells_list_url %}
+            {% url mf-town-buildings-list region=region.slug district=district.slug town=town.slug campaign="mf" as buildings_list_url %}
             <a style="color:#E5ECF9;text-decoration:none;padding-right:1em;" href="{{ town_url }}">Základní přehled</a>
             <a style="color:#E5ECF9;text-decoration:none;padding-right:1em;" href="{{ town_map_url }}">Podrobná mapa</a>
             <a style="color:#E5ECF9;text-decoration:none;padding-right:1em;" href="{{ hells_list_url }}">Seznam heren</a>
@@ -33,28 +33,24 @@
 
         {# mapa #}
         <div class="span-14 last">
+            <p>
+                Zobrazit
+                <select id="type-switcher">
+                    <option title="heren" value="hells">herny</option>
+                    <option title="automatů" value="machines">automaty</option>
+                </select>
+                &mdash;
+                <select id="table-switcher">
+                    <option title="celkového počtu" value="counts">jejich celkový počet</option>
+                    <option title="počtu nezákonně povolených" value="conflict_counts">počet nezákonně povolených</option>
+                    <option title="poměru nezákonně/zákonně povolených" value="conflict_perc">poměr nezákonně/zákonně povolených</option>
+                </select>
+            </p>
             {% block map %}
                 <div id="map"></div>
             {% endblock %}
-            <p class="todo">mapa by se mohla zasekavat na hornim okraji prohlizece, pokud by se odrolovalo moc dolu</p>
         </div>
     {% endblock %}
-
-    {% comment %}
-    <div class="span-4 last">
-        {% block local_menu %}
-            {% url mf-town region=region.slug district=district.slug town=town.slug type="mf" as town_url %}
-            {% url mf-town-hells-list region=region.slug district=district.slug town=town.slug type="mf" as hells_list_url %}
-            {% url mf-town-buildings-list region=region.slug district=district.slug town=town.slug type="mf" as buildings_list_url %}
-            <h3>Menu</h3>
-            <ul class="local-menu">
-                <li><a href="{{ town_url }}">Úvod</a></li>
-                <li><a href="{{ hells_list_url }}">Herny</a></li>
-                <li><a href="{{ buildings_list_url }}">Budovy</a></li>
-            </ul>
-        {% endblock %}
-    </div>
-    {% endcomment %}
 {% endblock %}
 
 {# vim: set et si ts=4 sw=4 syn=django: #}

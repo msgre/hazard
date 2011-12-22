@@ -21,3 +21,58 @@ ul.local-menu li {
 ul.local-menu li a {
     display:block;
 }
+
+/* styly pro tabulky s "teplomerem" */
+table.statistics .counts,
+table.statistics .conflict_counts,
+table.statistics .conflict_perc,
+table.statistics .density,
+table.statistics .per_resident {
+    text-align:right;
+}
+table.statistics td {
+    background: #E5ECF9 url(../img/white_bg_line.png) no-repeat 1000px 0;
+    cursor: pointer;
+}
+table.statistics tr.hover td {
+    background-color: #ccc;
+}
+table.statistics tr.active td {
+    background-color: #E5ECF9;
+}
+table.statistics tr.hover td *,
+table.statistics tr.active td * {
+    /*color:#333;*/
+    text-decoration:none;
+}
+table.statistics tr.active td {
+    border-top: 1px dotted #0066CC;
+    border-bottom: 1px dotted #0066CC;
+}
+div.wrapper {
+    height:200px;
+    overflow:auto;
+}
+
+/* uvodni text */
+#primer h2 {
+    font-size:140%;
+    line-height:110%;
+}
+#primer h2 a {
+    color:#000;
+    text-decoration:none;
+    border-bottom:1px dotted #000;
+}
+#primer h2 a:hover {
+    color:#09f;
+    border-bottom-color:#09f;
+}
+
+.hotspot {color:#900; padding-bottom:1px; border-bottom:1px dotted #900; cursor:pointer}
+
+#tt {position:absolute; display:block; background:url(images/tt_left.gif) top left no-repeat}
+#tttop {display:block; height:5px; margin-left:5px; background:url(images/tt_top.gif) top right no-repeat; overflow:hidden}
+#ttcont {display:block; padding:2px 12px 3px 7px; margin-left:5px; background:#666; color:#FFF}
+#ttbot {display:block; height:5px; margin-left:5px; background:url(images/tt_bottom.gif) top right no-repeat; overflow:hidden}
+

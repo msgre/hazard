@@ -1,5 +1,7 @@
 {% extends "bone.html" %}
 
+{% load territories %}
+
 {% block js %}
     {{ block.super }}
     <script type="text/javascript" src="{{ STATIC_URL }}js/territories.js"></script>
@@ -17,11 +19,16 @@
     {% block main_header %}{% endblock %}
 
     {# zalozky kampani #}
-    <p>
-        {% for campaign in campaigns %}
-            <a class="box" style="padding:10px;text-decoration:none;{% if forloop.first %}color:#E5ECF9;background:#06c;{% endif %}" href="{{ campaign.slug }}">{{ campaign.title }}</a>
-        {% endfor %}
-    </p>
+    {% block campaign_menu %}
+        <p id="campaign-menu">
+            {% territory_base_url as base_url %}
+            {% for campaign_item in campaigns %}
+                <a {% if campaign_item.slug == campaign %}class="active" {% endif %}href="{{ base_url }}kampan/{{ campaign_item.slug }}/" class="box">
+                    {{ campaign_item.title }}
+                </a>
+            {% endfor %}
+        </p>
+    {% endblock %}
     {% block submenu %}{% endblock %}
     <hr />
 

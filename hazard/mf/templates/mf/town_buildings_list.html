@@ -10,7 +10,7 @@
         </tr>
         {% for building in object_list %}
             <tr>
-                <td><a href="{% url mf-town-building-detail region=region.slug district=district.slug town=town.slug type="mf" id=building.id %}">{{ building.title }}</a></td>
+                <td><a href="{% url mf-town-building-detail region=region.slug district=district.slug town=town.slug campaign="mf" id=building.id %}">{{ building.title }}</a></td>
                 <td>{{ building.address }}</td>
                 <td>{{ building.updated|date }}</td>
             </tr>

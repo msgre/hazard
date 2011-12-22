@@ -5,12 +5,24 @@ from django.views.generic import DetailView, ListView
 from django.http import Http404, HttpResponseRedirect
 
 from hazard.territories.models import Region, District, Town
-from hazard.addresses.models import Address
-from hazard.gobjects.models import Hell
 from hazard.campaigns.models import Campaign
+from hazard.territories.settings import REDIRECT_TO_DEFAULT_CAMPAIGN
 
 
-class RegionListView(ListView):
+class TerritoriesBaseView(object):
+    """
+    Spolecna trida pro territories view, zajistuje presmerovani na kampane.
+    """
+
+    def get(self, request, *args, **kwargs):
+        if not 'campaign' in kwargs and REDIRECT_TO_DEFAULT_CAMPAIGN:
+            campaign = Campaign.objects.get(default=True)
+            return HttpResponseRedirect("%skampan/%s/" % (request.path, campaign.slug))
+        else:
+            return super(TerritoriesBaseView, self).get(request, *args, **kwargs)
+
+
+class RegionListView(TerritoriesBaseView, ListView):
     """
     Vypis kraju.
     """
@@ -19,10 +31,10 @@ class RegionListView(ListView):
     allow_empty = True
 
     def get_queryset(self):
-        return Region.objects.all()
+        return Region.objects.select_related().all()
 
 
-class DistrictListView(ListView):
+class DistrictListView(TerritoriesBaseView, ListView):
     """
     Vypis okresu.
     """
@@ -31,17 +43,16 @@ class DistrictListView(ListView):
     allow_empty = True
 
     def get_queryset(self):
-        return District.objects.filter(region__slug=self.kwargs['region'])
+        return District.objects.select_related().filter(region__slug=self.kwargs['region'])
 
     def get_context_data(self, **kwargs):
         kwargs.update({
-            'region': Region.objects.get(slug=self.kwargs['region']),
-            'regions': Region.objects.all()
+            'region': Region.objects.select_related().get(slug=self.kwargs['region'])
         })
         return super(DistrictListView, self).get_context_data(**kwargs)
 
 
-class TownListView(ListView):
+class TownListView(TerritoriesBaseView, ListView):
     """
     Vypis mest.
     """
@@ -50,12 +61,12 @@ class TownListView(ListView):
     allow_empty = True
 
     def get_queryset(self):
-        return Town.objects.filter(region__slug=self.kwargs['region'], district__slug=self.kwargs['district'])
+        return Town.objects.select_related().filter(region__slug=self.kwargs['region'], district__slug=self.kwargs['district'])
 
     def get_context_data(self, **kwargs):
         kwargs.update({
-            'region': Region.objects.get(slug=self.kwargs['region']),
-            'district': District.objects.get(slug=self.kwargs['district'])
+            'region': Region.objects.select_related().get(slug=self.kwargs['region']),
+            'district': District.objects.select_related().get(slug=self.kwargs['district']),
         })
         return super(TownListView, self).get_context_data(**kwargs)
 
@@ -69,10 +80,9 @@ class TownDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         kwargs.update({
-            'region': Region.objects.get(slug=self.kwargs['region']),
-            'district': District.objects.get(slug=self.kwargs['district']),
-            'addresses': Address.objects.filter(town=self.object),
-            'hells': Hell.objects.filter(address__town=self.object),
+            'region': Region.objects.select_related().get(slug=self.kwargs['region']),
+            'district': District.objects.select_related().get(slug=self.kwargs['district'])
+            # town je generovan s pomoci DetailView
         })
         return super(TownDetailView, self).get_context_data(**kwargs)
 
@@ -85,7 +95,3 @@ class TownDetailView(DetailView):
             )
         except Town.DoesNotExist:
             raise Http404
-
-    # def get(self, request, *args, **kwargs):
-    #     campaign = Campaign.objects.get(default=True)
-    #     return HttpResponseRedirect("%s%s/" % (request.path, campaign.slug))

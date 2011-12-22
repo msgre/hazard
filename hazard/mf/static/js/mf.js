@@ -1,45 +1,348 @@
 (function() {
-  "TODO:";  var HELL_MARKERS, HOVERED_HELL, ICONS, MAP, MAP_STYLE, MARKER_LUT, OPENED_INFOWINDOW, clear_surround, draw_hells, draw_shapes, handle_perex, init_map, show_surround;
+  "TODO:";  var HELL_MARKERS, HOVERED_HELL, ICONS, MAP, MAP_STYLE, MARKER_LUT, OPENED_INFOWINDOW, POLYS, POLYS_COLORS, VIEW, clear_surround, convert_to_hex, convert_to_rgb, draw_hells, draw_shapes, handle_primer, handle_switcher, handle_table, hex, init_map, interpolate_color, number_to_graph, perex_addon, show_surround, trim, update_shapes;
+  var __indexOf = Array.prototype.indexOf || function(item) {
+    for (var i = 0, l = this.length; i < l; i++) {
+      if (this[i] === item) return i;
+    }
+    return -1;
+  };
   $(document).ready(function() {
+    handle_table();
+    handle_primer();
+    handle_switcher();
     init_map();
-    draw_shapes();
-    return handle_perex();
+    return draw_shapes();
   });
+  VIEW = 'hells';
+  /*
+  Zkrati seznam podrazenych geografickych oblasti v uvodnim textu.
+  */
+  handle_primer = function() {
+    var $sobjects, $span;
+    $sobjects = $('#primer .sub-objects');
+    $span = $sobjects.find('span');
+    $span.hide();
+    $span.before('<a class="more" href="#"><i>další…</i></a>');
+    return $sobjects.find('a.more').click(function() {
+      $(this).next('span').show();
+      $(this).remove();
+      return false;
+    });
+  };
+  perex_addon = function() {
+    var $perex, actual_value, geo, i, order, text, type, values, view;
+    view = $('#table-switcher option:selected').attr('title');
+    type = $('#type-switcher option:selected').attr('title');
+    geo = $("#primer ." + VIEW + " span.title").text();
+    values = $("table.statistics." + VIEW + " td." + ($('#table-switcher').val()));
+    values = _.sortBy((function() {
+      var _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = values.length; _i < _len; _i++) {
+        i = values[_i];
+        _results.push($.trim($(i).text()));
+      }
+      return _results;
+    })(), function(num) {
+      if (num) {
+        return parseFloat(num.replace('%', '').replace(',', '.'));
+      } else {
+        return 0;
+      }
+    });
+    values.reverse();
+    actual_value = $.trim($("table.statistics." + VIEW + " tr." + window.actual + " td." + ($('#table-switcher').val())).text());
+    actual_value = actual_value;
+    order = _.indexOf(values, actual_value);
+    if (order === 0) {
+      text = "Z pohledu <b>" + view + " " + type + "</b> je stav v " + geo + " <b>nejhorší</b> v republice.";
+    } else {
+      text = "Z pohledu <b>" + view + " " + type + "</b> je stav v " + geo + " <b>" + (order + 1) + ". nejhorší</b> v republice.";
+    }
+    $perex = $("#primer ." + VIEW + " h2");
+    if ($perex.next('h2').length) {
+      return $perex.next('h2').html(text);
+    } else {
+      return $perex.after("<h2>" + text + "</h2>");
+    }
+  };
+  /*
+  Obsluha preklikavani pohledu herny/automaty.
+  */
+  handle_switcher = function() {
+    var $primer;
+    $primer = $('#primer');
+    $primer.children('div').last().hide();
+    $('table.machines').closest('div.outer-wrapper').hide();
+    $('#type-switcher').change(function() {
+      var old_class, old_value;
+      VIEW = $(this).val();
+      old_value = _.reject($(this).find('option'), function(i) {
+        return $(i).attr('value') === VIEW;
+      });
+      old_class = $(old_value).attr('value');
+      $("div.outer-wrapper." + VIEW + ", #primer div." + VIEW).show();
+      $("div.outer-wrapper." + old_class + ", #primer div." + old_class).hide();
+      return $('#table-switcher').change();
+    });
+    return $('#type-switcher').change();
+  };
+  /*
+  Zjednodusi tabulku na strance -- zobrazi vzdy jen jeden vybrany sloupec
+  a data v nem interpretuje jako barevny prouzek na pozadi radku.
+  */
+  handle_table = function() {
+    $('table.statistics tr').hover(function() {
+      var key;
+      key = $.trim($(this).attr('class').replace('active', ''));
+      google.maps.event.trigger(POLYS[key], 'mouseover');
+      return $(this).addClass('hover');
+    }, function() {
+      var key;
+      $(this).removeClass('hover');
+      key = $.trim($(this).attr('class').replace('active', ''));
+      return google.maps.event.trigger(POLYS[key], 'mouseout');
+    });
+    $('table.statistics td').click(function() {
+      var href;
+      href = $(this).closest('tr').find('a').attr('href');
+      window.location = href;
+      return false;
+    });
+    $('table.statistics thead').remove();
+    $('#table-switcher').change(function() {
+      var switcher_value, type_value;
+      switcher_value = $(this).val();
+      type_value = $('#type-switcher').val();
+      $("table.statistics").each(function() {
+        var $table, percents, values;
+        values = [];
+        percents = false;
+        $table = $(this);
+        $table.find('td').each(function() {
+          var $td, value;
+          $td = $(this);
+          if ($td.attr('class') && !$td.hasClass(switcher_value)) {
+            return $td.hide();
+          } else {
+            if ($td.attr('class')) {
+              value = $.trim($td.text());
+              percents = __indexOf.call(value, '%') >= 0;
+              value = value.replace('%', '').replace(',', '.');
+              if (value.length) {
+                values.push(parseFloat(value));
+              } else {
+                values.push(0);
+              }
+            }
+            return $td.show();
+          }
+        });
+        if (!$table.data(switcher_value)) {
+          $table.data(switcher_value, {
+            'min': _.min(values),
+            'max': percents ? 100.0 : _.max(values)
+          });
+        }
+        return number_to_graph($table, values, percents, switcher_value);
+      });
+      update_shapes();
+      return perex_addon();
+    });
+    return $('.table-switcher').change();
+  };
+  /*
+  Interpretuje hodnotu jako barevny prouzek na pozadi radku tabulky.
+  */
+  number_to_graph = function($table, values, percents, cls) {
+    var max, td1_w, td2_w, width;
+    if (percents) {
+      max = 100.0;
+    } else {
+      max = _.max(values) * 1.2;
+    }
+    width = $table.width();
+    td1_w = $table.find('td:first').width();
+    td2_w = width - td1_w;
+    return $table.find('tr').each(function(idx, el) {
+      var $td1, $td2, $tr, w, x1, x2;
+      $tr = $(this);
+      $td1 = $tr.find('td:first');
+      $td2 = $tr.find("." + cls);
+      w = Math.round(values[idx] / max * width);
+      if (w > td1_w) {
+        x1 = 1000;
+        x2 = w - td1_w;
+      } else {
+        x1 = w;
+        x2 = 0;
+      }
+      $td1.css('background-position', "" + x1 + "px 0");
+      return $td2.css('background-position', "" + x2 + "px 0");
+    });
+  };
+  POLYS = {};
+  POLYS_COLORS = {};
+  /*
+  TODO:
+  */
   draw_shapes = function() {
-    return _.each(window.shapes, function(shape, key) {
-      var i, polys, sh;
+    var $select, $table, actual_max_lat, actual_max_lon, actual_min_lat, actual_min_lon, col, delta, extrems, max_lat, max_lats, max_lon, max_lons, min_lat, min_lats, min_lon, min_lons, _ref, _ref2;
+    $table = $("table.statistics." + VIEW);
+    $select = $('#table-switcher');
+    col = $select.val();
+    extrems = $table.data(col);
+    delta = extrems.max - extrems.min;
+    _ref = [[], [], [], []], min_lats = _ref[0], max_lats = _ref[1], min_lons = _ref[2], max_lons = _ref[3];
+    _ref2 = [null, null, null, null], actual_min_lat = _ref2[0], actual_max_lat = _ref2[1], actual_min_lon = _ref2[2], actual_max_lon = _ref2[3];
+    _.each(window.shapes, function(shape, key) {
+      var color, i, item, max_lat, max_lon, min_lat, min_lon, polys, value, _i, _j, _len, _len2, _polys, _ref;
       if (!shape) {
         return true;
       }
-      polys = (function() {
-        var _i, _len, _results;
-        _results = [];
-        for (_i = 0, _len = shape.length; _i < _len; _i++) {
-          i = shape[_i];
-          _results.push(new google.maps.LatLng(i[0], i[1]));
+      polys = [];
+      _ref = [100000000, 0, 100000000, 0], min_lat = _ref[0], max_lat = _ref[1], min_lon = _ref[2], max_lon = _ref[3];
+      for (_i = 0, _len = shape.length; _i < _len; _i++) {
+        item = shape[_i];
+        _polys = [];
+        for (_j = 0, _len2 = item.length; _j < _len2; _j++) {
+          i = item[_j];
+          min_lat = i[0] < min_lat ? i[0] : min_lat;
+          max_lat = i[0] > max_lat ? i[0] : max_lat;
+          min_lon = i[1] < min_lon ? i[1] : min_lon;
+          max_lon = i[1] > max_lon ? i[1] : max_lon;
+          _polys.push(new google.maps.LatLng(i[0], i[1]));
         }
-        return _results;
-      })();
-      if (key === window.region) {
-        sh = new google.maps.Polygon({
-          paths: polys,
-          strokeColor: "#FFFF00",
-          strokeOpacity: 1,
-          strokeWeight: 3,
-          fillColor: "#000000",
-          fillOpacity: 1
-        });
-      } else {
-        sh = new google.maps.Polygon({
-          paths: polys,
-          strokeColor: "#dddddd",
-          strokeOpacity: 1,
-          strokeWeight: 0,
-          fillColor: "#666666",
-          fillOpacity: 1
+        polys.push(_polys);
+      }
+      min_lats.push(min_lat);
+      max_lats.push(max_lat);
+      min_lons.push(min_lon);
+      max_lons.push(max_lon);
+      if (key === window.actual) {
+        actual_min_lat = min_lat;
+        actual_max_lat = max_lat;
+        actual_min_lon = min_lon;
+        actual_max_lon = max_lon;
+      }
+      value = $.trim($table.find("tr." + key + " td." + col).text());
+      value = value.replace('%', '').replace(',', '.');
+      value = (value - extrems.min) / delta;
+      color = interpolate_color('#FFD700', '#EE0000', value);
+      POLYS[key] = new google.maps.Polygon({
+        paths: polys,
+        strokeColor: color,
+        strokeOpacity: 1,
+        strokeWeight: 1,
+        fillColor: color,
+        fillOpacity: 1,
+        zIndex: 10
+      });
+      POLYS_COLORS[key] = color;
+      if (key === window.actual) {
+        POLYS[key].setOptions({
+          zIndex: 20,
+          strokeColor: "#333333",
+          strokeWeight: 3
         });
       }
-      return sh.setMap(MAP);
+      google.maps.event.addListener(POLYS[key], 'mouseover', function() {
+        var $tr, hovno, i, texts, titles;
+        POLYS[key].setOptions({
+          fillColor: '#333333',
+          strokeColor: '#333333',
+          zIndex: 15
+        });
+        $tr = $table.find("tr." + key);
+        $tr.addClass('hover');
+        titles = (function() {
+          var _i, _len, _ref, _results;
+          _ref = $select.find('option');
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            i = _ref[_i];
+            _results.push($(i).text());
+          }
+          return _results;
+        })();
+        texts = (function() {
+          var _i, _len, _ref, _results;
+          _ref = $tr.find('td');
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            i = _ref[_i];
+            _results.push($.trim($(i).text()));
+          }
+          return _results;
+        })();
+        hovno = _.zip(titles, _.last(texts, 3));
+        return hovno = (function() {
+          var _i, _len, _results;
+          _results = [];
+          for (_i = 0, _len = hovno.length; _i < _len; _i++) {
+            i = hovno[_i];
+            _results.push("" + i[0] + ": " + i[1]);
+          }
+          return _results;
+        })();
+      });
+      google.maps.event.addListener(POLYS[key], 'mouseout', function() {
+        POLYS[key].setOptions({
+          fillColor: POLYS_COLORS[key],
+          strokeColor: key === window.actual ? '#333333' : POLYS_COLORS[key],
+          zIndex: key === window.actual ? 20 : 10
+        });
+        return $table.find("tr." + key).removeClass('hover');
+      });
+      google.maps.event.addListener(POLYS[key], 'click', function() {
+        return $table.find("tr." + key + " a").click();
+      });
+      return POLYS[key].setMap(MAP);
+    });
+    min_lat = _.min(min_lats);
+    max_lat = _.max(max_lats);
+    min_lon = _.min(min_lons);
+    max_lon = _.max(max_lons);
+    min_lat = actual_min_lat;
+    max_lat = actual_max_lat;
+    min_lon = actual_min_lon;
+    max_lon = actual_max_lon;
+    google.maps.event.addListenerOnce(MAP, 'zoom_changed', function() {
+      return MAP.setZoom(MAP.getZoom() - 1);
+    });
+    return MAP.fitBounds(new google.maps.LatLngBounds(new google.maps.LatLng(min_lat, min_lon), new google.maps.LatLng(max_lat, max_lon)));
+  };
+  /*
+  TODO:
+  */
+  update_shapes = function() {
+    var $select, $table, col, delta, extrems;
+    $table = $("table.statistics." + VIEW);
+    $select = $('#table-switcher');
+    col = $select.val();
+    extrems = $table.data(col);
+    delta = extrems.max - extrems.min;
+    return _.each(window.shapes, function(shape, key) {
+      var color, value;
+      if (!POLYS[key]) {
+        return true;
+      }
+      value = $.trim($table.find("tr." + key + " td." + col).text());
+      value = value.replace('%', '').replace(',', '.');
+      value = (value - extrems.min) / delta;
+      color = interpolate_color('#FFD700', '#EE0000', value);
+      POLYS_COLORS[key] = color;
+      POLYS[key].setOptions({
+        fillColor: color,
+        strokeColor: color
+      });
+      if (key === window.actual) {
+        return POLYS[key].setOptions({
+          zIndex: 20,
+          strokeColor: "#333333",
+          strokeWeight: 3
+        });
+      }
     });
   };
   MAP = void 0;
@@ -121,6 +424,16 @@
           visibility: "off"
         }
       ]
+    }, {
+      featureType: "administrative.country",
+      elementType: "geometry",
+      stylers: [
+        {
+          visibility: "on"
+        }, {
+          lightness: 58
+        }
+      ]
     }
   ];
   show_surround = function(hell) {
@@ -140,10 +453,10 @@
     ];
     poly = new google.maps.Polygon({
       paths: coords,
-      strokeColor: "#FF0000",
+      strokeColor: "#EE0000",
       strokeOpacity: 0,
       strokeWeight: 0,
-      fillColor: "#FF0000",
+      fillColor: "#EE0000",
       fillOpacity: 0.35
     });
     poly.setMap(MAP);
@@ -271,7 +584,7 @@
     if ($('#map').hasClass('detail-map')) {
       map_options = {
         zoom: 14,
-        center: new google.maps.LatLng(49.340, 17.993),
+        center: new google.maps.LatLng(49.38512, 14.61765),
         mapTypeControl: false,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         streetViewControl: false
@@ -292,23 +605,33 @@
       return MAP.mapTypes.set('CB', styledMapType);
     }
   };
-  handle_perex = function() {
-    var $table;
-    $('#percentual-perex').hide();
-    $('#perex a').click(function() {
-      var parent;
-      parent = $(this).closest('div.block');
-      console.log(parent);
-      parent.hide();
-      parent.siblings().show();
-      return false;
-    });
-    $table = $('#table-data');
-    $table.hide();
-    $table.before('<p><a href="#">Tabulková data</a></p>');
-    return $table.prev('p').find('a').click(function() {
-      $table.toggle();
-      return false;
-    });
+  hex = function(v) {
+    var out;
+    out = v.toString(16);
+    if (out.length === 1) {
+      out = '0' + out;
+    }
+    return out;
+  };
+  convert_to_hex = function(rgb) {
+    return '#' + hex(rgb[0]) + hex(rgb[1]) + hex(rgb[2]);
+  };
+  trim = function(s) {
+    if (s.charAt(0) === '#') {
+      return s.substring(1, 7);
+    } else {
+      return s;
+    }
+  };
+  convert_to_rgb = function(hex) {
+    var color;
+    return color = [parseInt(trim(hex).substring(0, 2), 16), parseInt(trim(hex).substring(2, 4), 16), parseInt(trim(hex).substring(4, 6), 16)];
+  };
+  interpolate_color = function(start_color, end_color, value) {
+    var c, end, start;
+    start = convert_to_rgb(start_color);
+    end = convert_to_rgb(end_color);
+    c = [Math.round((end[0] - start[0]) * value + start[0]), Math.round((end[1] - start[1]) * value + start[1]), Math.round((end[2] - start[2]) * value + start[2])];
+    return convert_to_hex(c);
   };
 }).call(this);

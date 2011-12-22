@@ -1,0 +1,45 @@
+{% extends "territories/base.html" %}
+
+{% load webdesign %}
+
+{% block campaign_menu %}{% endblock %}
+
+{% block main_header %}
+    <h1>Kampane</h1>
+{% endblock %}
+
+{% block content %}
+    <div class="span-12">
+        <h2>
+            Jde o hazard. Pohledu na nej je hodne. Pokusime se postupne
+            odhalovat nejruznejsi souvislosti v tzv. kampanich. Bla, bla...
+        </h2>
+    </div>
+    <div class="clear"> </div>
+
+    {% for campaign in campaigns %}
+        <div class="span-12{% if forloop.counter|divisibleby:2 %} last{% endif %}">
+            <h4><a href="{{ campaign.get_absolute_url }}">{{ campaign.title }}</a></h4>
+            <div class="span-4">
+                <div class="box"><br><br><br><br></div>
+            </div>
+            <div class="span-8 last">
+                <p>{% lorem 30 w %}</p>
+            </div>
+        </div>
+    {% endfor %}
+    <div class="clear"></div>
+
+    <hr>
+
+    <h3>Chystame</h3>
+    <div class="span-12 last">
+        <ul>
+            <li>mapovani obecnich vyhlasek</li>
+            <li>utraty loterijnich spolecnosti do neziskovek</li>
+        </ul>
+        <p>Mate pro nas tip na dalsi kampan? <a href="#">Sem s nim</a></p>
+    </div>
+{% endblock %}
+
+{# vim: set et si ts=4 sw=4 syn=django: #}

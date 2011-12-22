@@ -3,11 +3,13 @@
 
 """
 TODO: tohle jsou prilepky za territories url strukturu
+teritories musi udelat kontrolu, ze konkretni mesto je fakt v danem okrese a kraji
 """
 
 from django.core.paginator import Paginator, InvalidPage
 
 from hazard.gobjects.models import Hell, MachineCount
+from hazard.territories.models import Region, District
 from hazard.territories.views import TownDetailView
 from hazard.mf.models import BuildingConflict, Building
 
@@ -58,16 +60,20 @@ class MfTownDetailView(TownDetailView):
 
             'region': Region.objects.get(slug=self.kwargs['region']),
             'district': District.objects.get(slug=self.kwargs['district']),
-            'addresses': Address.objects.filter(town=self.object),
-            'hells': Hell.objects.filter(address__town=self.object),
+            #'addresses': Address.objects.filter(town=self.object),
+            #'hells': Hell.objects.filter(address__town=self.object),
             'town': self.object
 
         pass
         """
         out = super(MfTownDetailView, self).get_context_data(**kwargs)
-        statistics = BuildingConflict.statistics(self.object)
-        out.update(statistics)
-        out.update(BuildingConflict.javascript(self.object, statistics))
+        statistics = BuildingConflict.statistics(out['district'], group_by='town')
+        out.update({
+            'regions': dict([(i.id, i) for i in Region.objects.select_related().all()]),
+            'districts': dict([(i.id, i) for i in District.objects.select_related().all()]),
+            'statistics': statistics,
+            'campaign': self.kwargs['campaign']
+        })
         return out
 
 
@@ -89,6 +95,7 @@ class MfTownHellsListView(TownDetailView, MfCommon):
         statistics = BuildingConflict.statistics(self.object)
         out.update(statistics)
         out.update(self.paginator(statistics['hells_qs']))
+        out['campaign'] = self.kwargs['campaign']
         return out
 
 
@@ -106,7 +113,8 @@ class MfTownHellDetailView(TownDetailView):
         hell = Hell.objects.get(region=out['region'], district=out['district'], town=out['town'], id=self.kwargs['id'])
         out.update({
             'hell': hell,
-            'counts': MachineCount.objects.filter(hell=hell)
+            'counts': MachineCount.objects.filter(hell=hell),
+            'campaign': self.kwargs['campaign']
         })
         return out
 
@@ -122,7 +130,8 @@ class MfTownBuildingsListView(TownDetailView, MfCommon):
         statistics = BuildingConflict.statistics(self.object)
         out.update(statistics)
         out.update({
-            'buildings_qs': Building.objects.filter(town=out['town'])
+            'buildings_qs': Building.objects.filter(town=out['town']),
+            'campaign': self.kwargs['campaign']
         })
         out.update(self.paginator(out['buildings_qs']))
         return out
@@ -139,6 +148,7 @@ class MfTownBuildingDetailView(TownDetailView):
         statistics = BuildingConflict.statistics(self.object)
         out.update(statistics)
         out.update({
-            'building': Building.objects.get(region=out['region'], district=out['district'], town=out['town'], id=self.kwargs['id'])
+            'building': Building.objects.get(region=out['region'], district=out['district'], town=out['town'], id=self.kwargs['id']),
+            'campaign': self.kwargs['campaign']
         })
         return out

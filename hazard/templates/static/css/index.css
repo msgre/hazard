@@ -83,9 +83,6 @@ td, th {
 tr {
     border-bottom:1px dotted #eee;
 }
-tbody tr:nth-child(even) td, tbody tr.even td {
-    background:transparent;
-}
 #nav {
     padding-bottom:2px;
     color:#999;
