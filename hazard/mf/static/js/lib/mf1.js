@@ -1,14 +1,80 @@
 (function() {
-  "TODO:";  var HELL_MARKERS, HOVERED_HELL, ICONS, MAP, MAP_STYLE, MARKER_LUT, OPENED_INFOWINDOW, POLYS, POLYS_COLORS, VIEW, clear_surround, convert_to_hex, convert_to_rgb, draw_hells, draw_shapes, handle_primer, handle_switcher, handle_table, hex, init_map, interpolate_color, number_to_graph, perex_addon, show_surround, trim, update_shapes;
+  var $, HELL_MARKERS, HOVERED_HELL, ICONS, MAP, MAP_STYLE, MARKER_LUT, OPENED_INFOWINDOW, POLYS, POLYS_COLORS, VIEW, clear_surround, convert_to_hex, convert_to_rgb, draw_hells, draw_shapes, handle_primer, handle_switcher, handle_table, hex, init_map, interpolate_color, number_to_graph, perex_addon, show_surround, trim, update_shapes;
   var __indexOf = Array.prototype.indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (this[i] === item) return i;
     }
     return -1;
   };
+  $ = jQuery;
+  $.fn.extend({
+    schovavacz: function(options) {
+      var opts, self;
+      self = $.fn.schovavacz;
+      opts = $.extend({}, self.default_options, options);
+      return $(this).each(function(i, el) {
+        return self.init(el, opts);
+      });
+    }
+  });
+  $.extend($.fn.schovavacz, {
+    default_options: {
+      show_txt: 'Next',
+      hide_txt: 'Hide',
+      link_class: 'krl_command_link',
+      hidden_container_class: 'krl_hidden',
+      shown_container_class: 'krl_shown',
+      item_class: 'krl_item',
+      item_overlimit_class: 'krl_item_overlimit',
+      link_class: 'krl_command_link',
+      items_selector: 'a',
+      epsilon: 0,
+      limit: 2
+    },
+    init: function(el, opts) {
+      var $el, items, link;
+      $el = $(el);
+      $el.addClass(opts.hidden_container_class);
+      items = $el.find(opts.items_selector);
+      console.log($el);
+      console.log(items);
+      items.addClass(opts.item_class);
+      if ((items.length - opts.epsilon) > opts.limit) {
+        items.filter(":gt(" + (opts.limit - 1) + ")").addClass(opts.item_overlimit_class).hide();
+        link = $("<a>", {
+          html: opts.show_txt,
+          href: "#",
+          "class": opts.link_class
+        });
+        this.makeLinkClickable(link, $el, opts);
+        return $el.append(link);
+      }
+    },
+    makeLinkClickable: function(link, container, opts) {
+      return link.click(function() {
+        var $link, isHidden;
+        $link = $(this);
+        isHidden = container.hasClass(opts.hidden_container_class);
+        $link.html(isHidden ? opts.hide_txt : opts.show_txt);
+        if (isHidden) {
+          container.removeClass(opts.hidden_container_class).addClass(opts.shown_container_class).find("." + opts.item_class).show();
+        } else {
+          container.addClass(opts.hidden_container_class).removeClass(opts.shown_container_class).find("." + opts.item_overlimit_class).hide();
+        }
+        return false;
+      });
+    }
+  });
+  "TODO:";
   $(document).ready(function() {
     handle_table();
-    handle_primer();
+    $('#sub-objects').schovavacz({
+      limit: 4,
+      epsilon: 1,
+      show_txt: ' — <i>a další…</i>',
+      hide_txt: ' — <i>zkrátit seznam…</i>',
+      items_selector: 'span'
+    });
     handle_switcher();
     init_map();
     return draw_shapes();

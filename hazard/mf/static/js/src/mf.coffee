@@ -4,7 +4,13 @@ TODO:
 
 $(document).ready () ->
     handle_table()
-    handle_primer()
+    $('#sub-objects').schovavacz
+        limit: 4
+        epsilon: 1
+        show_txt: ' <i>a další…</i>'
+        hide_txt: ' <i>zkrátit seznam…</i>'
+        items_selector: 'span'
+
     handle_switcher()
 
     init_map()
@@ -12,19 +18,6 @@ $(document).ready () ->
     draw_shapes()
 
 VIEW = 'hells'
-
-###
-Zkrati seznam podrazenych geografickych oblasti v uvodnim textu.
-###
-handle_primer = () ->
-    $sobjects = $('#primer .sub-objects')
-    $span = $sobjects.find('span')
-    $span.hide()
-    $span.before('<a class="more" href="#"><i>další…</i></a>')
-    $sobjects.find('a.more').click () ->
-        $(@).next('span').show()
-        $(@).remove()
-        false
 
 
 # TODO:

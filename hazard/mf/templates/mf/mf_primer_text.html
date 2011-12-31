@@ -43,13 +43,11 @@
 
 {# vypis podrazenych geo oblasti #}
 {% if detail_title %}
-    <p class="sub-objects">
+    <p id="sub-objects">
         Další podrobnosti o {{ detail_title }}:
         {% for subobject in subobjects %}
-            {% if forloop.counter == 4 %}<span>{% endif %}
             {% mf_table_url subobject as subobject_url %}
-            <a href="{{ subobject_url }}">{{ subobject }}</a>{% if forloop.last %}.{% else %},{% endif %}
-            {% if forloop.last %}</span>{% endif %}
+            <span><a href="{{ subobject_url }}">{{ subobject }}</a>{% if forloop.last %}.{% else %},{% endif %}</span>
         {% endfor %}
     </p>
 {% endif %}
