@@ -28,8 +28,6 @@ $.extend $.fn.schovavacz,
     $el = $ el
     $el.addClass opts.hidden_container_class
     items = $el.find opts.items_selector
-    console.log $el
-    console.log items
     items.addClass opts.item_class
 
     if (items.length - opts.epsilon) > opts.limit

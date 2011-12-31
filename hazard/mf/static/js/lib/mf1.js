@@ -1,5 +1,5 @@
 (function() {
-  var $, HELL_MARKERS, HOVERED_HELL, ICONS, MAP, MAP_STYLE, MARKER_LUT, OPENED_INFOWINDOW, POLYS, POLYS_COLORS, VIEW, clear_surround, convert_to_hex, convert_to_rgb, draw_hells, draw_shapes, handle_primer, handle_switcher, handle_table, hex, init_map, interpolate_color, number_to_graph, perex_addon, show_surround, trim, update_shapes;
+  var $, HELL_MARKERS, HOVERED_HELL, ICONS, MAP, MAP_STYLE, MARKER_LUT, OPENED_INFOWINDOW, POLYS, POLYS_COLORS, VIEW, clear_surround, convert_to_hex, convert_to_rgb, draw_hells, draw_shapes, handle_switcher, handle_table, hex, init_map, interpolate_color, number_to_graph, perex_addon, show_surround, trim, update_shapes;
   var __indexOf = Array.prototype.indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (this[i] === item) return i;
@@ -36,8 +36,6 @@
       $el = $(el);
       $el.addClass(opts.hidden_container_class);
       items = $el.find(opts.items_selector);
-      console.log($el);
-      console.log(items);
       items.addClass(opts.item_class);
       if ((items.length - opts.epsilon) > opts.limit) {
         items.filter(":gt(" + (opts.limit - 1) + ")").addClass(opts.item_overlimit_class).hide();
@@ -71,8 +69,8 @@
     $('#sub-objects').schovavacz({
       limit: 4,
       epsilon: 1,
-      show_txt: ' — <i>a další…</i>',
-      hide_txt: ' — <i>zkrátit seznam…</i>',
+      show_txt: ' <i>a další…</i>',
+      hide_txt: ' <i>zkrátit seznam…</i>',
       items_selector: 'span'
     });
     handle_switcher();
@@ -80,21 +78,6 @@
     return draw_shapes();
   });
   VIEW = 'hells';
-  /*
-  Zkrati seznam podrazenych geografickych oblasti v uvodnim textu.
-  */
-  handle_primer = function() {
-    var $sobjects, $span;
-    $sobjects = $('#primer .sub-objects');
-    $span = $sobjects.find('span');
-    $span.hide();
-    $span.before('<a class="more" href="#"><i>další…</i></a>');
-    return $sobjects.find('a.more').click(function() {
-      $(this).next('span').show();
-      $(this).remove();
-      return false;
-    });
-  };
   perex_addon = function() {
     var $perex, actual_value, geo, i, order, text, type, values, view;
     view = $('#table-switcher option:selected').attr('title');
