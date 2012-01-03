@@ -19,7 +19,7 @@ class Region(geomodels.Model):
     """
     title       = models.CharField(u"Název", max_length=200)
     slug        = models.SlugField(u"Webové jméno", max_length=100, unique=True)
-    lokativ     = models.CharField(u"Lokativ", max_length=200, blank=True, null=True, help_text=u"6.pád, 'O kom, o čem', včetně vyskloňovaného slova 'kraj'.")
+    lokativ     = models.CharField(u"Lokativ", max_length=200, blank=True, null=True, help_text=u"6.pád, 'O kom, o čem', včetně vyskloňovaného slova 'kraj' a předložky. Např. 'Ve Zlínském kraji', nebo 'V Kraji Vysočina'.")
     description = models.TextField(u"Popis", blank=True)
     shape       = geomodels.PolygonField(u"Tvar", null=True, blank=True)
     # doplnujici informace o kraji
@@ -51,6 +51,7 @@ class District(geomodels.Model):
     """
     title       = models.CharField(u"Název", max_length=200)
     slug        = models.SlugField(u"Webové jméno", max_length=100, unique=True) # TODO: zjistit, jestli byly v CR okresy shodneho jmena
+    lokativ     = models.CharField(u"Lokativ", max_length=200, blank=True, null=True, help_text=u"6.pád, 'O kom, o čem', včetně vyskloňovaného slova 'okres' a předložky, např. 'Ve Vsetínském okrese', nebo 'V Benešovském okrese'.")
     description = models.TextField(u"Popis", blank=True)
     region      = models.ForeignKey(Region, verbose_name=u"Kraj")
     shape       = geomodels.PolygonField(u"Tvar", null=True, blank=True)
@@ -72,6 +73,9 @@ class District(geomodels.Model):
         out = ('district', [], {'region': self.region.slug, 'district': self.slug})
         return out
 
+    def get_lokativ(self):
+        return self.lokativ or self.title
+
 
 class Town(geomodels.Model):
     """
@@ -79,6 +83,7 @@ class Town(geomodels.Model):
     """
     title       = models.CharField(u"Název", max_length=200)
     slug        = models.SlugField(u"Webové jméno", max_length=100)
+    lokativ     = models.CharField(u"Lokativ", max_length=200, blank=True, null=True, help_text=u"6.pád, 'O kom, o čem', včetně předložky, např. 'Ve Valašském Meziříčí', nebo 'V Krně'.")
     description = models.TextField(u"Popis", blank=True)
     district    = models.ForeignKey(District, verbose_name=u"Okres")
     shape       = geomodels.PolygonField(u"Tvar", null=True, blank=True)
@@ -109,6 +114,9 @@ class Town(geomodels.Model):
     def get_absolute_url(self):
         out = ('town', [], {'region': self.region.slug, 'district': self.district.slug, 'town': self.slug})
         return out
+
+    def get_lokativ(self):
+        return self.lokativ or self.title
 
 
 WHITECHAR_RE = re.compile('\s+')
