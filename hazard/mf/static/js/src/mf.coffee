@@ -2,19 +2,18 @@
 TODO:
 """
 
+SCHOVAVACZ_OPTS =
+    limit: 4
+    epsilon: 1
+    show_txt: ' <i>a další…(%count%)</i>'
+    hide_txt: ' <i>zkrátit seznam…</i>'
+    items_selector: 'span'
+
 $(document).ready () ->
     handle_table()
-    $('#sub-objects').schovavacz
-        limit: 4
-        epsilon: 1
-        show_txt: ' <i>a další…</i>'
-        hide_txt: ' <i>zkrátit seznam…</i>'
-        items_selector: 'span'
-
+    $('.sub-objects').schovavacz(SCHOVAVACZ_OPTS)
     handle_switcher()
-
     init_map()
-    #draw_hells()
     draw_shapes()
 
 VIEW = 'hells'

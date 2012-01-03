@@ -31,11 +31,10 @@ $.extend $.fn.schovavacz,
     items.addClass opts.item_class
 
     if (items.length - opts.epsilon) > opts.limit
-        items.filter(":gt(#{(opts.limit-1)})")
-            .addClass(opts.item_overlimit_class)
-            .hide()
-
-        link = $ "<a>", {html:opts.show_txt,href:"#",class:opts.link_class}
+        rest = items.filter(":gt(#{(opts.limit-1)})")
+        rest.addClass(opts.item_overlimit_class).hide()
+        opts.show_txt = opts.show_txt.replace('%count%', rest.length)
+        link = $ "<a>", {html:opts.show_txt, href:"#", class:opts.link_class}
         this.makeLinkClickable link,$el,opts
         $el.append link
 

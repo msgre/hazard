@@ -8,7 +8,7 @@
         {% variable statistics.conflict_hell_counts|key:obj.id as conflict_hell_counts %}
         {% if conflict_hell_counts > 0 %}
             {# nektere z nich jsou v konfliktu se zakonem #}
-            V <span class="title"><b>{{ obj.get_lokativ }}</b></span> povolilo Ministerstvo financí k 31. 12. 2011 provoz
+            <span class="title"><b>{{ obj.get_lokativ }}</b></span> povolilo Ministerstvo financí k 31. 12. 2011 provoz
             {% if hells %}
                 <b>{{ conflict_hell_counts }}&nbsp;{{ conflict_hell_counts|grammar:"0=heren,1=herna,4=herny,?=heren" }}</b>
                 ({{ statistics.conflict_hell_perc|key:obj.id|floatformat:1 }}% z&nbsp;{{ statistics.hell_counts|key:obj.id }})
@@ -20,7 +20,7 @@
             v rozporu se <a href="#">zákonem</a>.
         {% else %}
             {# herny tu jsou, ale vsechny jsou ok #}
-            V <span class="title">{{ prefix }} <b>{{ obj.get_lokativ }}</b></span> není ani
+            <span class="title">{{ prefix }} <b>{{ obj.get_lokativ }}</b></span> není ani
             {% if hells %}
                 jedna herna
             {% else %}
@@ -29,7 +29,7 @@
             v rozporu se <a href="#">zákonem</a>.
         {% endif %}
     {% else %}
-        V <span class="title">{{ prefix }} <b>{{ obj.get_lokativ }}</b></span> není provozována ani
+        <span class="title">{{ prefix }} <b>{{ obj.get_lokativ }}</b></span> není provozována ani
         {% if hells %}
             jedna herna.
         {% else %}
@@ -43,7 +43,7 @@
 
 {# vypis podrazenych geo oblasti #}
 {% if detail_title %}
-    <p id="sub-objects">
+    <p class="sub-objects">
         Další podrobnosti o {{ detail_title }}:
         {% for subobject in subobjects %}
             {% mf_table_url subobject as subobject_url %}
