@@ -36,10 +36,6 @@ class TownAdmin(admin.ModelAdmin):
         return my_urls + urls
 
     def merge_action(self, request, queryset):
-        """
-        Akce do administrace -- slouceni obci. Dojde zde pouze k redirectu
-        na custom admin view.
-        """
         selected = request.POST.getlist(admin.ACTION_CHECKBOX_NAME)
         url = reverse('admin:territories-town-merge')
         return HttpResponseRedirect("%s?ids=%s" % (url, ",".join(selected)))
@@ -47,7 +43,8 @@ class TownAdmin(admin.ModelAdmin):
 
     def merge_view(self, request):
         """
-        TODO:
+        Slouci vybrane obce pod jedinou (vcetne presunu automatu, budov a
+        dalsich referenci).
         """
         # vyzobneme IDcka z URL
         ids = [int(i) for i in request.GET.get('ids', '').split(',') if i.isdigit()]
@@ -81,12 +78,10 @@ class TownAdmin(admin.ModelAdmin):
             'title': u'Sloučení obcí',
             'adminform': adminForm,
             'media': mark_safe(media),
-            'original': None # TODO: muze to tak byt?
+            'original': None
         }
         self.change_form_template = 'admin/territories/town/merge.html'
         return self.render_change_form(request, context, change=True)
-
-
 
 
 class ZipAdmin(admin.ModelAdmin):

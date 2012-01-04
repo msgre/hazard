@@ -22,7 +22,8 @@ class MergeTownAdminForm(forms.Form):
 
     def save(self):
         """
-        TODO:
+        Slouci vsechny obce z self.towns.queryset pod vybranou
+        cleaned_data['towns'].
         """
         chief = self.cleaned_data['towns']
         others = self.fields['towns'].queryset.exclude(id=chief.id)

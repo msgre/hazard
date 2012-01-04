@@ -1,10 +1,5 @@
 # -*- coding: utf-8 -*-
 
-"""
-TODO:
-- nejaky slucovac mest podle stejneho zip kodu
-"""
-
 import re
 
 from django.db import models
@@ -14,8 +9,6 @@ from django.contrib.gis.db import models as geomodels
 class Region(geomodels.Model):
     """
     Kraj.
-
-    TODO: pridat rozlohu a pocet lidi
     """
     title       = models.CharField(u"Název", max_length=200)
     slug        = models.SlugField(u"Webové jméno", max_length=100, unique=True)
@@ -46,8 +39,6 @@ class Region(geomodels.Model):
 class District(geomodels.Model):
     """
     Okres.
-
-    TODO: pridat rozlohu a pocet lidi
     """
     title       = models.CharField(u"Název", max_length=200)
     slug        = models.SlugField(u"Webové jméno", max_length=100, unique=True) # TODO: zjistit, jestli byly v CR okresy shodneho jmena

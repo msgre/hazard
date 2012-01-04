@@ -10,7 +10,7 @@ class Address(geomodels.Model):
     """
     Adresa.
     """
-    title   = models.CharField(u"Ulice", max_length=200)
+    title   = models.CharField(u"Ulice", max_length=200) # TODO: mozna prejmenovat na adresa? pak by to mohlo byt konkretni misto, cela ulice, nebo i oblast
     town    = models.ForeignKey(Town, verbose_name=u"Obec")
     slug    = models.SlugField(u"Webové jméno", max_length=100)
     point   = geomodels.PointField(u"Bod", null=True, blank=True)
