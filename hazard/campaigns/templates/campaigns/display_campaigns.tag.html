@@ -1,3 +1,5 @@
-{% for campaign in campaigns %}
-    <p><a href="{{ campaign.get_absolute_url }}">{{ campaign.title }}</a></p>
-{% endfor %}
+<ul>
+    {% for campaign in campaigns %}
+        <li><a href="{{ campaign.get_absolute_url }}">{{ campaign.title }}</a></li>
+    {% endfor %}
+</ul>

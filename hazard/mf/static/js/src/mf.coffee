@@ -10,38 +10,12 @@ SCHOVAVACZ_OPTS =
     items_selector: 'span'
 
 $(document).ready () ->
-    handle_table()
-    $('.sub-objects').schovavacz(SCHOVAVACZ_OPTS)
-    handle_switcher()
     init_map()
-    draw_shapes()
+    $('.sub-objects').schovavacz(SCHOVAVACZ_OPTS)
+    handle_table()
+    handle_switcher()
 
 VIEW = 'hells'
-
-
-# TODO:
-perex_addon = () ->
-    view = $('#table-switcher option:selected').attr('title')
-    type = $('#type-switcher option:selected').attr('title')
-    geo = $("#primer .#{ VIEW } span.title").text()
-
-    values = $("table.statistics.#{ VIEW } td.#{ $('#table-switcher').val() }")
-    values = _.sortBy(($.trim($(i).text()) for i in values), (num) -> if num then parseFloat(num.replace('%', '').replace(',', '.')) else 0)
-    values.reverse()
-    actual_value = $.trim($("table.statistics.#{ VIEW } tr.#{ window.actual } td.#{ $('#table-switcher').val() }").text())
-    actual_value = actual_value
-    order = _.indexOf(values, actual_value)
-
-    if order == 0
-        text = "Z pohledu <b>#{ view } #{ type}</b> je stav v #{ geo } <b>nejhorší</b> v republice."
-    else
-        text = "Z pohledu <b>#{ view } #{ type}</b> je stav v #{ geo } <b>#{ order + 1 }. nejhorší</b> v republice."
-
-    $perex = $("#primer .#{ VIEW } h2")
-    if $perex.next('h2').length
-        $perex.next('h2').html(text)
-    else
-        $perex.after("<h2>#{ text }</h2>")
 
 
 
@@ -49,7 +23,7 @@ perex_addon = () ->
 ###
 Obsluha preklikavani pohledu herny/automaty.
 ###
-handle_switcher = () ->
+handle_switcher = (set=true) ->
     $primer = $('#primer')
 
     $primer.children('div').last().hide()
@@ -85,8 +59,35 @@ handle_table = () ->
 
     # klikance fachaji nad kteroukoliv bunkou v tabulce
     $('table.statistics td').click () ->
-        href = $(@).closest('tr').find('a').attr('href')
-        window.location = href
+        $tr = $(@).closest('tr')
+        href = $tr.find('a').attr('href')
+
+        $.ajax
+            url: href
+            cache: true
+            dataType: 'json'
+            success: (data) ->
+# TODO: focus na vybrany kraj
+# TODO: dynamicka zmena URL s pomoci history api
+# TODO: nejaky ajax loader nekde kua...
+                $('h1').replaceWith(data.main_header)
+                $('#primer').replaceWith(data.primer_content)
+                $('.sub-objects').schovavacz(SCHOVAVACZ_OPTS)
+                handle_switcher(false)
+                $('table.statistics tr.active').removeClass('active')
+                POLYS[window.actual].setOptions
+                    zIndex: 10
+                    strokeWeight: 0
+                window.actual = $.trim($tr.attr('class').replace('hover', ''))
+                console.log "##{ window.actual }#"
+                POLYS[window.actual].setOptions
+                    zIndex: 20
+                    strokeWeight: 3
+                    strokeColor: "#333333"
+                $tr.addClass('active')
+                google.maps.event.addListenerOnce MAP, 'zoom_changed', () ->
+                    MAP.setZoom(MAP.getZoom() - 1)
+                MAP.fitBounds(POLYS[window.actual].getBounds())
         false
 
     # pryc s hlavickou tabulky
@@ -120,7 +121,7 @@ handle_table = () ->
                 $table.data(switcher_value, {'min': _.min(values), 'max': if percents then 100.0 else _.max(values)})
             number_to_graph($table, values, percents, switcher_value)
         update_shapes()
-        perex_addon()
+        #perex_addon()
 
     $('.table-switcher').change()
 
@@ -203,8 +204,6 @@ draw_shapes = () ->
         value = value.replace('%', '').replace(',', '.')
         value = (value - extrems.min) / delta
         color = interpolate_color('#FFD700', '#EE0000', value)
-        #color = interpolate_color('#E5ECF9', '#0066CC', value)
-        #color = interpolate_color('#CCCCCC', '#555555', value)
         POLYS[key] = new google.maps.Polygon
             paths: polys
             strokeColor: color
@@ -232,10 +231,6 @@ draw_shapes = () ->
 
             titles = ($(i).text() for i in $select.find('option'))
             texts = ($.trim($(i).text()) for i in $tr.find('td'))
-            hovno = _.zip(titles, _.last(texts, 3))
-            hovno = ("#{ i[0] }: #{ i[1] }" for i in hovno)
-
-            #tooltip.show("<strong>#{ _.first(texts) }</strong><br /><br /><p>#{ hovno.join('<br>') }</p>")
 
         google.maps.event.addListener POLYS[key], 'mouseout', () ->
             POLYS[key].setOptions
@@ -243,7 +238,6 @@ draw_shapes = () ->
                 strokeColor: if key == window.actual then '#333333' else POLYS_COLORS[key]
                 zIndex: if key == window.actual then 20 else 10
             $table.find("tr.#{ key }").removeClass('hover')
-            #tooltip.hide()
 
         google.maps.event.addListener POLYS[key], 'click', () ->
             $table.find("tr.#{ key } a").click()
@@ -312,15 +306,7 @@ update_shapes = () ->
 
 
 MAP = undefined
-ICONS =
-    'allowed': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/yes.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14))
-    'allowed_dimmed': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/yes_dimmed.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14))
-    'allowed_hovered': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/yes_hovered.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14))
-    'disallowed': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/no.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14))
-    'disallowed_dimmed': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/no_dimmed.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14))
-    'disallowed_hovered': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/no_hovered.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14))
-    'shadow': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/shadow.png', new google.maps.Size(27, 14), new google.maps.Point(0, 0), new google.maps.Point(8, 0))
-
+ICONS = {}
 MARKER_LUT = {} # kes spendliku na mape
 HELL_MARKERS = {}
 HOVERED_HELL = null
@@ -554,25 +540,52 @@ draw_hells = () ->
 
 # TODO:
 init_map = () ->
-    if $('#map').hasClass('detail-map')
-        map_options =
-            zoom: 14
-            center: new google.maps.LatLng(49.38512, 14.61765) # defaultne zamerime na CR
-            mapTypeControl: false,
-            mapTypeId: google.maps.MapTypeId.ROADMAP
-            streetViewControl: false
-        MAP = new google.maps.Map(document.getElementById("map"), map_options)
-    else
-        map_options =
-            zoom: 6
-            center: new google.maps.LatLng(49.38512, 14.61765) # defaultne zamerime na CR
-            mapTypeControl: false,
-            mapTypeId: 'CB'
-            streetViewControl: false
-        MAP = new google.maps.Map(document.getElementById("map"), map_options)
-        styledMapType = new google.maps.StyledMapType(MAP_STYLE, {name:'Černobílá'})
-        MAP.mapTypes.set('CB', styledMapType)
+    $.getJSON window.url, (data) ->
+        window.shapes = {}
+        for key in _.keys(data['details'])
+            window.shapes[key] = data['details'][key]['shape']
 
+        script = document.createElement('script')
+        script.type = 'text/javascript'
+        script.src = 'http://maps.googleapis.com/maps/api/js?key=AIzaSyDw1uicJmcKKdEIvLS9XavLO0RPFvIpOT4&v=3&sensor=false&callback=window.late_map'
+        document.body.appendChild(script)
+
+
+
+window.late_map = () ->
+
+    # http://code.google.com/p/google-maps-extensions/source/browse/google.maps.Polygon.getBounds.js
+    if not google.maps.Polygon.prototype.getBounds
+        google.maps.Polygon.prototype.getBounds = (latLng) ->
+
+            bounds = new google.maps.LatLngBounds()
+            paths = this.getPaths()
+            for path in paths.getArray()
+                for item in path.getArray()
+                    bounds.extend(item)
+            bounds
+
+
+    ICONS =
+        'allowed': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/yes.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14))
+        'allowed_dimmed': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/yes_dimmed.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14))
+        'allowed_hovered': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/yes_hovered.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14))
+        'disallowed': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/no.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14))
+        'disallowed_dimmed': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/no_dimmed.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14))
+        'disallowed_hovered': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/no_hovered.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14))
+        'shadow': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/shadow.png', new google.maps.Size(27, 14), new google.maps.Point(0, 0), new google.maps.Point(8, 0))
+
+    map_options =
+        zoom: 6
+        center: new google.maps.LatLng(49.38512, 14.61765) # defaultne zamerime na CR
+        mapTypeControl: false,
+        mapTypeId: 'CB'
+        streetViewControl: false
+    MAP = new google.maps.Map(document.getElementById("map"), map_options)
+    styledMapType = new google.maps.StyledMapType(MAP_STYLE, {name:'Černobílá'})
+    MAP.mapTypes.set('CB', styledMapType)
+
+    draw_shapes()
 
 
 hex = (v) ->

@@ -16,19 +16,23 @@ def mf_primer_text(context, obj, type):
     heren/automatu v dane oblasti.
     """
     geo = obj.__class__.__name__.lower()
+    prefix = 'neco dlouheho a nesmyslneho'
     if geo == 'town':
         detail_title = ''
         subobjects = None
     elif geo == 'district':
         detail_title = 'obcích okresu'
         subobjects = obj.town_set.all()
+        prefix = 'Obec'
     else:
         detail_title = 'okresech kraje'
         subobjects = obj.district_set.all()
+        prefix = 'Okres'
     context.update({
         'detail_title': detail_title,
         'hells': type == 'hells',
         'obj': obj,
+        'prefix': prefix,
         'subobjects': subobjects
     })
     return context
@@ -69,20 +73,6 @@ def mf_table(context, area, type):
     return context
 
 
-@register.inclusion_tag('mf/mf_toplist.html', takes_context=True)
-def mf_toplist(context, statistics, geo, key, title):
-    """
-    TODO:
-    """
-    context.update({
-        'statistics': statistics,
-        'geo': geo,
-        'key': key,
-        'title': title
-    })
-    return context
-
-
 class MfTableUrl(ttag.helpers.AsTag):
     """
     Pomocny tag pro generovani URL z tabulky {% mf_table %}.
@@ -120,5 +110,27 @@ class MfTableUrl(ttag.helpers.AsTag):
             })
 
         return url
+
+
+@register.inclusion_tag('mf/mf_toplist.html', takes_context=True)
+def mf_toplist(context, statistics, geo, key, title):
+    """
+    TODO:
+    """
+    context.update({
+        'statistics': statistics,
+        'geo': geo,
+        'key': key,
+        'title': title
+    })
+    return context
+
+
+@register.filter
+def remove_str(value, substr):
+    """
+    Odstrani z retezce value substr (nahradi jej za '').
+    """
+    return unicode(value).replace(substr, '').strip()
 
 register.tag(MfTableUrl)

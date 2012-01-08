@@ -1,4 +1,4 @@
-{% extends "mf/base.html" %}
+{% extends base_template %}
 
 {% load shared mf %}
 
@@ -8,28 +8,30 @@
 
 {% block text_content %}
     {# uvodni text se zakladnimi udaji a kolacovym grafem #}
-    <div id="primer">
-        <div class="hells">
-            <div class="span-2">
-                {% variable statistics.conflict_hell_perc|key:region.id as chells %}
-                {% variable statistics.nonconflict_hell_perc|key:region.id as nchells %}
-                <img title="Poměr nezákonně (červená výseč) a zákonně (zelená) povolených heren" alt="Poměr nezákonně/zákonně povolených heren" src="http://chart.googleapis.com/chart?chs=70x70&cht=p&chd=t:{{ chells|floatformat:0 }},{{ nchells|floatformat:0 }}&chco=FF0000,00FF00"/>
+    {% block primer_content %}
+        <div id="primer">
+            <div class="hells">
+                <div class="span-2">
+                    {% variable statistics.conflict_hell_perc|key:region.id as chells %}
+                    {% variable statistics.nonconflict_hell_perc|key:region.id as nchells %}
+                    <img title="Poměr nezákonně (červená výseč) a zákonně (zelená) povolených heren" alt="Poměr nezákonně/zákonně povolených heren" src="http://chart.googleapis.com/chart?chs=70x70&cht=p&chd=t:{{ chells|floatformat:0 }},{{ nchells|floatformat:0 }}&chco=FF0000,00FF00"/>
+                </div>
+                <div class="span-8 last">
+                    {% mf_primer_text region "hells" %}
+                </div>
             </div>
-            <div class="span-8 last">
-                {% mf_primer_text region "hells" %}
+            <div class="machines">
+                <div class="span-2">
+                    {% variable statistics.conflict_machine_perc|key:region.id as cmachines %}
+                    {% variable statistics.nonconflict_machine_perc|key:region.id as ncmachines %}
+                    <img title="Poměr nezákonně (červená výseč) a zákonně (zelená) povolených automatů" alt="Poměr nezákonně/zákonně povolených automatů" src="http://chart.googleapis.com/chart?chs=70x70&cht=p&chd=t:{{ cmachines|floatformat:0 }},{{ ncmachines|floatformat:0 }}&chco=FF0000,00FF00"/>
+                </div>
+                <div class="span-8 last">
+                    {% mf_primer_text region "machines" %}
+                </div>
             </div>
         </div>
-        <div class="machines">
-            <div class="span-2">
-                {% variable statistics.conflict_machine_perc|key:region.id as cmachines %}
-                {% variable statistics.nonconflict_machine_perc|key:region.id as ncmachines %}
-                <img title="Poměr nezákonně (červená výseč) a zákonně (zelená) povolených automatů" alt="Poměr nezákonně/zákonně povolených automatů" src="http://chart.googleapis.com/chart?chs=70x70&cht=p&chd=t:{{ cmachines|floatformat:0 }},{{ ncmachines|floatformat:0 }}&chco=FF0000,00FF00"/>
-            </div>
-            <div class="span-8 last">
-                {% mf_primer_text region "machines" %}
-            </div>
-        </div>
-    </div>
+    {% endblock %}
 
     <hr />
 
@@ -49,18 +51,9 @@
 {% block js %}
     {{ block.super }}
     <script type="text/javascript">
-        {% filter shorten_latlon %}
-        window.shapes = {
-            {% for id, region in regions.items %}
-                '{{ region.slug }}': {{ region.shape.coords|json }}{% if not forloop.last %},{% endif %}
-            {% endfor %}
-        };
-        {% endfilter %}
         window.actual = '{{ region.slug }}';
+        window.url = '/kampan/mf/ajax/kraje/';
     </script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/underscore-min.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDw1uicJmcKKdEIvLS9XavLO0RPFvIpOT4&v=3&sensor=false" type="text/javascript"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/tooltip.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/lib/mf1.js"></script>
 {% endblock %}
 {# vim: set et si ts=4 sw=4 syn=django: #}

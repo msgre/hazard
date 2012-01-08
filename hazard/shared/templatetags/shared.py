@@ -8,6 +8,8 @@ from django import template
 from django.utils import simplejson
 from django.utils.safestring import mark_safe
 from django.conf import settings
+from django.template.base import Node
+from django.utils.html import strip_spaces_between_tags
 
 import ttag
 
@@ -120,7 +122,7 @@ register.tag(Variable)
 @register.filter
 def grammar(count, variants):
     """
-    TODO:
+    Sklonovadlo.
     """
     variants = [[y.strip() for y in i.strip().split('=')] for i in variants.split(',')]
     variants = dict([(i[0] == '?' and i[0] or int(i[0]), i[1]) for i in variants])
@@ -129,3 +131,112 @@ def grammar(count, variants):
             return variants[k]
         elif count <= k:
             return variants[k]
+
+
+RE_QUOTE = re.compile(r'"')
+RE_WHITECHARS = re.compile(r'>\s+')
+RE_NEWLINES = re.compile(r'\n+')
+
+class JSONItemNode(Node):
+    child_nodelists = ('nodecontent', )
+
+    def __init__(self, name, nodecontent): # pylint: disable-msg=W0231
+        self.nodecontent = nodecontent
+        self.name = name
+
+    def __repr__(self):
+        return "<JSONItem node>"
+
+    def __iter__(self):
+        for node in self.nodecontent:
+            yield node
+
+    def render(self, context):
+        try:
+            name = self.name.resolve(context)
+        except VariableDoesNotExist:
+            name = None
+
+        # pokud se v GETu objevi parametr stejneho jmena jako nazev bloku,
+        # pak se cela polozka NEBUDE generovat
+        if name in context['request'].GET:
+            return ''
+
+        # TODO: mozna staci escapnout jen " , ne? mrdat ' nebo <> YES! je to strasne velke ted!
+        content = self.nodecontent.render(context)
+        content = strip_spaces_between_tags(content).strip()
+        content = RE_WHITECHARS.sub('> ', content)
+        content = RE_NEWLINES.sub(' ', content)
+        content = RE_QUOTE.sub('\\"', content)
+        if content.startswith('[') and content.endswith(']'):
+            return mark_safe(u'"%s":%s' % (name, content))
+        else:
+            return mark_safe(u'"%s":"%s"' % (name, content))
+
+def do_jsonitem(parser, token):
+    """
+    Pomocny tag pro generovani JSON odpovedi na AJAXove dotazy ve Scuku.
+
+    Generuje jednu polozku do JSON struktury. Pouziti:
+
+        {% jsonblock %}
+            {% jsonitem "NAME" %}{% block NAME %}{% endblock %}{% endjsonitem %}
+        {% endjsonblock %}
+
+    Pokud se tento tag objevi v materske sablone, bude {% block %} naplnen
+    skutecnym obsahem. {% jsonitem %} obsah escapuje a vygeneruje:
+
+        "NAME": "OBSAH"
+
+    Deje se zde ale jeste jedna specialitka. Protoze ruzne AJAX dotazy potrebuji
+    ruzne podmnoziny dat z sablon, je mozne do GETu uvest nazvy bloku, ktere
+    se NEMAJI do vystupu generovat. Pokud by tedy v nasem priklade byl AJAXovy
+    dotaz podan jako /?NAME, pak tento tag vrati prazdny retezec.
+    """
+    name = parser.compile_filter(token.split_contents()[1])
+    nodecontent = parser.parse(('endjsonitem', ))
+    parser.delete_first_token()
+    return JSONItemNode(name, nodecontent)
+do_jsonitem = register.tag("jsonitem", do_jsonitem)
+
+
+class JSONBlockNode(Node):
+    child_nodelists = ('nodecontent', )
+
+    def __init__(self, nodecontent): # pylint: disable-msg=W0231
+        self.nodecontent = nodecontent
+
+    def __repr__(self):
+        return "<JSONBlock node>"
+
+    def __iter__(self):
+        for node in self.nodecontent:
+            yield node
+
+    def render(self, context):
+        content = self.nodecontent.render(context).split(u'\n')
+        out = u",".join([i.strip() for i in content if i.strip()])
+        return mark_safe(u"{%s}" % out)
+
+def do_jsonblock(parser, token):
+    """
+    Pomocny tag pro generovani JSON odpovedi na AJAXove dotazy ve Scuku.
+
+    Jednotlive JSON polozky slouci do bloku. Napr.:
+
+        {% jsonblock %}
+            {% jsonitem "NAME1" %}{% block NAME1 %}{% endblock %}{% endjsonitem %}
+            {% jsonitem "NAME2" %}{% block NAME2 %}{% endblock %}{% endjsonitem %}
+        {% endjsonblock %}
+
+    Prevede do:
+
+        {"NAME1":"OBSAH1","NAME2":"OBSAH2"}
+
+    Konkretne se stara o to, ze vyradi prazdne {% jsonitem %} polozky, da pryc
+    nepotrebne bile znaky, prida carky na konce polozek a vse to obali do {}.
+    """
+    nodecontent = parser.parse(('endjsonblock', ))
+    parser.delete_first_token()
+    return JSONBlockNode(nodecontent)
+do_jsonblock = register.tag("jsonblock", do_jsonblock)

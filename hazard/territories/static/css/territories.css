@@ -1,5 +1,6 @@
 #map {
   height: 400px;
+  background: #eee url(../img/ajax-loader2.gif) 50% 50% no-repeat;
 }
 #campaign-menu a {
     padding:10px;

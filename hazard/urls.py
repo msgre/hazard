@@ -14,6 +14,7 @@ urlpatterns = patterns('',
     url(r'^kampan/', include('hazard.campaigns.urls')),
     url(r'^zpravy/', include('hazard.news.urls')),
     url(r'^kontakt/$', TemplateView.as_view(template_name='contact.html'), name="contact"),
+    url(r'^', include('hazard.territories.urls'))
 )
 
 # debug static media server

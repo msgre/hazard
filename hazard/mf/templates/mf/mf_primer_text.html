@@ -47,7 +47,7 @@
         Další podrobnosti o {{ detail_title }}:
         {% for subobject in subobjects %}
             {% mf_table_url subobject as subobject_url %}
-            <span><a href="{{ subobject_url }}">{{ subobject }}</a>{% if forloop.last %}.{% else %},{% endif %}</span>
+            <span><a href="{{ subobject_url }}">{{ subobject|remove_str:prefix }}</a>{% if forloop.last %}.{% else %},{% endif %}</span>
         {% endfor %}
     </p>
 {% endif %}

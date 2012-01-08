@@ -35,7 +35,7 @@ class RegionUpdater1(ImporterBase):
         'stredocesky':          u'Ve Středočeském kraji',
         'plzensky':             u'V Plzeňském kraji',
         'kralovehradecky':      u'V Královehradeckém kraji',
-        'hlavni-mesto-praha':   u'V Hlavním městě Praha',
+        'hlavni-mesto-praha':   u'V kraji Hlavní město Praha',
         'pardubicky':           u'V Pardubickém kraji',
         'vysocina':             u'V Kraji Vysočina',
         'jihocesky':            u'V Jihočeském kraji',

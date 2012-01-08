@@ -1,5 +1,5 @@
 (function() {
-  var $, HELL_MARKERS, HOVERED_HELL, ICONS, MAP, MAP_STYLE, MARKER_LUT, OPENED_INFOWINDOW, POLYS, POLYS_COLORS, SCHOVAVACZ_OPTS, VIEW, clear_surround, convert_to_hex, convert_to_rgb, draw_hells, draw_shapes, handle_switcher, handle_table, hex, init_map, interpolate_color, number_to_graph, perex_addon, show_surround, trim, update_shapes;
+  var $, HELL_MARKERS, HOVERED_HELL, ICONS, MAP, MAP_STYLE, MARKER_LUT, OPENED_INFOWINDOW, POLYS, POLYS_COLORS, SCHOVAVACZ_OPTS, VIEW, clear_surround, convert_to_hex, convert_to_rgb, draw_hells, draw_shapes, handle_switcher, handle_table, hex, init_map, interpolate_color, number_to_graph, show_surround, trim, update_shapes;
   var __indexOf = Array.prototype.indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (this[i] === item) return i;
@@ -74,55 +74,20 @@
     items_selector: 'span'
   };
   $(document).ready(function() {
-    handle_table();
-    $('.sub-objects').schovavacz(SCHOVAVACZ_OPTS);
-    handle_switcher();
     init_map();
-    return draw_shapes();
+    $('.sub-objects').schovavacz(SCHOVAVACZ_OPTS);
+    handle_table();
+    return handle_switcher();
   });
   VIEW = 'hells';
-  perex_addon = function() {
-    var $perex, actual_value, geo, i, order, text, type, values, view;
-    view = $('#table-switcher option:selected').attr('title');
-    type = $('#type-switcher option:selected').attr('title');
-    geo = $("#primer ." + VIEW + " span.title").text();
-    values = $("table.statistics." + VIEW + " td." + ($('#table-switcher').val()));
-    values = _.sortBy((function() {
-      var _i, _len, _results;
-      _results = [];
-      for (_i = 0, _len = values.length; _i < _len; _i++) {
-        i = values[_i];
-        _results.push($.trim($(i).text()));
-      }
-      return _results;
-    })(), function(num) {
-      if (num) {
-        return parseFloat(num.replace('%', '').replace(',', '.'));
-      } else {
-        return 0;
-      }
-    });
-    values.reverse();
-    actual_value = $.trim($("table.statistics." + VIEW + " tr." + window.actual + " td." + ($('#table-switcher').val())).text());
-    actual_value = actual_value;
-    order = _.indexOf(values, actual_value);
-    if (order === 0) {
-      text = "Z pohledu <b>" + view + " " + type + "</b> je stav v " + geo + " <b>nejhorší</b> v republice.";
-    } else {
-      text = "Z pohledu <b>" + view + " " + type + "</b> je stav v " + geo + " <b>" + (order + 1) + ". nejhorší</b> v republice.";
-    }
-    $perex = $("#primer ." + VIEW + " h2");
-    if ($perex.next('h2').length) {
-      return $perex.next('h2').html(text);
-    } else {
-      return $perex.after("<h2>" + text + "</h2>");
-    }
-  };
   /*
   Obsluha preklikavani pohledu herny/automaty.
   */
-  handle_switcher = function() {
+  handle_switcher = function(set) {
     var $primer;
+    if (set == null) {
+      set = true;
+    }
     $primer = $('#primer');
     $primer.children('div').last().hide();
     $('table.machines').closest('div.outer-wrapper').hide();
@@ -156,9 +121,37 @@
       return google.maps.event.trigger(POLYS[key], 'mouseout');
     });
     $('table.statistics td').click(function() {
-      var href;
-      href = $(this).closest('tr').find('a').attr('href');
-      window.location = href;
+      var $tr, href;
+      $tr = $(this).closest('tr');
+      href = $tr.find('a').attr('href');
+      $.ajax({
+        url: href,
+        cache: true,
+        dataType: 'json',
+        success: function(data) {
+          $('h1').replaceWith(data.main_header);
+          $('#primer').replaceWith(data.primer_content);
+          $('.sub-objects').schovavacz(SCHOVAVACZ_OPTS);
+          handle_switcher(false);
+          $('table.statistics tr.active').removeClass('active');
+          POLYS[window.actual].setOptions({
+            zIndex: 10,
+            strokeWeight: 0
+          });
+          window.actual = $.trim($tr.attr('class').replace('hover', ''));
+          console.log("#" + window.actual + "#");
+          POLYS[window.actual].setOptions({
+            zIndex: 20,
+            strokeWeight: 3,
+            strokeColor: "#333333"
+          });
+          $tr.addClass('active');
+          google.maps.event.addListenerOnce(MAP, 'zoom_changed', function() {
+            return MAP.setZoom(MAP.getZoom() - 1);
+          });
+          return MAP.fitBounds(POLYS[window.actual].getBounds());
+        }
+      });
       return false;
     });
     $('table.statistics thead').remove();
@@ -198,8 +191,7 @@
         }
         return number_to_graph($table, values, percents, switcher_value);
       });
-      update_shapes();
-      return perex_addon();
+      return update_shapes();
     });
     return $('.table-switcher').change();
   };
@@ -299,7 +291,7 @@
         });
       }
       google.maps.event.addListener(POLYS[key], 'mouseover', function() {
-        var $tr, hovno, i, texts, titles;
+        var $tr, i, texts, titles;
         POLYS[key].setOptions({
           fillColor: '#333333',
           strokeColor: '#333333',
@@ -317,23 +309,13 @@
           }
           return _results;
         })();
-        texts = (function() {
+        return texts = (function() {
           var _i, _len, _ref, _results;
           _ref = $tr.find('td');
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             i = _ref[_i];
             _results.push($.trim($(i).text()));
-          }
-          return _results;
-        })();
-        hovno = _.zip(titles, _.last(texts, 3));
-        return hovno = (function() {
-          var _i, _len, _results;
-          _results = [];
-          for (_i = 0, _len = hovno.length; _i < _len; _i++) {
-            i = hovno[_i];
-            _results.push("" + i[0] + ": " + i[1]);
           }
           return _results;
         })();
@@ -398,15 +380,7 @@
     });
   };
   MAP = void 0;
-  ICONS = {
-    'allowed': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/yes.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14)),
-    'allowed_dimmed': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/yes_dimmed.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14)),
-    'allowed_hovered': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/yes_hovered.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14)),
-    'disallowed': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/no.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14)),
-    'disallowed_dimmed': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/no_dimmed.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14)),
-    'disallowed_hovered': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/no_hovered.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14)),
-    'shadow': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/shadow.png', new google.maps.Size(27, 14), new google.maps.Point(0, 0), new google.maps.Point(8, 0))
-  };
+  ICONS = {};
   MARKER_LUT = {};
   HELL_MARKERS = {};
   HOVERED_HELL = null;
@@ -632,30 +606,61 @@
     }
   };
   init_map = function() {
+    return $.getJSON(window.url, function(data) {
+      var key, script, _i, _len, _ref;
+      window.shapes = {};
+      _ref = _.keys(data['details']);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        key = _ref[_i];
+        window.shapes[key] = data['details'][key]['shape'];
+      }
+      script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.src = 'http://maps.googleapis.com/maps/api/js?key=AIzaSyDw1uicJmcKKdEIvLS9XavLO0RPFvIpOT4&v=3&sensor=false&callback=window.late_map';
+      return document.body.appendChild(script);
+    });
+  };
+  window.late_map = function() {
     var map_options, styledMapType;
-    if ($('#map').hasClass('detail-map')) {
-      map_options = {
-        zoom: 14,
-        center: new google.maps.LatLng(49.38512, 14.61765),
-        mapTypeControl: false,
-        mapTypeId: google.maps.MapTypeId.ROADMAP,
-        streetViewControl: false
+    if (!google.maps.Polygon.prototype.getBounds) {
+      google.maps.Polygon.prototype.getBounds = function(latLng) {
+        var bounds, item, path, paths, _i, _j, _len, _len2, _ref, _ref2;
+        bounds = new google.maps.LatLngBounds();
+        paths = this.getPaths();
+        _ref = paths.getArray();
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          path = _ref[_i];
+          _ref2 = path.getArray();
+          for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+            item = _ref2[_j];
+            bounds.extend(item);
+          }
+        }
+        return bounds;
       };
-      return MAP = new google.maps.Map(document.getElementById("map"), map_options);
-    } else {
-      map_options = {
-        zoom: 6,
-        center: new google.maps.LatLng(49.38512, 14.61765),
-        mapTypeControl: false,
-        mapTypeId: 'CB',
-        streetViewControl: false
-      };
-      MAP = new google.maps.Map(document.getElementById("map"), map_options);
-      styledMapType = new google.maps.StyledMapType(MAP_STYLE, {
-        name: 'Černobílá'
-      });
-      return MAP.mapTypes.set('CB', styledMapType);
     }
+    ICONS = {
+      'allowed': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/yes.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14)),
+      'allowed_dimmed': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/yes_dimmed.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14)),
+      'allowed_hovered': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/yes_hovered.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14)),
+      'disallowed': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/no.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14)),
+      'disallowed_dimmed': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/no_dimmed.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14)),
+      'disallowed_hovered': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/no_hovered.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14)),
+      'shadow': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/shadow.png', new google.maps.Size(27, 14), new google.maps.Point(0, 0), new google.maps.Point(8, 0))
+    };
+    map_options = {
+      zoom: 6,
+      center: new google.maps.LatLng(49.38512, 14.61765),
+      mapTypeControl: false,
+      mapTypeId: 'CB',
+      streetViewControl: false
+    };
+    MAP = new google.maps.Map(document.getElementById("map"), map_options);
+    styledMapType = new google.maps.StyledMapType(MAP_STYLE, {
+      name: 'Černobílá'
+    });
+    MAP.mapTypes.set('CB', styledMapType);
+    return draw_shapes();
   };
   hex = function(v) {
     var out;
