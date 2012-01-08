@@ -1,0 +1,50 @@
+Obecne
+------
+
+* stale nemam view obrnena vuci nesmyslnym kombinacim kraje/okresu/mesta
+  (valmez v praze, apod)
+* JS by se mel zrychlit, je tam strasna prodleva, nez se stranka dynamicky
+  upravi do finalni podoby. Myslim ze by hodne prospelo asynchronni tahani
+  googlich map, a ajaxove tahani dat o mapach
+  (Korel)
+* Jak s velkymi mesty a jejich dalsim clenenim? (Praha a Brno jsou
+  extremy)
+  (Matej)
+* Nasadim do aplikace chunky
+  V sablonach pak budu pouzivat je, a kluci budou mit moznost editovat i
+  narocneji zalomene stranky pres admin
+
+
+Data
+----
+
+* vsiml jsem si bordelu v MfPlace -- je tam spousta objektu, ktere se jmenuji
+  stejne, ale maji ruzne adresy. Myslim ze jde o adresy malych obecnich
+  uradu, ale nekoumal jsem to podrobne.
+
+
+MF
+--
+
+* administrace je velmi hruba
+* MfPlaceType by mozna mohl byt popisnejsi
+    - ted mam jen title a description, pricemz title je lowercase ascii
+    - momentalne mame cirkev, lekarny, ministerstvo, obce, skoly, zdravi
+    - v datech nemame zarizeni socialni pece
+    - popisky dle Brneni:
+        (u'nezname', u'Neznámé'),
+        (u'zdravi', u'Zařízení zdravotní péče'),
+        (u'cirkev', u'Budovy církví'),
+        (u'skoly', u'Školy a školská zařízení'),
+        (u'obce', u'?'),
+        (u'lekarny', u'?'),
+        (u'ministerstvo', u'Budovy státních orgánů'),
+        (u'socialni', u'Zařízení sociální péče'),
+* chybi mi cele view (a jeho "podview") pro obce
+* u selektitek nad mapou by melo byt nejake vysvetleni, co dana kombinace
+  voleb predstavuje
+* tabulka v prehledech by mohla byt doplnena nejakym JS udelatkem, ktere
+  by dokazalo aktualne vybrana data seradit vzestupne/sestupne
+  (Korel)
+* doplneni textu o poradi do uvodniho textu. Budeme to ale vubec delat?
+  (Korel, Matej)

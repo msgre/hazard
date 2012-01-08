@@ -1,0 +1,18 @@
+{% load shared %}
+
+<table class="{{ key }}">
+    <thead>
+        <tr>
+            <th>{{ title }}</th>
+            <th style="text-align:right">Počet</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in statistics|key:key %}
+            <tr>
+                <td>{{ geo|key:item.0 }}</td>
+                <td style="text-align:right">{{ item.1 }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

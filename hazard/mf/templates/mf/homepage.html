@@ -1,56 +1,33 @@
-{% extends "territories/base.html" %}
-
-{% load webdesign %}
-
-{% block breadcrumb %}
-    <a href="/kampan/">Kampane</a>
-{% endblock %}
-
-{% block campaign_menu %}{% endblock %}
-
-{% block main_header %}
-    <h1>{{ campaign.title }}</h1>
-{% endblock %}
-
-{% block submenu %}
-    <p>
-        <a href="#">Podrobnejsi popis</a> |
-        <a href="#">Zebricky</a> |
-        <a href="#">Casova osa</a> |
-        <a href="#">Media</a> |
-        <a href="#">Navod</a> |
-        <a href="#">Data</a>
-    </p>
-{% endblock %}
+{% extends "mf/campaign_base.html" %}
 
 {% block content %}
     <div class="span-12">
-            <h2>
-                Strucne o cem to tu je. Zaseknuti drapku. Treba neco ve smyslu
-                ze se MF vedomne v urcitem obdobi chovalo nezakonne, a
-                povolilo provoz <b>1.000&nbsp;heren</b> s <b>10.000&nbsp;automaty</b>.
-                Nebo tak neco...
-            </h2>
-            <p>
-                Tady pak muze byt nejaky suchoparnejsi kratky rozbor. V cem
-                byla ta nezakonnost, jak to ze se MF do toho vubec micha.
-                Z ceho vychazime.
-                Opet by melo jit o par zakladnich dat, doplneny prolinky
-                hloubeji do webu (kde uz je prostor probrat veci dopodrobna).
-            </p>
-            <h4>Casovy vyvoj</h4>
-            <div class="box">
-                <p>Bude uz tady prostor pro casovou osu? (jak se co vyvijelo,
-                ze i po upozorneni a ombudsmanovi MF fici dal...)</p>
-            </div>
-            <h4>Zapojeni verejnosti</h4>
-            <p>
-                Neco jako ze se muzou regnout, a pak data editovat. Vime ze
-                jsou v nich nepresnosti. V pripade kampane MF by asi mely
-                jit editovat jen budovy, data o hernach mame z ofiko zdroje
-                a asi bych na ne nesahal (snad jen co se tyce jejich pozice
-                na mape, tam chyby byt muzou).
-            </p>
+        <h2>
+            Strucne o cem to tu je. Zaseknuti drapku. Treba neco ve smyslu
+            ze se MF vedomne v urcitem obdobi chovalo nezakonne, a
+            povolilo provoz <b>1.000&nbsp;heren</b> s <b>10.000&nbsp;automaty</b>.
+            Nebo tak neco...
+        </h2>
+        <p>
+            Tady pak muze byt nejaky suchoparnejsi kratky rozbor. V cem
+            byla ta nezakonnost, jak to ze se MF do toho vubec micha.
+            Z ceho vychazime.
+            Opet by melo jit o par zakladnich dat, doplneny prolinky
+            hloubeji do webu (kde uz je prostor probrat veci dopodrobna).
+        </p>
+        <h4>Casovy vyvoj</h4>
+        <div class="box">
+            <p>Bude uz tady prostor pro casovou osu? (jak se co vyvijelo,
+            ze i po upozorneni a ombudsmanovi MF fici dal...)</p>
+        </div>
+        <h4>Zapojeni verejnosti</h4>
+        <p>
+            Neco jako ze se muzou regnout, a pak data editovat. Vime ze
+            jsou v nich nepresnosti. V pripade kampane MF by asi mely
+            jit editovat jen budovy, data o hernach mame z ofiko zdroje
+            a asi bych na ne nesahal (snad jen co se tyce jejich pozice
+            na mape, tam chyby byt muzou).
+        </p>
     </div>
     <div class="span-12 last">
         <h4>Co oko uvidi, to i srdce zaboli</h4>

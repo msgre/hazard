@@ -8,7 +8,7 @@ from django.http import HttpResponseRedirect, Http404
 from django.template import RequestContext
 from django.utils.safestring import mark_safe
 
-from hazard.territories.models import Region, District, Town, Zip
+from hazard.territories.models import Region, District, Town, Zip, Address
 from hazard.territories.forms import MergeTownAdminForm
 
 
@@ -93,3 +93,11 @@ admin.site.register(Region)
 admin.site.register(District, DistrictAdmin)
 admin.site.register(Town, TownAdmin)
 admin.site.register(Zip, ZipAdmin)
+
+
+from django.contrib.gis.admin.options import OSMGeoAdmin
+
+class AddressAdmin(OSMGeoAdmin):
+    pass
+
+admin.site.register(Address, AddressAdmin)

@@ -1,0 +1,34 @@
+http://tablesorter.com/docs/
+http://datatables.net/
+    - tady je dobry ten search
+
+- budu generovat vsechna uzitecna data do samostatnych sloupcu
+- teprem javascriptem zaridim skryti vsech sloupcu s vyjimkou jedineho
+- a prevedu obsah uvnitr na nejakou HTML strukturu, aby z toho vznikl teplomer
+
+sloupce v hernach:
+    - absolutni pocet vsech heren
+    - absolutni pocet konfliktnich heren
+    - absolutni pocet nekonfliktnich heren
+    - pomer konfliktni/nekonfliktni herny
+
+sloupce v automatech:
+    - absolutni pocet vsech automatu
+    - absolutni pocet konfliktnich automatu
+    - absolutni pocet nekonfliktnich automatu
+    - pomer konfliktni/nekonfliktni automaty
+
+
+prepinac herny/automaty dam vpravo nahoru (mozna to bude nejaka pidi zalozka)
+prida se javascriptem asik...
+
+nad tabulkou bude selektitko pro vyber sloupce tabulky, ktery se ma zobrazovat
+selektitko tam ale dodam javascriptem, protoze na staticke strance nema valny
+vyznam
+
+kod pro vykreslovani tabulek by sel mozna zobecnit ne? mam pocit ze je generuju
+pokazde stejne, jen se lisi z jakeho zdroje dat
+
+
+
+.... no a pak uz pujdu na ty mapy asik...

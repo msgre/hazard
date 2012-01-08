@@ -1,0 +1,24 @@
+{% extends "mf/campaign_base.html" %}
+
+{% load mf %}
+
+{% block content %}
+    <h2>Dvacítka nejhorších</h2>
+    <p class="todo">TODO: nejake selektitko pro vyber herny/maty + ruzne typy pohledu, podobne jako nad mapou</p>
+    <div class="span-8">
+        <h3>Kraje</h3>
+        {% mf_toplist region_statistics regions "hell_counts" "Kraj" %}
+    </div>
+    <div class="span-8">
+        <h3>Okresy</h3>
+        {% mf_toplist district_statistics districts "hell_counts" "Okres" %}
+    </div>
+    <div class="span-8 last">
+        <h3>Města</h3>
+        {% mf_toplist town_statistics towns "hell_counts" "Město" %}
+    </div>
+
+    <div class="clear"></div>
+{% endblock %}
+
+{# vim: set et si ts=4 sw=4 syn=django: #}

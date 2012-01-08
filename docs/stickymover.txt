@@ -1,0 +1,230 @@
+/**
+* Carousel render
+* @author Jan Krivohlavek <jan.krivohlavek@centrumholdings.com>
+* @version 1.0 2011-02-11
+*
+* @param int maxCount maximalni pocet polozek zobrazenych v carouselu
+*/
+function carousel(maxCount) {
+	this.data = null;
+	this.url = null;
+	this.maxCount = maxCount || 4;
+	this.titleArr = {};
+
+	/**
+	* Ulozi data do promenne objektu
+	* Pripadne zkrati delku pole s daty na maximalni nastaveny limit
+	* @param array data Data carouselu
+	*/
+	this.storeData = function(data) {
+		this.data = data;
+		/* pokud mame dat vice nez potrebujeme tak orizneme */
+		if(this.data.length > this.maxCount) { this.data = this.data.slice(0, this.maxCount); }
+	}
+
+	/**
+	* Podle slugu vrati pozadovany nazev webu
+	* @param string key klic k nazvu
+	* @return string nazev webu
+	*/
+	this.getWebTitle = function(key) {
+		return (key in this.titleArr) ? this.titleArr[key] : '';
+	}
+
+	/**
+	* Zakladni sablona pro vypis dat carouselu
+	* @param array dataToRender data carouselu
+	*/
+	this.template = function(dataToRender) {
+		/* poud nemame data tak nic */
+		if(dataToRender == null) { return ''; }
+		/* pokud nemam dostatecny pocet clanku tak nic */
+		if(dataToRender.length < this.maxCount) { return ''; }
+		var domain = (!location.hostname) ? 'aktualne.centrum.cz' : location.hostname;
+		var s = '';
+		for(var i = 0; i < dataToRender.length; i++) {
+			if(dataToRender[i].url.indexOf('?', 0) != -1) { var urlParam = '&amp;'; } else { var urlParam = '?'; }
+			var webTitle = this.getWebTitle(dataToRender[i].slug);
+			s += '<a class="karusel-prvek" title="'+dataToRender[i].title+'" href="'+dataToRender[i].url+urlParam+'utm_source='+domain+'&amp;utm_medium=carousel">';
+			s += '<img alt="'+dataToRender[i].title+'" src="'+dataToRender[i].image+'" />';
+			if(webTitle != '') {
+				s += '<span>'+webTitle+'</span>';
+			}
+			s += '<em>'+dataToRender[i].title+'</em>';
+			s += '</a>';
+		}
+		return s;
+	}
+
+	/**
+	* Vrati zformatovany carousel
+	* @return string zformatovany carousel
+	*/
+	this.render = function() { return this.template(this.data); }
+}
+
+/**
+ * Sticky mover
+ * @version	0.9 2010-08-31 22h
+ *
+ */
+function stickyMover(sticky_wrapper, sticky_content, layout){
+	if($(sticky_wrapper).length > 0){
+		$(sticky_wrapper).bind('move',function() {
+			var $this = $(this);
+			var sticky_starter = $this.data('sticky_starter');
+			var sticky_stopper = $this.data('sticky_stopper');
+			var positionTop = sticky_stopper - sticky_starter;
+			var sticky_actual_position = $(window).scrollTop();
+			var is_msie6 = ($.browser.msie == true && parseInt($.browser.version) <= 6 ? true : false);
+			if(is_msie6) {
+				/**          __
+				 * prubeh __/
+				 *
+				 * (0, sticky_stopper)
+				 * IE6 verze - nemenit position - dochazi v krajnich polohach k mizeni sticky
+				 */
+				$(sticky_content).css({
+					'position' : 'absolute',
+					/* 0 - sticky_stopper */
+					'top' : (
+							Math.abs(sticky_starter - sticky_actual_position) -
+							Math.abs(sticky_stopper - sticky_actual_position) +
+							sticky_stopper - sticky_starter
+						)/2 + 'px'
+				});
+			} else {
+				/**
+				 * prubeh \__
+				 *           \
+				 * (sticky_start, 0) U (0, -inf)
+				 *
+				 * S position fixed je plynulejsi renderovani ve vetsine browseru (samozrejme nefunguje v <=IE6)
+				 * Pozor ve Firefoxu (urcite 3.6) - zmena position mezi fixed/relative/absolute zpusobuje restartovani flashe (Linux i Win)
+				 * proto ponechame fixed ale se zapornymi hodnotami, snad to nebude nikde zlobit
+				 */
+				$(sticky_content).css({
+					'position' : 'fixed',
+					'top' : (
+							Math.abs(sticky_starter - sticky_actual_position) -
+							Math.abs(sticky_stopper - sticky_actual_position) +
+							sticky_starter + sticky_stopper - 2*sticky_actual_position
+						)/2 + 'px'
+				});
+			}
+		}).bind('setBoundery',function() {
+			var $this = $(this);
+			$this.trigger('setHeight');
+			var starter = $(sticky_wrapper).offset().top;
+			var sticky_height = $(sticky_content).height();
+			var stopper = starter + $this.height() - sticky_height;
+			$this.data('sticky_starter', starter);
+			$this.data('sticky_stopper', stopper);
+		}).bind('setHeight',function() {
+			var $this = $(this);
+			// vyska souvisejiciho sloupce
+			var other_height = $(layout.otherColumn).height();
+			// vyska sticky
+			var sticky_height = $(sticky_content).height();
+			// virtualni vyska sloupce v kterem je sticky
+			var my_column_virtual = 0;
+			var $my_column = $(layout.myColumn);
+			my_column_virtual += parseInt($my_column.css('padding-top'));
+			my_column_virtual += parseInt($my_column.css('padding-bottom'));
+			// <script> ma ve firefoxu nekdy vysku !? - netusim proc - vyhozeno
+			$my_column.children().not('script,:has('+sticky_wrapper+'),'+sticky_wrapper).each(function() {
+				my_column_virtual += $(this).height();
+				var repair = 0;
+				repair += parseInt($(this).css('margin-top'));
+				repair += parseInt($(this).css('margin-bottom'));
+				my_column_virtual += repair;
+			});
+			$this.css('height',Math.max(other_height - my_column_virtual,sticky_height));
+		}).trigger('setBoundery');
+		$(window).scroll(function() {
+			$(sticky_wrapper).trigger('move');
+		});
+	}
+}
+
+/**
+ * adsenseaktualne - pouziti primo nebo backcompatible
+ * 	adfoxaktualneclanek = (new adsenseaktualne()).clanek;
+ * 	adfoxaktualneclanek = (new adsenseaktualne()).video;
+ */
+
+function adsenseaktualne(type,channel,max_ads) {
+	var self = this;
+	this.type = typeof type  == 'undefined' ? 'iframe' : type;
+	this.channel = typeof channel  == 'undefined' ? false : channel;
+	this.max_ads = typeof max_ads  == 'undefined' ? false : max_ads;
+
+	this.getType = function() {
+		return self.type;
+	}
+
+	this.getChannel = function(channel_default) {
+		return self.channel ? self.channel : channel_default;
+	}
+
+	this.template = function(google_ads) {
+		if(google_ads.length == 0) {
+			return;
+		}
+		var s = '<div class="adsense"><h2><a title="Reklamy Google" href="'+google_info.feedback_url+'">Reklamy Google<\/a><\/h2>';
+		google_num_ads += google_ads.length;
+		google_last_ad_type = google_ads[0].type;
+		for (var i = 0; i < google_ads.length; i++) {
+			s += '<div class="adsense-box"><h3><a target="_top" href="'+google_ads[i].url+'">'+google_ads[i].line1+'<\/a><\/h3>';
+			s += '<p>'+google_ads[i].line2 + '\n' + google_ads[i].line3+'<\/p>';
+			s += '<div><a target="_top" href="'+google_ads[i].url+'">'+google_ads[i].visible_url+'<\/a><\/div>';
+			s += '<\/div>';
+		}
+		s += '</div>';
+		document.write(s);
+		return;
+		//console.log(google_ads);
+	}
+
+	this.render = function() {
+		/**
+		 * je-li ve strance pred vypisem adsensu element napr <span id="vypnout-adsense"></span>
+		 * tak se vypne renderovani reklam adsensu (katastrofy, smrt atd staci dat do popisky)
+		 */
+		if(document.getElementById('vypnout-adsense') == null) {
+			document.write('<'+'div class="google-adsense"><'+'script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"><'+'/script><'+'/div>');
+		}
+	}
+
+	this.slugurl = function() {
+		if(self.getType() == 'template') {
+			google_num_ads = 0;
+			google_last_ad_type = '';
+			google_ad_output = 'js';
+			google_max_num_ads = self.max_ads ? self.max_ads : 3;
+			google_ad_request_done = self.template;
+			google_ad_channel = 'zena-wiki-js';
+		}
+
+		// muzem si pretizit channel
+		google_ad_channel = self.getChannel(google_ad_channel);
+
+		google_ad_client = 'ca-centrum-cz';
+		google_language = 'cs';
+		google_ad_type = 'text'; // type of ads to display
+		google_page_url = location.href;
+		// odrezeme si querystring
+		if(google_page_url.search(/\?/) != -1) {
+			google_page_url = google_page_url.split(/\?/)[0];
+		}
+		//google_page_url = 'http://www.example.com'; Moznost manualne nastavit stranku, podle ktere se budou cilit reklamy
+		//google_alternate_ad_url = ''; //tohle je URL, ktera se v iFrame zobrazi, kdyz Google nema relevantni reklamu
+		//google_alternate_color = ''; //tohle je barva, kterou se iFrame vyplni, kdyz Google nema relevantni reklamu a neni uvedene alternativni url v predchozim parametru
+		google_encoding = 'utf8';
+		google_safe = 'high'; // specifies the setting that should be used to filter ads that display adult or pornographic content
+		//  google_adtest = 'on'; // Indicates whether a request for ads should be treated as a test
+		google_ad_section = 'default';
+		self.render();
+	}
+	this.wiki = this.slugurl;
+}

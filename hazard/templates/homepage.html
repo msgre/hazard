@@ -1,36 +1,31 @@
 {% extends "bone.html" %}
 
-{% load webdesign %}
+{% load news chunks campaigns %}
 
 {% block main %}
     <h1>MapyHazardu.cz</h1>
     <div class="span-12">
         <h2 style="line-height:130%">
-            Mapujeme hazard. Statu je to fuk, kamaradickum na radnici taky,
-            mesta jsou zaplevelena hernama jak nikde jinde v Evrope.
-            Pojdme se na nej podivat z jineho pohledu a dokopejme nase
-            volene zastupce k cinum.
+            {% chunk "homepage-perex" %}
         </h2>
         <p>Jakoze jde o portal ne? -- ukazujeme na problemy, informujeme,
         vizualizujeme, nabizime syrova data.</p>
     </div>
     <div class="span-12 last">
         <div class="box">
-            slideshow s kampanema / obrazek + text
-            <br><br><br><br><br><br><br><br><br><br>
+            {% display_campaigns %}
+            <hr/>
+            <p class="quiet todo">tady bude bud nejaky seznam, nebo slideshow s kampanema;
+            musi to zaujmout, budto nejaky obrazek nebo zajimava cisla; musime
+            pocitat s tim, ze treba 1/4 roku tady bude viset pouze jedina kampan</p>
         </div>
     </div>
 
     <div class="clear"> </div>
 
     <div class="span-8">
-        <h3>Zpravy</h3>
-        <p>12.4.2011 &mdash; <b>{% lorem 4 w %}</b></p>
-        {#<p style="position:relative; top:-15px;margin-bottom:5px;">{% lorem 15 w %}...</p>#}
-        <p>12.4.2011 &mdash; <b>{% lorem 4 w %}</b></p>
-        {#<p style="position:relative; top:-15px;margin-bottom:5px;">{% lorem 15 w %}...</p>#}
-        <p>12.4.2011 &mdash; <b>{% lorem 4 w %}</b></p>
-        {#<p style="position:relative; top:-15px;">{% lorem 15 w %}...</p>#}
+        <h3>Zprávy</h3>
+        {% display_news %}
     </div>
     <div class="span-8">
         <h3>Zapojte se</h3>

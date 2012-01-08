@@ -11,7 +11,7 @@ from django.core.paginator import Paginator, InvalidPage
 from hazard.gobjects.models import Hell, MachineCount
 from hazard.territories.models import Region, District
 from hazard.territories.views import TownDetailView
-from hazard.mf.models import BuildingConflict, Building
+from hazard.mf.models import MfPlaceConflict, MfPlace
 
 
 class MfCommon(object):
@@ -67,7 +67,7 @@ class MfTownDetailView(TownDetailView):
         pass
         """
         out = super(MfTownDetailView, self).get_context_data(**kwargs)
-        statistics = BuildingConflict.statistics(out['district'], group_by='town')
+        statistics = MfPlaceConflict.statistics(out['district'], group_by='town')
         out.update({
             'regions': dict([(i.id, i) for i in Region.objects.select_related().all()]),
             'districts': dict([(i.id, i) for i in District.objects.select_related().all()]),
@@ -92,7 +92,7 @@ class MfTownHellsListView(TownDetailView, MfCommon):
 
     def get_context_data(self, **kwargs):
         out = super(MfTownHellsListView, self).get_context_data(**kwargs)
-        statistics = BuildingConflict.statistics(self.object)
+        statistics = MfPlaceConflict.statistics(self.object)
         out.update(statistics)
         out.update(self.paginator(statistics['hells_qs']))
         out['campaign'] = self.kwargs['campaign']
@@ -107,7 +107,7 @@ class MfTownHellDetailView(TownDetailView):
 
     def get_context_data(self, **kwargs):
         out = super(MfTownHellDetailView, self).get_context_data(**kwargs)
-        statistics = BuildingConflict.statistics(self.object)
+        statistics = MfPlaceConflict.statistics(self.object)
         out.update(statistics)
 
         hell = Hell.objects.get(region=out['region'], district=out['district'], town=out['town'], id=self.kwargs['id'])
@@ -127,10 +127,10 @@ class MfTownBuildingsListView(TownDetailView, MfCommon):
 
     def get_context_data(self, **kwargs):
         out = super(MfTownBuildingsListView, self).get_context_data(**kwargs)
-        statistics = BuildingConflict.statistics(self.object)
+        statistics = MfPlaceConflict.statistics(self.object)
         out.update(statistics)
         out.update({
-            'buildings_qs': Building.objects.filter(town=out['town']),
+            'buildings_qs': MfPlace.objects.filter(town=out['town']),
             'campaign': self.kwargs['campaign']
         })
         out.update(self.paginator(out['buildings_qs']))
@@ -145,10 +145,10 @@ class MfTownBuildingDetailView(TownDetailView):
 
     def get_context_data(self, **kwargs):
         out = super(MfTownBuildingDetailView, self).get_context_data(**kwargs)
-        statistics = BuildingConflict.statistics(self.object)
+        statistics = MfPlaceConflict.statistics(self.object)
         out.update(statistics)
         out.update({
-            'building': Building.objects.get(region=out['region'], district=out['district'], town=out['town'], id=self.kwargs['id']),
+            'building': MfPlace.objects.get(region=out['region'], district=out['district'], town=out['town'], id=self.kwargs['id']),
             'campaign': self.kwargs['campaign']
         })
         return out

@@ -10,17 +10,17 @@
             {# nektere z nich jsou v konfliktu se zakonem #}
             <span class="title"><b>{{ obj.get_lokativ }}</b></span> povolilo Ministerstvo financí k 31. 12. 2011 provoz
             {% if hells %}
-                <b>{{ conflict_hell_counts }}&nbsp;{{ conflict_hell_counts|grammar:"0=heren,1=herna,4=herny,?=heren" }}</b>
+                <b>{{ conflict_hell_counts }}&nbsp;{{ conflict_hell_counts|grammar:"0=heren,1=herny,?=heren" }}</b>
                 ({{ statistics.conflict_hell_perc|key:obj.id|floatformat:1 }}% z&nbsp;{{ statistics.hell_counts|key:obj.id }})
             {% else %}
                 {% variable statistics.conflict_machine_counts|key:obj.id as conflict_machine_counts %}
-                <b>{{ conflict_machine_counts }}&nbsp;{{ conflict_machine_counts|grammar:"0=automatů,1=automat,4=automaty,?=automatů" }}</b>
+                <b>{{ conflict_machine_counts }}&nbsp;{{ conflict_machine_counts|grammar:"0=automatů,1=automatu,?=automatů" }}</b>
                 ({{ statistics.conflict_machine_perc|key:obj.id|floatformat:1 }}% z&nbsp;{{ statistics.machine_counts|key:obj.id }})
             {% endif %}
             v rozporu se <a href="#">zákonem</a>.
         {% else %}
             {# herny tu jsou, ale vsechny jsou ok #}
-            <span class="title">{{ prefix }} <b>{{ obj.get_lokativ }}</b></span> není ani
+            <span class="title"><b>{{ obj.get_lokativ }}</b></span> není ani
             {% if hells %}
                 jedna herna
             {% else %}
@@ -29,7 +29,7 @@
             v rozporu se <a href="#">zákonem</a>.
         {% endif %}
     {% else %}
-        <span class="title">{{ prefix }} <b>{{ obj.get_lokativ }}</b></span> není provozována ani
+        <span class="title"><b>{{ obj.get_lokativ }}</b></span> není provozována ani
         {% if hells %}
             jedna herna.
         {% else %}
@@ -53,4 +53,4 @@
 {% endif %}
 
 {# vysvetleni kampane #}
-<p><a href="{% url campaign-detail campaign=campaign %}">Podrobné vysvětlení této kampaně</a> &raquo;</p>
+<p><a href="{% url campaign-mf-homepage campaign=campaign %}">Podrobné vysvětlení této kampaně</a> &raquo;</p>

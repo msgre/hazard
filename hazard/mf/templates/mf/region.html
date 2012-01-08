@@ -3,7 +3,6 @@
 {% load shared mf %}
 
 {% block main_header %}
-    {#<h1>{% if region.title == 'Vysočina' %}Kraj {{ region.title }}{% else %}{{ region.title }} kraj{% endif %}</h1>#}
     <h1>{{ region.title }}</h1>
 {% endblock %}
 
@@ -20,7 +19,6 @@
                 {% mf_primer_text region "hells" %}
             </div>
         </div>
-
         <div class="machines">
             <div class="span-2">
                 {% variable statistics.conflict_machine_perc|key:region.id as cmachines %}

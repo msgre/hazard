@@ -1,0 +1,24 @@
+{% extends "territories/base.html" %}
+
+{% block breadcrumb %}
+    <a href="/kampan/">Kampane</a>
+{% endblock %}
+
+{% block campaign_menu %}{% endblock %}
+
+{% block main_header %}
+    <h1>{{ campaign.title }}</h1>
+{% endblock %}
+
+{% block submenu %}
+    <p>
+        <a href="{% url campaign-mf-homepage campaign=campaign.slug %}">Popis</a> |
+        <a href="{% url campaign-mf-toplist campaign=campaign.slug %}">Zebricky</a>
+        <span class="quiet">| Casova osa |
+        Media |
+        Navod |
+        Data</span>
+    </p>
+{% endblock %}
+
+{# vim: set et si ts=4 sw=4 syn=django: #}

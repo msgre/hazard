@@ -1,10 +1,9 @@
-from django.conf.urls.defaults import patterns, include, url
+# -*- coding: utf-8 -*-
+# vim: set et si ts=4 sw=4:
+
+from django.conf.urls.defaults import *
 from django.contrib import admin
 from django.views.generic import TemplateView, RedirectView
-from django.views.decorators.cache import cache_page
-
-#from hazard.geo.views import EntryDetailView, EntryFormView, EntryListView, FullEntryListView
-#from hazard.news.views import NewDetailView, NewListView
 
 admin.autodiscover()
 
@@ -13,7 +12,8 @@ urlpatterns = patterns('',
     url(r'^$', TemplateView.as_view(template_name='homepage.html')),
     url(r'^kampane/$', RedirectView.as_view(url='/kampan/')),
     url(r'^kampan/', include('hazard.campaigns.urls')),
-    url(r'^', include('hazard.territories.urls')),
+    url(r'^zpravy/', include('hazard.news.urls')),
+    url(r'^kontakt/$', TemplateView.as_view(template_name='contact.html'), name="contact"),
 )
 
 # debug static media server

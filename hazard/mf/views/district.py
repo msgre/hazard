@@ -3,7 +3,7 @@
 
 from hazard.territories.views import TownListView
 from hazard.territories.models import District, Region
-from hazard.mf.models import BuildingConflict
+from hazard.mf.models import MfPlaceConflict
 
 
 class MfDistrictView(TownListView):
@@ -14,7 +14,7 @@ class MfDistrictView(TownListView):
 
     def get_context_data(self, **kwargs):
         out = super(MfDistrictView, self).get_context_data(**kwargs)
-        statistics = BuildingConflict.statistics(None, group_by='district')
+        statistics = MfPlaceConflict.statistics(None, group_by='district')
         out.update({
             'statistics': statistics,
             'regions': dict([(i.id, i) for i in Region.objects.select_related().all()]),

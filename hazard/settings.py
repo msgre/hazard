@@ -75,13 +75,10 @@ INSTALLED_APPS = (
     'django.contrib.markup',
     'debug_toolbar',
     'south',
+    'chunks',
     'hazard.shared',
-    'hazard.geo',
     'hazard.news',
-    'django_concurrent_test_server',
-    # remake
     'hazard.territories',
-    'hazard.addresses',
     'hazard.gobjects',
     'hazard.campaigns',
     'hazard.mf',
@@ -91,12 +88,12 @@ INSTALLED_APPS = (
 APPEND_SLASH = True
 
 # datumy
-DATE_FORMAT = "j.n. Y"
+DATE_FORMAT = "j.E Y"
 TIME_FORMAT = "G.i"
 
 # debug
 SEND_BROKEN_LINK_EMAILS = True
-EMAIL_SUBJECT_PREFIX = u'[MapyHazardu]'
+EMAIL_SUBJECT_PREFIX = u'[MapyHazardu_2]'
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -150,7 +147,7 @@ TEMPLATE_CONTEXT_PROCESSORS = [
     "django.core.context_processors.media",
     "django.core.context_processors.static",
     "django.core.context_processors.request",
-    "hazard.shared.context_processors.common",
+    #"hazard.shared.context_processors.common",
     "hazard.campaigns.context_processors.campaigns",
 ]
 

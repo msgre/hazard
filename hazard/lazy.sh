@@ -1,5 +1,5 @@
 #!/bin/bash
-dropdb hazard
-createdb -T template_postgis hazard
+dropdb hazard3
+createdb -T template_postgis hazard3
 ./manage.py syncdb --noinput
 ./manage.py migrate

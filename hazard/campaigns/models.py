@@ -3,6 +3,7 @@
 import re
 
 from django.db import models
+from django.core.urlresolvers import reverse
 
 
 class Campaign(models.Model):
@@ -26,7 +27,7 @@ class Campaign(models.Model):
     class Meta:
         verbose_name = u'Kampaň'
         verbose_name_plural = u'Kampaně'
-        ordering = ('title', )
+        ordering = ('order', )
 
     def __unicode__(self):
         return self.title
@@ -34,6 +35,6 @@ class Campaign(models.Model):
     def get_title(self):
         return self.short_title or self.title
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('campaign-detail', [], {'campaign': self.slug})
+        url = reverse('campaign-homepage')
+        return "%s%s/" % (url, self.slug)

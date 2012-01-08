@@ -1,8 +1,3 @@
-<table>
-    {% for new in news %}
-        <tr>
-            <td><a href="{{ new.get_absolute_url }}">{{ new.title }}</a></td>
-            <td class="right">{{ new.created|date }}</td>
-        </tr>
-    {% endfor %}
-</table>
+{% for new in news %}
+    <p>{{ new.created|date }}<br><a href="{{ new.get_absolute_url }}">{{ new.title }}</a></p>
+{% endfor %}

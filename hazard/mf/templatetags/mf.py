@@ -12,23 +12,20 @@ register = template.Library()
 @register.inclusion_tag('mf/mf_primer_text.html', takes_context=True)
 def mf_primer_text(context, obj, type):
     """
-    TODO:
+    Generuje uvodni text se zakladnimi informacemi o poctech a procentech
+    heren/automatu v dane oblasti.
     """
     geo = obj.__class__.__name__.lower()
     if geo == 'town':
-        prefix = 'obci'
         detail_title = ''
         subobjects = None
     elif geo == 'district':
-        prefix = 'okrese'
         detail_title = 'obcích okresu'
         subobjects = obj.town_set.all()
     else:
-        prefix = 'kraji'
         detail_title = 'okresech kraje'
         subobjects = obj.district_set.all()
     context.update({
-        'prefix': prefix,
         'detail_title': detail_title,
         'hells': type == 'hells',
         'obj': obj,
@@ -63,16 +60,26 @@ def mf_table(context, area, type):
         context['conflict_counts'] = context['statistics']['conflict_hell_counts']
         context['conflict_perc'] = context['statistics']['conflict_hell_perc']
         context['type_title'] = u'heren'
-        context['density'] = context['statistics']['hell_density']
-        context['per_resident'] = context['statistics']['hell_per_resident']
     else:
         context['counts'] = context['statistics']['machine_counts']
         context['conflict_counts'] = context['statistics']['conflict_machine_counts']
         context['conflict_perc'] = context['statistics']['conflict_machine_perc']
         context['type_title'] = u'automatů'
-        context['density'] = context['statistics']['machine_density']
-        context['per_resident'] = context['statistics']['machine_per_resident']
 
+    return context
+
+
+@register.inclusion_tag('mf/mf_toplist.html', takes_context=True)
+def mf_toplist(context, statistics, geo, key, title):
+    """
+    TODO:
+    """
+    context.update({
+        'statistics': statistics,
+        'geo': geo,
+        'key': key,
+        'title': title
+    })
     return context
 
 

@@ -19,6 +19,7 @@ def display_news(news=None):
         news = New.objects.all()[:TOP_NEWS]
     return {'news': news}
 
+
 @register.inclusion_tag('news/display_last_new.tag.html')
 def display_last_new():
     """
