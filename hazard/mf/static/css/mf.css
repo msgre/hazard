@@ -1,3 +1,7 @@
+h1.loading {
+    background: transparent url(../img/ajax-loader3.gif) 100% 50% no-repeat;
+}
+
 .text-right {
     text-align:right;
 }

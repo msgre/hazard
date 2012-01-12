@@ -1,5 +1,5 @@
 (function() {
-  var $, HELL_MARKERS, HOVERED_HELL, ICONS, MAP, MAP_STYLE, MARKER_LUT, OPENED_INFOWINDOW, POLYS, POLYS_COLORS, SCHOVAVACZ_OPTS, VIEW, clear_surround, convert_to_hex, convert_to_rgb, draw_hells, draw_shapes, handle_switcher, handle_table, hex, init_map, interpolate_color, number_to_graph, show_surround, trim, update_shapes;
+  var $, MAP, MAP_STYLE, POLYS, POLYS_COLORS, SCHOVAVACZ_OPTS, VIEW, convert_to_hex, convert_to_rgb, draw_shapes, handle_switcher, handle_table, hex, interpolate_color, load_maps_api, number_to_graph, trim, update_shapes;
   var __indexOf = Array.prototype.indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (this[i] === item) return i;
@@ -65,7 +65,7 @@
       });
     }
   });
-  "TODO:";
+  "Kod pro stranky s krajem a okresy.\n\nZ tabulky vlozene do stranky dokaze vyzobnout potrebne informace (napr.\nabsolutni pocet heren v kraji), spoji se serverem a vytahne z nej polygony\ngeokrafickych objektu (obrysy kraju/okresu), zavesi na elementy ve strance\nobsluzne funkce a upravi vzhled stranky.";
   SCHOVAVACZ_OPTS = {
     limit: 4,
     epsilon: 1,
@@ -73,12 +73,6 @@
     hide_txt: ' <i>zkrátit seznam…</i>',
     items_selector: 'span'
   };
-  $(document).ready(function() {
-    init_map();
-    $('.sub-objects').schovavacz(SCHOVAVACZ_OPTS);
-    handle_table();
-    return handle_switcher();
-  });
   VIEW = 'hells';
   /*
   Obsluha preklikavani pohledu herny/automaty.
@@ -106,7 +100,8 @@
   };
   /*
   Zjednodusi tabulku na strance -- zobrazi vzdy jen jeden vybrany sloupec
-  a data v nem interpretuje jako barevny prouzek na pozadi radku.
+  a data v nem interpretuje jako barevny prouzek na pozadi radku. Povesi na
+  tabulku hover obsluhu (zvyrazeneni radku i polygonu v mape).
   */
   handle_table = function() {
     $('table.statistics tr').hover(function() {
@@ -124,6 +119,7 @@
       var $tr, href;
       $tr = $(this).closest('tr');
       href = $tr.find('a').attr('href');
+      $('h1').addClass('loading');
       $.ajax({
         url: href,
         cache: true,
@@ -139,7 +135,6 @@
             strokeWeight: 0
           });
           window.actual = $.trim($tr.attr('class').replace('hover', ''));
-          console.log("#" + window.actual + "#");
           POLYS[window.actual].setOptions({
             zIndex: 20,
             strokeWeight: 3,
@@ -149,7 +144,8 @@
           google.maps.event.addListenerOnce(MAP, 'zoom_changed', function() {
             return MAP.setZoom(MAP.getZoom() - 1);
           });
-          return MAP.fitBounds(POLYS[window.actual].getBounds());
+          MAP.fitBounds(POLYS[window.actual].getBounds());
+          return $('h1').removeClass('loading');
         }
       });
       return false;
@@ -196,7 +192,7 @@
     return $('.table-switcher').change();
   };
   /*
-  Interpretuje hodnotu jako barevny prouzek na pozadi radku tabulky.
+  Interpretuje hodnotu v tabulce jako barevny prouzek na pozadi radku tabulky.
   */
   number_to_graph = function($table, values, percents, cls) {
     var max, td1_w, td2_w, width;
@@ -228,7 +224,8 @@
   POLYS = {};
   POLYS_COLORS = {};
   /*
-  TODO:
+  Prvotni vykresleni barevnych polygonu do mapy (dle aktualne zvolenych voleb
+  v selektitkach a datech v tabulce).
   */
   draw_shapes = function() {
     var $select, $table, actual_max_lat, actual_max_lon, actual_min_lat, actual_min_lon, col, delta, extrems, max_lat, max_lats, max_lon, max_lons, min_lat, min_lats, min_lon, min_lons, _ref, _ref2;
@@ -347,7 +344,8 @@
     return MAP.fitBounds(new google.maps.LatLngBounds(new google.maps.LatLng(min_lat, min_lon), new google.maps.LatLng(max_lat, max_lon)));
   };
   /*
-  TODO:
+  Aktualizace barev vykreslenych polygonu na mape (dle aktualne zvolenych voleb
+  v selektitkach a datech v tabulce).
   */
   update_shapes = function() {
     var $select, $table, col, delta, extrems;
@@ -380,11 +378,6 @@
     });
   };
   MAP = void 0;
-  ICONS = {};
-  MARKER_LUT = {};
-  HELL_MARKERS = {};
-  HOVERED_HELL = null;
-  OPENED_INFOWINDOW = false;
   MAP_STYLE = [
     {
       featureType: "water",
@@ -462,150 +455,11 @@
       ]
     }
   ];
-  show_surround = function(hell) {
-    var conflict, coords, i, poly;
-    conflict = window.conflicts["" + hell.id];
-    coords = [
-      (function() {
-        var _i, _len, _ref, _results;
-        _ref = conflict.shape[0];
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          i = _ref[_i];
-          _results.push(new google.maps.LatLng(i[1], i[0]));
-        }
-        return _results;
-      })()
-    ];
-    poly = new google.maps.Polygon({
-      paths: coords,
-      strokeColor: "#EE0000",
-      strokeOpacity: 0,
-      strokeWeight: 0,
-      fillColor: "#EE0000",
-      fillOpacity: 0.35
-    });
-    poly.setMap(MAP);
-    return HOVERED_HELL = {
-      'hell': hell,
-      'poly': poly
-    };
-  };
-  clear_surround = function() {
-    if (HOVERED_HELL) {
-      HOVERED_HELL['poly'].setMap(null);
-      return HOVERED_HELL = null;
-    }
-  };
-  draw_hells = function() {
-    var bounds, ne, sw;
-    sw = [1000, 1000];
-    ne = [0, 0];
-    _.each(window.hells, function(hell) {
-      var address, infowindow, marker_pos, pos_key;
-      address = window.addresses["" + hell.address];
-      pos_key = "" + address.point[1] + "-" + address.point[0];
-      if (pos_key in MARKER_LUT) {
-        MARKER_LUT[pos_key]['hells'].push(hell.id);
-        HELL_MARKERS[hell.id] = pos_key;
-        return true;
-      } else {
-        MARKER_LUT[pos_key] = {
-          'hells': [],
-          'gobjects': [],
-          'marker': void 0
-        };
-      }
-      MARKER_LUT[pos_key]['hells'].push(hell.id);
-      HELL_MARKERS[hell.id] = pos_key;
-      marker_pos = new google.maps.LatLng(address.point[1], address.point[0]);
-      MARKER_LUT[pos_key]['marker'] = new google.maps.Marker({
-        position: marker_pos,
-        map: MAP,
-        icon: ("" + hell.id) in window.conflicts ? ICONS.disallowed : ICONS.allowed,
-        shadow: ICONS.shadow
-      });
-      if (address.point[1] < sw[0]) {
-        sw[0] = address.point[1];
-      }
-      if (address.point[1] > ne[0]) {
-        ne[0] = address.point[1];
-      }
-      if (address.point[0] < sw[1]) {
-        sw[1] = address.point[0];
-      }
-      if (address.point[0] > ne[1]) {
-        ne[1] = address.point[0];
-      }
-      infowindow = new google.maps.InfoWindow();
-      google.maps.event.addListener(MARKER_LUT[pos_key]['marker'], 'click', function() {
-        var building_names, hell_titles, i, text;
-        if (OPENED_INFOWINDOW) {
-          clear_surround();
-          OPENED_INFOWINDOW.close();
-        }
-        OPENED_INFOWINDOW = infowindow;
-        show_surround(hell);
-        if (MARKER_LUT[pos_key]['hells'].length) {
-          hell_titles = ((function() {
-            var _i, _len, _ref, _results;
-            _ref = MARKER_LUT[pos_key]['hells'];
-            _results = [];
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              i = _ref[_i];
-              _results.push("<a href=\"herny/" + i + "/\">" + window.hells[i].title + "</a>");
-            }
-            return _results;
-          })()).join('<br/>');
-        } else {
-          hell_titles = null;
-        }
-        text = "<h4>" + hell_titles + "</h4>";
-        if (("" + hell.id) in window.conflicts) {
-          text = "" + text + "<p>Provoz herny(-en) je na tomto místě v <b>rozporu se zákonem o loteriích</b>.</p>";
-        } else {
-          text = "" + text + "<p>Provoz herny(-en) na tomto místě není v rozporu se zákonem o loteriích.</p>";
-        }
-        if (("" + hell.id) in window.conflicts) {
-          text = "" + text + "<p>Konfliktní budovy/oblasti:</p>";
-          building_names = ((function() {
-            var _i, _len, _ref, _results;
-            _ref = window.conflicts["" + hell.id]['buildings'];
-            _results = [];
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              i = _ref[_i];
-              _results.push(window.gobjects["" + i].title);
-            }
-            return _results;
-          })()).join('</li><li>');
-          text = "" + text + "<ul><li>" + building_names + "</li></ul>";
-        }
-        infowindow.setContent(text);
-        return infowindow.open(MAP, MARKER_LUT[pos_key]['marker']);
-      });
-      google.maps.event.addListener(infowindow, 'closeclick', function() {
-        OPENED_INFOWINDOW = false;
-        return clear_surround();
-      });
-      if (("" + hell.id) in window.conflicts) {
-        google.maps.event.addListener(MARKER_LUT[pos_key]['marker'], 'mouseover', function() {
-          if (!OPENED_INFOWINDOW) {
-            return show_surround(hell);
-          }
-        });
-        return google.maps.event.addListener(MARKER_LUT[pos_key]['marker'], 'mouseout', function() {
-          if (!OPENED_INFOWINDOW) {
-            return clear_surround();
-          }
-        });
-      }
-    });
-    if (window.hells) {
-      bounds = new google.maps.LatLngBounds(new google.maps.LatLng(sw[0], sw[1]), new google.maps.LatLng(ne[0], ne[1]));
-      return MAP.fitBounds(bounds);
-    }
-  };
-  init_map = function() {
+  /*
+  Ajaxove nacteni geografickych dat o polygonech a asynchronni load Google Maps API.
+  */
+  load_maps_api = function() {
+    $('h1').addClass('loading');
     return $.getJSON(window.url, function(data) {
       var key, script, _i, _len, _ref;
       window.shapes = {};
@@ -620,6 +474,9 @@
       return document.body.appendChild(script);
     });
   };
+  /*
+  Inicializace map, volana jako callback po asynchronnim nacteni Google Maps API.
+  */
   window.late_map = function() {
     var map_options, styledMapType;
     if (!google.maps.Polygon.prototype.getBounds) {
@@ -639,15 +496,6 @@
         return bounds;
       };
     }
-    ICONS = {
-      'allowed': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/yes.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14)),
-      'allowed_dimmed': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/yes_dimmed.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14)),
-      'allowed_hovered': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/yes_hovered.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14)),
-      'disallowed': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/no.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14)),
-      'disallowed_dimmed': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/no_dimmed.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14)),
-      'disallowed_hovered': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/no_hovered.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14)),
-      'shadow': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/shadow.png', new google.maps.Size(27, 14), new google.maps.Point(0, 0), new google.maps.Point(8, 0))
-    };
     map_options = {
       zoom: 6,
       center: new google.maps.LatLng(49.38512, 14.61765),
@@ -660,8 +508,12 @@
       name: 'Černobílá'
     });
     MAP.mapTypes.set('CB', styledMapType);
-    return draw_shapes();
+    draw_shapes();
+    return $('h1').removeClass('loading');
   };
+  /*
+  Funkce pro vypocet interpolovanych barev mezi dvema zadanymi body.
+  */
   hex = function(v) {
     var out;
     out = v.toString(16);
@@ -691,4 +543,10 @@
     c = [Math.round((end[0] - start[0]) * value + start[0]), Math.round((end[1] - start[1]) * value + start[1]), Math.round((end[2] - start[2]) * value + start[2])];
     return convert_to_hex(c);
   };
+  $(document).ready(function() {
+    load_maps_api();
+    $('.sub-objects').schovavacz(SCHOVAVACZ_OPTS);
+    handle_table();
+    return handle_switcher();
+  });
 }).call(this);

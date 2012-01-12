@@ -60,19 +60,18 @@
 {% block js %}
     {{ block.super }}
     <script type="text/javascript">
+    {% comment %}
         {% filter shorten_latlon %}
         window.hells = {{ js_hells|json }};
         window.gobjects = {{ js_gobjects|json }};
         window.conflicts = {{ js_conflicts|json }};
         window.addresses = {{ js_addresses|json }};
         {% endfilter %}
-    </script>
-    {% comment %}
-    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=true"></script>
     {% endcomment %}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/underscore-min.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDw1uicJmcKKdEIvLS9XavLO0RPFvIpOT4&v=3&sensor=false" type="text/javascript"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/mf.js"></script>
+        window.actual = '{{ town.slug }}';
+        window.url = '/kampan/mf/ajax/obce/';
+    </script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/lib/mf1.js"></script>
 {% endblock %}
 
 {# vim: set et si ts=4 sw=4 syn=django: #}

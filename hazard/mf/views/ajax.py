@@ -4,7 +4,7 @@
 from django.views.generic import TemplateView
 
 from hazard.mf.models import MfPlaceConflict
-from hazard.territories.models import Region, District
+from hazard.territories.models import Region, District, Town
 
 
 class MfAjax(TemplateView):
@@ -18,8 +18,10 @@ class MfAjax(TemplateView):
         out['statistics'] = MfPlaceConflict.statistics(None, group_by='region')
         if self.kwargs['type'] == 'kraje':
             out['json_details'] = dict([(i.id, i) for i in Region.objects.select_related().all()])
-        else:
+        elif self.kwargs['type'] == 'okresy':
             out['json_details'] = dict([(i.id, i) for i in District.objects.select_related().all()])
+        else:
+            out['json_details'] = dict([(i.id, i) for i in Town.objects.select_related().all()])
         return out
 
     def render_to_response(self, context, **response_kwargs):

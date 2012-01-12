@@ -1,14 +1,7 @@
 """
-Kod pro stranky s krajem a okresy.
-
-Z tabulky vlozene do stranky dokaze vyzobnout potrebne informace (napr.
-absolutni pocet heren v kraji), spoji se serverem a vytahne z nej polygony
-geokrafickych objektu (obrysy kraju/okresu), zavesi na elementy ve strance
-obsluzne funkce a upravi vzhled stranky.
+TODO:
 """
 
-# nastaveni schovavace (pluginu starajiciho se o zkraceni seznamu okresu/obci
-# pod uvodnim textem)
 SCHOVAVACZ_OPTS =
     limit: 4
     epsilon: 1
@@ -16,10 +9,15 @@ SCHOVAVACZ_OPTS =
     hide_txt: ' <i>zkrátit seznam…</i>'
     items_selector: 'span'
 
+$(document).ready () ->
+    init_map()
+    $('.sub-objects').schovavacz(SCHOVAVACZ_OPTS)
+    handle_table()
+    handle_switcher()
 
-# globalni promenna, ktera udrzuje informaci o tom, jestli si na strance
-# prohlizime udaje o hernach nebo automatech (voli se selektitkem nad mapou)
 VIEW = 'hells'
+
+
 
 
 ###
@@ -46,10 +44,10 @@ handle_switcher = (set=true) ->
 
 ###
 Zjednodusi tabulku na strance -- zobrazi vzdy jen jeden vybrany sloupec
-a data v nem interpretuje jako barevny prouzek na pozadi radku. Povesi na
-tabulku hover obsluhu (zvyrazeneni radku i polygonu v mape).
+a data v nem interpretuje jako barevny prouzek na pozadi radku.
 ###
 handle_table = () ->
+    # TODO: tady kravi ta bublina...
     $('table.statistics tr').hover () ->
         key = $.trim($(@).attr('class').replace('active', ''))
         google.maps.event.trigger(POLYS[key], 'mouseover')
@@ -63,13 +61,15 @@ handle_table = () ->
     $('table.statistics td').click () ->
         $tr = $(@).closest('tr')
         href = $tr.find('a').attr('href')
-        $('h1').addClass('loading')
 
         $.ajax
             url: href
             cache: true
             dataType: 'json'
             success: (data) ->
+# TODO: focus na vybrany kraj
+# TODO: dynamicka zmena URL s pomoci history api
+# TODO: nejaky ajax loader nekde kua...
                 $('h1').replaceWith(data.main_header)
                 $('#primer').replaceWith(data.primer_content)
                 $('.sub-objects').schovavacz(SCHOVAVACZ_OPTS)
@@ -79,6 +79,7 @@ handle_table = () ->
                     zIndex: 10
                     strokeWeight: 0
                 window.actual = $.trim($tr.attr('class').replace('hover', ''))
+                console.log "##{ window.actual }#"
                 POLYS[window.actual].setOptions
                     zIndex: 20
                     strokeWeight: 3
@@ -87,7 +88,6 @@ handle_table = () ->
                 google.maps.event.addListenerOnce MAP, 'zoom_changed', () ->
                     MAP.setZoom(MAP.getZoom() - 1)
                 MAP.fitBounds(POLYS[window.actual].getBounds())
-                $('h1').removeClass('loading')
         false
 
     # pryc s hlavickou tabulky
@@ -121,12 +121,13 @@ handle_table = () ->
                 $table.data(switcher_value, {'min': _.min(values), 'max': if percents then 100.0 else _.max(values)})
             number_to_graph($table, values, percents, switcher_value)
         update_shapes()
+        #perex_addon()
 
     $('.table-switcher').change()
 
 
 ###
-Interpretuje hodnotu v tabulce jako barevny prouzek na pozadi radku tabulky.
+Interpretuje hodnotu jako barevny prouzek na pozadi radku tabulky.
 ###
 number_to_graph = ($table, values, percents, cls) ->
     # maximum ve sloupecku s daty
@@ -157,16 +158,11 @@ number_to_graph = ($table, values, percents, cls) ->
         $td2.css('background-position', "#{ x2 }px 0")
 
 
-# globalni objekt se vsemi polygony vykreslenymi do mapy
 POLYS = {}
-
-# aktualni barvy vykreslenych polygonu
 POLYS_COLORS = {}
 
-
 ###
-Prvotni vykresleni barevnych polygonu do mapy (dle aktualne zvolenych voleb
-v selektitkach a datech v tabulce).
+TODO:
 ###
 draw_shapes = () ->
 
@@ -248,6 +244,7 @@ draw_shapes = () ->
 
         POLYS[key].setMap(MAP)
 
+
     min_lat = _.min(min_lats)
     max_lat = _.max(max_lats)
     min_lon = _.min(min_lons)
@@ -264,8 +261,7 @@ draw_shapes = () ->
 
 
 ###
-Aktualizace barev vykreslenych polygonu na mape (dle aktualne zvolenych voleb
-v selektitkach a datech v tabulce).
+TODO:
 ###
 update_shapes = () ->
 
@@ -297,29 +293,253 @@ update_shapes = () ->
                 strokeWeight: 3
 
 
-# mapa
-MAP = undefined
 
-# nastylovani mapy
+
+
+
+
+
+
+
+
+
+
+
+MAP = undefined
+ICONS = {}
+MARKER_LUT = {} # kes spendliku na mape
+HELL_MARKERS = {}
+HOVERED_HELL = null
+OPENED_INFOWINDOW = false
+
+
 MAP_STYLE = [
-  {featureType:"water", stylers:[{visibility:"off"}]},
-  {featureType:"transit", stylers:[{ visibility:"off"}]},
-  {featureType:"landscape.natural", stylers:[{visibility:"off"}]},
-  {featureType:"road", stylers:[{visibility:"off"}]},
-  {featureType:"landscape.man_made", stylers:[{visibility:"off"}]},
-  {featureType:"poi", stylers:[{visibility:"off"}]},
-  {featureType:"administrative.province", stylers:[{visibility:"off"}]},
-  {featureType:"administrative.locality", stylers:[{visibility:"off"}]},
-  {featureType:"administrative", elementType:"labels", stylers:[{visibility:"off"}]},
-  {featureType:"administrative.country", elementType:"geometry", stylers:[{visibility:"on"}, {lightness:58}]}
+  {
+    featureType: "water",
+    stylers: [
+      { visibility: "off" }
+    ]
+  },{
+    featureType: "transit",
+    stylers: [
+      { visibility: "off" }
+    ]
+  },{
+  #   featureType: "landscape",
+  #   stylers: [
+  #     { lightness: -80 },
+  #   ]
+  # },{
+    featureType: "landscape.natural",
+    stylers: [
+      { visibility: "off" }
+    ]
+  },{
+    featureType: "road",
+    stylers: [
+      { visibility: "off" }
+    ]
+  },{
+    featureType: "landscape.man_made",
+    stylers: [
+      { visibility: "off" }
+    ]
+  },{
+    featureType: "poi",
+    stylers: [
+      { visibility: "off" }
+    ]
+  },{
+    featureType: "administrative.province",
+    stylers: [
+      { visibility: "off" }
+    ]
+  },{
+    featureType: "administrative.locality",
+    stylers: [
+      { visibility: "off" }
+    ]
+  },{
+    featureType: "administrative",
+    elementType: "labels",
+    stylers: [
+      { visibility: "off" }
+    ]
+  },{
+    featureType: "administrative.country",
+    elementType: "geometry",
+    stylers: [
+      { visibility: "on" },
+      { lightness: 58 }
+    ]
+  }
 ]
 
+# MAP_STYLE = [
+#   {
+#     featureType: "landscape",
+#     stylers: [
+#       { visibility: "off" }
+#     ]
+#   },{
+#     featureType: "administrative.province",
+#     stylers: [
+#       { visibility: "off" }
+#     ]
+#   },{
+#     featureType: "poi",
+#     stylers: [
+#       { visibility: "off" }
+#     ]
+#   },{
+#     featureType: "administrative",
+#     stylers: [
+#       { lightness: 30 },
+#       { saturation: -100 }
+#     ]
+#   },{
+#     featureType: "road",
+#     stylers: [
+#       { saturation: -100 },
+#       { lightness: 30 }
+#     ]
+#   },{
+#     featureType: "transit",
+#     stylers: [
+#       { visibility: "off" }
+#     ]
+#   },{
+#     featureType: "water",
+#     stylers: [
+#       { saturation: -100 },
+#       { lightness: 30 }
+#     ]
+#   }
+# ]
 
-###
-Ajaxove nacteni geografickych dat o polygonech a asynchronni load Google Maps API.
-###
-load_maps_api = () ->
-    $('h1').addClass('loading')
+
+
+
+show_surround = (hell) ->
+    conflict = window.conflicts["#{ hell.id }"]
+    coords = [new google.maps.LatLng(i[1], i[0]) for i in conflict.shape[0]]
+    poly = new google.maps.Polygon
+        paths: coords
+        strokeColor: "#EE0000"
+        strokeOpacity: 0
+        strokeWeight: 0
+        fillColor: "#EE0000"
+        fillOpacity: 0.35
+    poly.setMap(MAP)
+    HOVERED_HELL = {'hell': hell, 'poly': poly}
+
+
+clear_surround = () ->
+    if HOVERED_HELL
+        HOVERED_HELL['poly'].setMap(null)
+        HOVERED_HELL = null
+
+
+# TODO:
+draw_hells = () ->
+    sw = [1000, 1000]
+    ne = [0, 0]
+
+    _.each window.hells, (hell) ->
+        address = window.addresses["#{ hell.address }"] # adresa herny
+        pos_key = "#{ address.point[1] }-#{ address.point[0] }" # pozice herny v mape
+
+        # tak co, uz jsme na pozici address.point neco zapichli?
+        if pos_key of MARKER_LUT
+            # yes! tak si jen poznamename co tam jeste patri a novy spendlik nekreslime
+            MARKER_LUT[pos_key]['hells'].push(hell.id)
+            HELL_MARKERS[hell.id] = pos_key
+            return true
+        else
+            MARKER_LUT[pos_key] = {'hells': [], 'gobjects': [], 'marker': undefined}
+
+        # zapamatujeme si co kde lezi
+        MARKER_LUT[pos_key]['hells'].push(hell.id)
+        HELL_MARKERS[hell.id] = pos_key
+
+        # zapichneme spendlik
+        marker_pos = new google.maps.LatLng(address.point[1], address.point[0])
+        MARKER_LUT[pos_key]['marker'] = new google.maps.Marker
+            position: marker_pos
+            map: MAP
+            icon: if "#{ hell.id }" of window.conflicts then ICONS.disallowed else ICONS.allowed
+            shadow: ICONS.shadow
+
+        # bounding box
+        sw[0] = address.point[1] if address.point[1] < sw[0]
+        ne[0] = address.point[1] if address.point[1] > ne[0]
+        sw[1] = address.point[0] if address.point[0] < sw[1]
+        ne[1] = address.point[0] if address.point[0] > ne[1]
+
+        # bublina s podrobnymi informacemi
+        infowindow = new google.maps.InfoWindow()
+        google.maps.event.addListener MARKER_LUT[pos_key]['marker'], 'click', () ->
+
+            if OPENED_INFOWINDOW
+                clear_surround()
+                OPENED_INFOWINDOW.close()
+            OPENED_INFOWINDOW = infowindow
+
+            # odkryti okoli
+            show_surround(hell)
+
+            # nadpis s nazvem heren
+            if MARKER_LUT[pos_key]['hells'].length
+                hell_titles = ("<a href=\"herny/#{ i }/\">#{ window.hells[i].title }</a>" for i in MARKER_LUT[pos_key]['hells']).join('<br/>')
+            else
+                hell_titles = null
+
+            # uvodni text bubliny
+            text = "<h4>#{ hell_titles }</h4>"
+            if "#{ hell.id }" of window.conflicts
+                text = "#{ text }<p>Provoz herny(-en) je na tomto místě v <b>rozporu se zákonem o loteriích</b>.</p>"
+            else
+                text = "#{ text }<p>Provoz herny(-en) na tomto místě není v rozporu se zákonem o loteriích.</p>"
+
+            # seznam konfliktnich oblasti
+            if "#{ hell.id }" of window.conflicts
+                text = "#{ text }<p>Konfliktní budovy/oblasti:</p>"
+                building_names = (window.gobjects["#{ i }"].title for i in window.conflicts["#{ hell.id }"]['buildings']).join('</li><li>')
+                text = "#{ text }<ul><li>#{ building_names }</li></ul>"
+
+            # otevreni bubliny
+            infowindow.setContent(text)
+            infowindow.open(MAP, MARKER_LUT[pos_key]['marker'])
+
+        google.maps.event.addListener infowindow, 'closeclick', () ->
+            OPENED_INFOWINDOW = false
+            clear_surround()
+
+        # mouseover/out nad ikonou konfliktni herny
+        if "#{ hell.id }" of window.conflicts
+
+            # mouseover
+            google.maps.event.addListener MARKER_LUT[pos_key]['marker'], 'mouseover', () ->
+                if not OPENED_INFOWINDOW
+                    show_surround(hell)
+
+            # mouseout
+            google.maps.event.addListener MARKER_LUT[pos_key]['marker'], 'mouseout', () ->
+                if not OPENED_INFOWINDOW
+                    clear_surround()
+
+    # focus na spendlosy
+    if window.hells
+        bounds = new google.maps.LatLngBounds(
+            new google.maps.LatLng(sw[0], sw[1]),
+            new google.maps.LatLng(ne[0], ne[1])
+        )
+        MAP.fitBounds(bounds)
+
+
+
+# TODO:
+init_map = () ->
     $.getJSON window.url, (data) ->
         window.shapes = {}
         for key in _.keys(data['details'])
@@ -331,12 +551,9 @@ load_maps_api = () ->
         document.body.appendChild(script)
 
 
-###
-Inicializace map, volana jako callback po asynchronnim nacteni Google Maps API.
-###
+
 window.late_map = () ->
 
-    # vypocet bounding boxy polygonu (Google to neumi), viz
     # http://code.google.com/p/google-maps-extensions/source/browse/google.maps.Polygon.getBounds.js
     if not google.maps.Polygon.prototype.getBounds
         google.maps.Polygon.prototype.getBounds = (latLng) ->
@@ -348,10 +565,19 @@ window.late_map = () ->
                     bounds.extend(item)
             bounds
 
-    # inicializace mapy
+
+    ICONS =
+        'allowed': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/yes.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14))
+        'allowed_dimmed': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/yes_dimmed.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14))
+        'allowed_hovered': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/yes_hovered.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14))
+        'disallowed': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/no.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14))
+        'disallowed_dimmed': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/no_dimmed.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14))
+        'disallowed_hovered': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/no_hovered.png', new google.maps.Size(28, 28), new google.maps.Point(0, 0), new google.maps.Point(14, 14))
+        'shadow': new google.maps.MarkerImage('http://media.mapyhazardu.cz/img/shadow.png', new google.maps.Size(27, 14), new google.maps.Point(0, 0), new google.maps.Point(8, 0))
+
     map_options =
         zoom: 6
-        center: new google.maps.LatLng(49.38512, 14.61765) # stred CR
+        center: new google.maps.LatLng(49.38512, 14.61765) # defaultne zamerime na CR
         mapTypeControl: false,
         mapTypeId: 'CB'
         streetViewControl: false
@@ -359,14 +585,8 @@ window.late_map = () ->
     styledMapType = new google.maps.StyledMapType(MAP_STYLE, {name:'Černobílá'})
     MAP.mapTypes.set('CB', styledMapType)
 
-    # vykresleni polygonu (kraje/okresy)
     draw_shapes()
-    $('h1').removeClass('loading')
 
-
-###
-Funkce pro vypocet interpolovanych barev mezi dvema zadanymi body.
-###
 
 hex = (v) ->
     out = v.toString(16)
@@ -396,12 +616,3 @@ interpolate_color = (start_color, end_color, value) ->
         Math.round((end[2] - start[2]) * value + start[2])
     ]
     convert_to_hex(c)
-
-
-# -----------------------------------------------------------------------------
-
-$(document).ready () ->
-    load_maps_api()
-    $('.sub-objects').schovavacz(SCHOVAVACZ_OPTS)
-    handle_table()
-    handle_switcher()
