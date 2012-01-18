@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # vim: set et si ts=4 sw=4:
 
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, ListView, TemplateView
 from django.http import Http404, HttpResponseRedirect
+from django.template.defaultfilters import slugify
 
 from hazard.territories.models import Region, District, Town
 from hazard.campaigns.models import Campaign
@@ -15,6 +16,7 @@ class TerritoriesBaseView(object):
     """
 
     def get(self, request, *args, **kwargs):
+        print 'pica'
         if not 'campaign' in kwargs and REDIRECT_TO_DEFAULT_CAMPAIGN:
             campaign = Campaign.objects.get(default=True)
             return HttpResponseRedirect("%skampan/%s/" % (request.path, campaign.slug))
@@ -71,7 +73,7 @@ class TownListView(TerritoriesBaseView, ListView):
         return super(TownListView, self).get_context_data(**kwargs)
 
 
-class TownDetailView(DetailView):
+class TownDetailView(TerritoriesBaseView, DetailView):
     """
     Detail konkretniho mesta.
     """
@@ -95,3 +97,31 @@ class TownDetailView(DetailView):
             )
         except Town.DoesNotExist:
             raise Http404
+
+
+class AutocompleteView(TemplateView):
+    """
+    Backend pro naseptavac kraju/okresu/obci.
+    """
+    template_name = 'territories/autocomplete.html'
+
+    def get_context_data(self, **kwargs):
+        out = super(AutocompleteView, self).get_context_data(**kwargs)
+        term = self.request.GET.get('term', '')
+        if len(term) >= 2:
+            # budem reagovat od 2 pismen vys
+            qs_kwargs = {'slug__contains': slugify(term)}
+            regions = [{'label': i.title, 'url': i.get_absolute_url(), 'category': u'Kraj'} \
+                       for i in Region.objects.select_related().filter(**qs_kwargs)]
+            districts = [{'label': i.title.replace(u'Okres ', u''), 'url': i.get_absolute_url(), 'category': u'Okres'} \
+                         for i in District.objects.select_related().filter(**qs_kwargs)]
+            towns = [{'label': i.title.replace(u'Obec ', u''), 'url': i.get_absolute_url(), 'category': u'Obec'} \
+                     for i in Town.objects.select_related().filter(**qs_kwargs)]
+            out.update({'data': regions + districts + towns})
+        else:
+            out.update({'data': []})
+        return out
+
+    def render_to_response(self, context, **response_kwargs):
+        response_kwargs.update({'mimetype': 'application/json'})
+        return super(AutocompleteView, self).render_to_response(context, **response_kwargs)

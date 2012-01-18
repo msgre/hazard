@@ -31,6 +31,9 @@ out = 'lib/'
 
 # definuje, ktere soubory z adresare `source` se maji spojit
 appFiles  = {
+  'homepage': [
+    'homepage'
+  ]
   'detail_map': [
     'common'
     'detail'

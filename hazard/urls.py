@@ -9,11 +9,12 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^$', TemplateView.as_view(template_name='homepage.html')),
+    url(r'^$', TemplateView.as_view(template_name='pages/homepage.html')),
+    url(r'^kdo-jsme/$', TemplateView.as_view(template_name='pages/who_we_are.html')),
     url(r'^kampane/$', RedirectView.as_view(url='/kampan/')),
     url(r'^kampan/', include('hazard.campaigns.urls')),
     url(r'^zpravy/', include('hazard.news.urls')),
-    url(r'^kontakt/$', TemplateView.as_view(template_name='contact.html'), name="contact"),
+    url(r'^kontakt/$', TemplateView.as_view(template_name='pages/contact.html'), name="contact"),
     url(r'^', include('hazard.territories.urls'))
 )
 

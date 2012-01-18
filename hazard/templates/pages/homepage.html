@@ -1,0 +1,52 @@
+{% extends "bone.html" %}
+
+{% load news chunks campaigns %}
+
+{% block css %}
+    {{ block.super }}
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/ui-lightness/jquery-ui.css" type="text/css" media="screen">
+{% endblock %}
+
+{% block js %}
+    {{ block.super }}
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/lib/homepage.js"></script>
+{% endblock %}
+
+{% block main %}
+    <h1>MapyHazardu.cz</h1>
+
+    {# uvodni lajna #}
+    <div class="span-12">
+        {#{% chunk "homepage-perex" %}#}
+        <h2 style="line-height:120%;" class="alt">Mapujeme hazard. Statu je to fuk, kamaradickum na radnici taky, mesta jsou zaplevelena hernama jak nikde jinde v Evrope. Pojdme se na nej podivat z jineho pohledu a dokopejme nase volene zastupce k cinum.</h2>
+        <p class="right"><a href="/kdo-jsme/">Zajímá vás kdo jsme a proč to děláme?</a> &rarr;</p>
+        <div class="clear"></div>
+        <p style="margin-bottom:0"><b>Znáte situaci ve vašem regionu?</b></p>
+        <p style="margin-bottom:0"><input placeholder="Zadejte název obce, okresu nebo kraje" style="width:95%; height:32px; font-size:18px;" type="text" name="search" id="search"></p>
+    </div>
+    <div class="span-11 prepend-1 last">
+        <img src="{{ STATIC_URL }}img/mapa.png" width="430">
+    </div>
+    <div class="clear"> </div>
+    <br>
+
+    {# druha lajna #}
+    <div class="span-7 colborder">
+        <h3>Zprávy</h3>
+        {% display_news %}
+        <p class="right"><a href="{% url new-list %}">Starší zprávy</a> &rarr;</p>
+    </div>
+    <div class="span-7 colborder">
+        <h3>Aktuální kampaň</h3>
+        <p><a href="/kampan/mf/">Hazardní přístroje povolené Ministerstvem financí — ignorování sousedství</a></p>
+        <p>V České republice je nejvíce hazardních přístrojů na světě. Za tuto skutečnost nese zodpovědnost Ministerstvo financí. Pod vedením Miroslava Kalouska se vědomě chovalo nezákonně a povolilo v České republice přes X0.000 hazardních přístrojů. Pomozte nám je zmapovat.</p>
+        <p><a href="/kampan/">Prohlédněte si další naše kampaně</a> &rarr;</p>
+    </div>
+    <div class="span-8 last">
+        <h3>Pomozte nám</h3>
+        <p class="todo">Nejaky uvodni plk, ze muzou budto pomoct s datama a jejich cistenim, nebo muzou poslat prachy na ucet + posledni zprava o tom na co budou penize pouzity konkretne</p>
+    </div>
+    <div class="clear"> </div>
+{% endblock %}
+{# vim: set et si ts=4 sw=4 syn=django: #}

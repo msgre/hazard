@@ -1,0 +1,38 @@
+{% extends "bone.html" %}
+
+{% load news chunks campaigns %}
+
+{% block css %}
+    {{ block.super }}
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/ui-lightness/jquery-ui.css" type="text/css" media="screen">
+{% endblock %}
+
+{% block js %}
+    {{ block.super }}
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/lib/homepage.js"></script>
+{% endblock %}
+
+{% block main %}
+    <h1>Kdo jsme a proč to děláme</h1>
+
+    {# uvodni lajna #}
+    <div class="span-12 todo">
+        <p>MapyHazardu.cz provozuje občanské sdružení Brnění. Cílem Brnění
+        je regulovat hazard na úroveň vyspělých států. Nechceme herny a
+        podniky s automaty na každém rohu. Nechceme, aby byla Česká
+        republika pračkou peněz. Nechceme, aby u nás žilo nejvíc gamblerů v
+        přepočtu na obyvatele. Chceme dostat hazard do zákonných a únosných
+        mezí. MapyHazardu.cz jsou jen jednou z našich protihazardních
+        aktivit. Vydali jsme manuál Jak ve Vaší obci regulovat hazard, kde
+        podrobně popisujeme, co musí obec udělat pro to, aby se zbavila
+        hazardu. Tento manuál jsme rozeslali na všechny obce v ČR.
+        Poskytujeme poradenství: Čile komunikujeme s mnoha radnicemi i
+        aktivními občany napříč republikou. Radíme jim, jak se zbavit
+        hazardu. Speciálně se zaměřujeme na regulaci hazardu v Brně.</p>
+
+        <p>zfinalizovat text</p>
+    </div>
+    <div class="clear"></div>
+{% endblock %}
+{# vim: set et si ts=4 sw=4 syn=django: #}
