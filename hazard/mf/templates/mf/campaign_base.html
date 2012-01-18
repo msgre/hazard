@@ -1,7 +1,8 @@
 {% extends "territories/base.html" %}
 
 {% block breadcrumb %}
-    <a href="/kampan/">Kampane</a>
+    <a href="/">Úvodní stránka</a> &raquo;
+    <a href="/kampan/">Kampaně</a>
 {% endblock %}
 
 {% block campaign_menu %}{% endblock %}
@@ -16,8 +17,7 @@
         <a href="{% url campaign-mf-help campaign=campaign.slug %}">Pomozte nám</a> |
         <a href="{% url campaign-mf-law campaign=campaign.slug %}">Porušování zákona</a> |
         <a href="{% url campaign-mf-timeline campaign=campaign.slug %}">Časový vývoj</a> |
-        <a href="{% url campaign-mf-about campaign=campaign.slug %}">O mapě</a> |
-        <a href="{% url campaign-mf-dictionary campaign=campaign.slug %}">Slovníček</a>
+        <a href="{% url campaign-mf-about campaign=campaign.slug %}">O mapě</a>
     </p>
 {% endblock %}
 

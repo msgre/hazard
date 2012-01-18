@@ -1,9 +1,14 @@
-{% extends "mf/campaign_base.html" %}
+{% extends "bone.html" %}
 
 {% load webdesign %}
 
-{% block content %}
-    <h2>Slovníček</h2>
+{% block main %}
+    <h1>Slovník pojmů</h1>
+
+    <p class="todo">Ty jo nepredelame to na nejaky model? Ze by se jednotlive
+    vyrazy administrovaly pres web rozhrani a ukladaly do DB. Pak bychom
+    mohli nasadit nejaky filtr, ktery by automaticky doplnil do stranek odkazy
+    na vysvetleni pojmu...</p>
 
     {# seznam terminu #}
     <p>

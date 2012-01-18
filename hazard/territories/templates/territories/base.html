@@ -23,7 +23,7 @@
             {% territory_base_url as base_url %}
             {% for campaign_item in campaigns %}
                 <a {% if campaign_item.slug == campaign %}class="active" {% endif %}href="{{ base_url }}kampan/{{ campaign_item.slug }}/" class="box">
-                    {{ campaign_item.title }}
+                    {% firstof campaign_item.short_title campaign_item.title %}
                 </a>
             {% endfor %}
         </p>

@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block breadcrumb %}
-    <a href="/">Česká republika</a> {% if district %}&raquo; <a href="{% url region region=region.slug %}">{{ region.title }}</a> {% if town %}&raquo; <a href="{% url district region=region.slug district=district.slug %}">{{ district.title }}</a>{% endif %}{% endif %}
+    <a href="/">Úvodní stránka</a> {% if district %}&raquo; <a href="{% url region region=region.slug %}">{{ region.title }}</a> {% if town %}&raquo; <a href="{% url district region=region.slug district=district.slug %}">{{ district.title }}</a>{% endif %}{% endif %}
 {% endblock %}
 
 {% block submenu %}

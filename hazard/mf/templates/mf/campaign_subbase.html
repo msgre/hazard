@@ -1,0 +1,8 @@
+{% extends "mf/campaign_base.html" %}
+
+{% block breadcrumb %}
+    {{ block.super }} &raquo;
+    <a href="{{ campaign.get_absolute_url }}">{{ campaign.short_title }}</a>
+{% endblock %}
+
+{# vim: set et si ts=4 sw=4 syn=django: #}
