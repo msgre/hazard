@@ -33,7 +33,13 @@ out = 'lib/'
 appFiles  = {
   'mf1': [
     'schovavacz'
+    'map_common'
     'mf'
+  ]
+  'towns': [
+    'schovavacz'
+    'map_common'
+    'town'
   ]
 }
 

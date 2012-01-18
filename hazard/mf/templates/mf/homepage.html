@@ -1,57 +1,74 @@
 {% extends "mf/campaign_base.html" %}
 
+{% load webdesign %}
+
 {% block content %}
+    {# uvodni lajna #}
     <div class="span-12">
-        <h2>
-            Strucne o cem to tu je. Zaseknuti drapku. Treba neco ve smyslu
-            ze se MF vedomne v urcitem obdobi chovalo nezakonne, a
-            povolilo provoz <b>1.000&nbsp;heren</b> s <b>10.000&nbsp;automaty</b>.
-            Nebo tak neco...
-        </h2>
-        <p>
-            Tady pak muze byt nejaky suchoparnejsi kratky rozbor. V cem
-            byla ta nezakonnost, jak to ze se MF do toho vubec micha.
-            Z ceho vychazime.
-            Opet by melo jit o par zakladnich dat, doplneny prolinky
-            hloubeji do webu (kde uz je prostor probrat veci dopodrobna).
-        </p>
-        <h4>Casovy vyvoj</h4>
-        <div class="box">
-            <p>Bude uz tady prostor pro casovou osu? (jak se co vyvijelo,
-            ze i po upozorneni a ombudsmanovi MF fici dal...)</p>
-        </div>
-        <h4>Zapojeni verejnosti</h4>
-        <p>
-            Neco jako ze se muzou regnout, a pak data editovat. Vime ze
-            jsou v nich nepresnosti. V pripade kampane MF by asi mely
-            jit editovat jen budovy, data o hernach mame z ofiko zdroje
-            a asi bych na ne nesahal (snad jen co se tyce jejich pozice
-            na mape, tam chyby byt muzou).
-        </p>
+        <h2>{{ campaign.description|safe }}</h2>{# TODO: nahrazeni nejakeho stringu za aktualni cifru s poctem nezakonne povolenych automatu #}
     </div>
     <div class="span-12 last">
-        <h4>Co oko uvidi, to i srdce zaboli</h4>
-        <div class="box"><a href="/zlinsky/">mapa</a><br><br><br><br><br><br><br><br><br><br><br><br></div>
-        <p><b>Mel tu byt nejaky search! (s naseptavacem)</b></p>
-        <p>Ziskana data jsme prechroustali do vizualni podoby</p>
-        <ul>
-            <li>Zajima vas kolik je kde heren?</li>
-            <li>V kterem okrese maji nejvetsi pocet nelegalne povolenych matu?</li>
-            <li>Mate predstavu jaka je situace ve vasi obci?</li>
-        </ul>
-        <p>Kliknete do mapy na vas kraj a vse se dozvite (pokud by jste se
-        v nasi aplikaci ztraceli, zde je <a href="">navod</a>)</p>
-        <p>Bacha! mel by tu byt i staticky link do nejakeho kraje, at se toho
-        chytnou roboti a proindexuji to...</p>
-        <h4>Zdrojova data</h4>
-        <p>
-            Strucne z ceho vychazime (Google docs tabulka od Mirzy a MF,
-            koupena data pres Mateje, Google Geocode, FreeGeodataCZ - Klokan
-            Petr Pridal). Prolink na stranku s exportem a podrobnym popisem
-            zdroju.
-        </p>
+        <div class="box" style="height:240px">obrazek<br>NEBO<br>naseptavac s textem: jak si na tom stoji vase obec</div>
     </div>
+    <div class="clear"></div>
+    <br><br>
 
+    {# druha lajna #}
+    <div class="span-12">
+        <h3>Proč je u nás nejvíc hazardních přístrojů na světě?</h3>
+
+        <p>V České republice panuje při povolování hazardních přístrojů
+        dvojkolejnost.</p>
+        <p>Část hazardních přístrojů (VHP)
+        povoluje obec a větší část (VLT, EMR, …) povoluje Ministerstvo financí.
+        Ministerstvo u svého povolování ale porušovalo všechny paragrafy, které
+        porušit šly:
+
+        <ul>
+            <li>Nerespektovalo vyhlášky obcí.</li>
+            <li>Ignorovalo zákonnou podmínku nastavit přístrojům limity, které
+            zaručí, že za hodinu nelze prohrát více než <span class="todo">X000 Kč</span>.</li>
+            <li>Obcházelo ustanovení, které omezuje dobu povolení pro hazardní
+            přístroj na jeden rok.</li>
+        </ul>
+
+        <div class="box">
+            <p>Dalším z porušených částí zákona bylo ignorování míst, kam bylo
+            ze zákona zakázáno hazard povolit.</p>
+            <h4 style="margin-bottom:0"><a href="/kampan/mf/pomozte-nam/">Pomozte nám toto porušování zmapovat</a> &rarr;</h4>
+        </div>
+    </div>
+    <div class="span-12 last">
+        {# hancina prezentace v prezi #}
+        <div class="prezi-player"><style type="text/css" media="screen">.prezi-player { width: 460px; } .prezi-player-links { text-align: center; }</style><object id="prezi_4cm_pz-namnn" name="prezi_4cm_pz-namnn" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="460" height="350"><param name="movie" value="http://prezi.com/bin/preziloader.swf"/><param name="allowfullscreen" value="true"/><param name="allowscriptaccess" value="always"/><param name="bgcolor" value="#ffffff"/><param name="flashvars" value="prezi_id=4cm_pz-namnn&amp;lock_to_path=0&amp;color=ffffff&amp;autoplay=no&amp;autohide_ctrls=0"/><embed id="preziEmbed_4cm_pz-namnn" name="preziEmbed_4cm_pz-namnn" src="http://prezi.com/bin/preziloader.swf" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="460" height="350" bgcolor="#ffffff" flashvars="prezi_id=4cm_pz-namnn&amp;lock_to_path=0&amp;color=ffffff&amp;autoplay=no&amp;autohide_ctrls=0"></embed></object><div class="prezi-player-links"><p><a title="MINISTERSTVO FINANCÍ A POVOLOVÁNÍ HAZARDNÍCH PŘÍSTROJŮ" href="http://prezi.com/4cm_pz-namnn/ministerstvo-financi-a-povolovani-hazardnich-pristroju/">MINISTERSTVO FINANCÍ A POVOLOVÁNÍ HAZARDNÍCH PŘÍSTROJŮ</a> on <a href="http://prezi.com">Prezi</a></p></div></div>
+    </div>
+    <div class="clear"></div>
+    <br><hr>
+
+    {# treti lajna s rozcestnikem #}
+    <div class="span-5 colborder">
+        <h4>Porušování zákona</h4>
+        <p class="todo">Odkaz na stranku, na ktere budou konkretni reference na zakony,
+        ktere se porusuji. Melo by tam byt i nejak dolozeno, ze k porusovani
+        skutecne dochazelo</p>
+        <p><a href="/kampan/mf/porusovani-zakona/">Podrobnosti</a> &rarr;</p>
+    </div>
+    <div class="span-5 colborder">
+        <h4>Časový vývoj</h4>
+        <p>Podívejte se, jak se v čase vyvíjela situace kolem povolování hazardu na území České republiky.</p>
+        <p><a href="/kampan/mf/casovy-vyvoj/">Podrobnosti</a> &rarr;</p>
+    </div>
+    <div class="span-5 colborder">
+        <h4>O mapě</h4>
+        <p>Jak interpretovat údaje z mapy? Z jakých dat jsme vycházeli? Jak jsme je zpracovali? Jaké technologie jsme využili?</p>
+        <p><a href="/kampan/mf/o-mape/">Podrobnosti</a> &rarr;</p>
+    </div>
+    <div class="span-5 last">
+        <h4>Slovníček pojmů</h4>
+        <p>Co je to sousedství?<br>
+        Co znamenají zkratky VLT, VHP, EMR?</p>
+        <p><a href="/kampan/mf/slovnicek/">Podrobnosti</a> &rarr;</p>
+    </div>
     <div class="clear"></div>
 {% endblock %}
 

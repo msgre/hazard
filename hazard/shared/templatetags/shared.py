@@ -50,7 +50,7 @@ def shorten_latlon(text):
     Proc? Protoze lat/lon je ulozeno v podobe floatu, a ten ma tendenci byt
     prilis presny.
     """
-    return LATLNG_RE.sub(do_shorten_latlon, text)
+    return mark_safe(LATLNG_RE.sub(do_shorten_latlon, text))
 
 
 KML_NAME_RE = re.compile(r'<name>Herny v obci ([^<]+)</name>')

@@ -156,3 +156,9 @@ form p {
 #info_box .shy, #info_box .shy a {
     color:#aaa;
 }
+.todo {
+    background-color:yellow;
+}
+.important {
+    font-weight:bold;
+}

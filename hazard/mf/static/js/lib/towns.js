@@ -1,5 +1,5 @@
 (function() {
-  var $, MAP, MAP_STYLE, POLYS, POLYS_COLORS, SCHOVAVACZ_OPTS, VIEW, convert_to_hex, convert_to_rgb, draw_shapes, handle_switcher, handle_table, hex, interpolate_color, load_maps_api, number_to_graph, trim, update_shapes;
+  var $, MAP, MAP_STYLE, POLYS, POLYS_COLORS, SCHOVAVACZ_OPTS, VIEW, ajax_key, convert_to_hex, convert_to_rgb, draw_shapes, handle_switcher, handle_table, hex, interpolate_color, load_maps_api, number_to_graph, trim, update_shapes;
   var __indexOf = Array.prototype.indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (this[i] === item) return i;
@@ -215,7 +215,7 @@
     c = [Math.round((end[0] - start[0]) * value + start[0]), Math.round((end[1] - start[1]) * value + start[1]), Math.round((end[2] - start[2]) * value + start[2])];
     return convert_to_hex(c);
   };
-  "Kod pro stranky s krajem a okresy.\n\nZ tabulky vlozene do stranky dokaze vyzobnout potrebne informace (napr.\nabsolutni pocet heren v kraji), spoji se serverem a vytahne z nej polygony\ngeokrafickych objektu (obrysy kraju/okresu), zavesi na elementy ve strance\nobsluzne funkce a upravi vzhled stranky.\n\nTODO: predelat draw_shapes aby vyuzival getBounds";
+  "TODO:";
   /*
   Obsluha preklikavani pohledu herny/automaty.
   */
@@ -329,59 +329,61 @@
         }
         return number_to_graph($table, values, percents, switcher_value);
       });
+      console.log('stary znamy');
       return update_shapes();
     });
     return $('.table-switcher').change();
+  };
+  /*
+  Konstrukce klice do AJAX dat podle hodnot ze selektitek.
+  */
+  ajax_key = function() {
+    var key, kind, type;
+    type = $('#type-switcher').val();
+    type = type.substr(0, type.length - 1);
+    kind = $('#table-switcher').val();
+    if (kind === 'counts') {
+      key = "" + type + "_" + kind;
+    } else {
+      kind = kind.split('_');
+      key = "" + kind[0] + "_" + type + "_" + kind[1];
+    }
+    return key;
   };
   /*
   Prvotni vykresleni barevnych polygonu do mapy (dle aktualne zvolenych voleb
   v selektitkach a datech v tabulce).
   */
   draw_shapes = function() {
-    var $select, $table, actual_max_lat, actual_max_lon, actual_min_lat, actual_min_lon, col, delta, extrems, max_lat, max_lats, max_lon, max_lons, min_lat, min_lats, min_lon, min_lons, _ref, _ref2;
-    $table = $("table.statistics." + VIEW);
-    $select = $('#table-switcher');
-    col = $select.val();
-    extrems = $table.data(col);
-    delta = extrems.max - extrems.min;
-    _ref = [[], [], [], []], min_lats = _ref[0], max_lats = _ref[1], min_lons = _ref[2], max_lons = _ref[3];
-    _ref2 = [null, null, null, null], actual_min_lat = _ref2[0], actual_max_lat = _ref2[1], actual_min_lon = _ref2[2], actual_max_lon = _ref2[3];
+    var delta, statistics_key;
+    statistics_key = ajax_key();
+    delta = window.extrems[statistics_key].max - window.extrems[statistics_key].min;
     _.each(window.shapes, function(shape, key) {
-      var color, i, item, max_lat, max_lon, min_lat, min_lon, polys, value, _i, _j, _len, _len2, _polys, _ref;
+      var color, i, item, value;
       if (!shape) {
         return true;
       }
-      polys = [];
-      _ref = [100000000, 0, 100000000, 0], min_lat = _ref[0], max_lat = _ref[1], min_lon = _ref[2], max_lon = _ref[3];
-      for (_i = 0, _len = shape.length; _i < _len; _i++) {
-        item = shape[_i];
-        _polys = [];
-        for (_j = 0, _len2 = item.length; _j < _len2; _j++) {
-          i = item[_j];
-          min_lat = i[0] < min_lat ? i[0] : min_lat;
-          max_lat = i[0] > max_lat ? i[0] : max_lat;
-          min_lon = i[1] < min_lon ? i[1] : min_lon;
-          max_lon = i[1] > max_lon ? i[1] : max_lon;
-          _polys.push(new google.maps.LatLng(i[0], i[1]));
-        }
-        polys.push(_polys);
-      }
-      min_lats.push(min_lat);
-      max_lats.push(max_lat);
-      min_lons.push(min_lon);
-      max_lons.push(max_lon);
-      if (key === window.actual) {
-        actual_min_lat = min_lat;
-        actual_max_lat = max_lat;
-        actual_min_lon = min_lon;
-        actual_max_lon = max_lon;
-      }
-      value = $.trim($table.find("tr." + key + " td." + col).text());
-      value = value.replace('%', '').replace(',', '.');
-      value = (value - extrems.min) / delta;
+      value = window.districts[key]['statistics'][statistics_key];
+      value = (value - window.extrems[statistics_key].min) / delta;
       color = interpolate_color('#FFD700', '#EE0000', value);
       POLYS[key] = new google.maps.Polygon({
-        paths: polys,
+        paths: (function() {
+          var _i, _len, _results;
+          _results = [];
+          for (_i = 0, _len = shape.length; _i < _len; _i++) {
+            item = shape[_i];
+            _results.push((function() {
+              var _i, _len, _results;
+              _results = [];
+              for (_i = 0, _len = item.length; _i < _len; _i++) {
+                i = item[_i];
+                _results.push(new google.maps.LatLng(i[0], i[1]));
+              }
+              return _results;
+            })());
+          }
+          return _results;
+        })(),
         strokeColor: color,
         strokeOpacity: 1,
         strokeWeight: 1,
@@ -390,101 +392,34 @@
         zIndex: 10
       });
       POLYS_COLORS[key] = color;
-      if (key === window.actual) {
-        POLYS[key].setOptions({
-          zIndex: 20,
-          strokeColor: "#333333",
-          strokeWeight: 3
-        });
-      }
-      google.maps.event.addListener(POLYS[key], 'mouseover', function() {
-        var $tr, i, texts, titles;
-        POLYS[key].setOptions({
-          fillColor: '#333333',
-          strokeColor: '#333333',
-          zIndex: 15
-        });
-        $tr = $table.find("tr." + key);
-        $tr.addClass('hover');
-        titles = (function() {
-          var _i, _len, _ref, _results;
-          _ref = $select.find('option');
-          _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            i = _ref[_i];
-            _results.push($(i).text());
-          }
-          return _results;
-        })();
-        return texts = (function() {
-          var _i, _len, _ref, _results;
-          _ref = $tr.find('td');
-          _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            i = _ref[_i];
-            _results.push($.trim($(i).text()));
-          }
-          return _results;
-        })();
-      });
-      google.maps.event.addListener(POLYS[key], 'mouseout', function() {
-        POLYS[key].setOptions({
-          fillColor: POLYS_COLORS[key],
-          strokeColor: key === window.actual ? '#333333' : POLYS_COLORS[key],
-          zIndex: key === window.actual ? 20 : 10
-        });
-        return $table.find("tr." + key).removeClass('hover');
-      });
-      google.maps.event.addListener(POLYS[key], 'click', function() {
-        return $table.find("tr." + key + " a").click();
-      });
       return POLYS[key].setMap(MAP);
     });
-    min_lat = _.min(min_lats);
-    max_lat = _.max(max_lats);
-    min_lon = _.min(min_lons);
-    max_lon = _.max(max_lons);
-    min_lat = actual_min_lat;
-    max_lat = actual_max_lat;
-    min_lon = actual_min_lon;
-    max_lon = actual_max_lon;
     google.maps.event.addListenerOnce(MAP, 'zoom_changed', function() {
       return MAP.setZoom(MAP.getZoom() - 1);
     });
-    return MAP.fitBounds(new google.maps.LatLngBounds(new google.maps.LatLng(min_lat, min_lon), new google.maps.LatLng(max_lat, max_lon)));
+    return MAP.fitBounds(POLYS[window.actual_disctrict].getBounds());
   };
   /*
   Aktualizace barev vykreslenych polygonu na mape (dle aktualne zvolenych voleb
   v selektitkach a datech v tabulce).
   */
   update_shapes = function() {
-    var $select, $table, col, delta, extrems;
-    $table = $("table.statistics." + VIEW);
-    $select = $('#table-switcher');
-    col = $select.val();
-    extrems = $table.data(col);
-    delta = extrems.max - extrems.min;
+    var delta, statistics_key;
+    statistics_key = ajax_key();
+    delta = window.extrems[statistics_key].max - window.extrems[statistics_key].min;
     return _.each(window.shapes, function(shape, key) {
       var color, value;
       if (!POLYS[key]) {
         return true;
       }
-      value = $.trim($table.find("tr." + key + " td." + col).text());
-      value = value.replace('%', '').replace(',', '.');
-      value = (value - extrems.min) / delta;
+      value = window.districts[key]['statistics'][statistics_key];
+      value = (value - window.extrems[statistics_key].min) / delta;
       color = interpolate_color('#FFD700', '#EE0000', value);
       POLYS_COLORS[key] = color;
-      POLYS[key].setOptions({
+      return POLYS[key].setOptions({
         fillColor: color,
         strokeColor: color
       });
-      if (key === window.actual) {
-        return POLYS[key].setOptions({
-          zIndex: 20,
-          strokeColor: "#333333",
-          strokeWeight: 3
-        });
-      }
     });
   };
   /*
@@ -493,13 +428,15 @@
   load_maps_api = function() {
     $('h1').addClass('loading');
     return $.getJSON(window.url, function(data) {
-      var key, script, _i, _len, _ref;
+      var id, script, _i, _len, _ref;
       window.shapes = {};
-      _ref = _.keys(data['details']);
+      _ref = _.keys(data['districts']);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        key = _ref[_i];
-        window.shapes[key] = data['details'][key]['shape'];
+        id = _ref[_i];
+        window.shapes[id] = data['districts'][id]['shape'];
       }
+      window.extrems = data['extrems'];
+      window.districts = data['districts'];
       script = document.createElement('script');
       script.type = 'text/javascript';
       script.src = 'http://maps.googleapis.com/maps/api/js?key=AIzaSyDw1uicJmcKKdEIvLS9XavLO0RPFvIpOT4&v=3&sensor=false&callback=window.late_map';
@@ -544,9 +481,9 @@
     return $('h1').removeClass('loading');
   };
   $(document).ready(function() {
-    handle_table();
     load_maps_api();
     $('.sub-objects').schovavacz(SCHOVAVACZ_OPTS);
+    handle_table();
     return handle_switcher();
   });
 }).call(this);

@@ -1,0 +1,36 @@
+{% extends "mf/campaign_base.html" %}
+
+{% load webdesign %}
+
+{% block content %}
+    <h2>O mapě</h2>
+    <div class="span-12">
+        <p>Tato mapa konfliktu sousedství s povoleními Ministerstva financí,
+        nebyla na rozdíl od původní verze MapyHazardu.cz dělána ručně, nýbrž
+        „strojově“. Jelikož míst, kam povolilo Ministerstvo financí hazardní
+        přístroj je XX.000, nebylo v našich silách vkládat pozice heren do mapy
+        ručně jednu po druhé. Přechroustali jsme proto adresy heren převaděčem
+        adres na GPS souřadnice a tyto jsme zobrazili v mapě.</p>
+
+        <p>Podobně jsme postupovali i u budov – získali jsme registry
+        škol......., kde jsme adresu opět strojově převedli na GPS, jako bod.</p>
+
+        <p>Zjištěné výsledky jsou proto jen přibližné! Nemáme v mapě všechny
+        budovy. Budovy nejsou vykresleny polygonem, ale jen bodem. Umístění
+        bodu pro hernu také hraje roli při vzdálenostech blízkých 100 m. Údaje
+        o počtu protiprávně povolených hazardních přístrojů jsou proto
+        podhodnocené, pokud porovnáme data vytvořená strojově počítačem, s daty
+        zadávanými a kontrolovanými ručně s původní verze Map Hazardu,
+        zjistíme, že skutečný stav je cca 2x horší – ve smyslu 2x častěji
+        porušovaný zákon.</p>
+
+        <p>Pokud chcete vytvořit komplexní a přesnou mapu hazardu ve Vaší obci,
+        využijte prosím starší verze map – www.mapyhazardu.cz/puvodni.</p>
+    </div>
+    <div class="span-12 last">
+        <p class="todo">linky na zdroj dat, zminit klokana, zdrojovy kod na githubu</p>
+        <p class="todo">revidovat matejuv text</p>
+    </div>
+{% endblock %}
+
+{# vim: set et si ts=4 sw=4 syn=django: #}

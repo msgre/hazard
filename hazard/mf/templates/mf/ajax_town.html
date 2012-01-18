@@ -1,0 +1,6 @@
+{% load shared %}{% jsonblock %}
+    "details":{% templatetag openbrace %}{% filter shorten_latlon %}{% for id, item in json_details.items %}"{{ item.slug }}":{% templatetag openbrace %}"id":{{ item.id }},"title":"{{ item.title }}","shape":{{ item.shape.coords|json }}{% templatetag closebrace %}{% if not forloop.last %},{% endif %}{% endfor %}{% endfilter %}{% templatetag closebrace %}
+    "statistics":{{ statistics|json }}
+    "districts":{{ districts|json|shorten_latlon }}
+    "extrems":{{ extrems|json }}
+{% endjsonblock %}

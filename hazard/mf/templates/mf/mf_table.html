@@ -16,14 +16,6 @@
                 <th class="conflict_perc">
                     Poměr konfliktních/nekonfliktích {{ type_title }}
                 </th>
-                {% comment %}
-                <th class="density">
-                    Hustota na km2
-                </th>
-                <th class="per_resident">
-                    Počet obyvatel na jednu {{ type_title }}
-                </th>
-                {% endcomment %}
             </tr>
         </thead>
         <tbody>
@@ -44,14 +36,6 @@
                             {{ conflict_perc|key:object.id|floatformat:1 }}%
                         {% endif %}
                     </td>
-                    {% comment %}
-                    <td class="density">
-                        {{ density|key:object.id|floatformat:3 }}
-                    </td>
-                    <td class="per_resident">
-                        {{ per_resident|key:object.id|floatformat:0 }}
-                    </td>
-                    {% endcomment %}
                 </tr>
             {% endfor %}
         </tbody>

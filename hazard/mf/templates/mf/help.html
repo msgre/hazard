@@ -1,0 +1,46 @@
+{% extends "mf/campaign_base.html" %}
+
+{% block content %}
+    <h2>Pomozte nám zmapovat herny</h2>
+
+    <div class="span-12 todo">
+        <h3>Zapojení veřejnosti</h3>
+
+        <p>Veškeré údaje zanesené do mapy rozporu sousedství s povoleními
+        Ministerstva financí, jsou vytvořeny strojově, jen s obecnou manuální
+        kontrolou. Aby údaje byly přesnější, je teď na Vás. Zpřesňujte prosím
+        ve svých městech polohy budov, tvořte jejich polygony, tak, aby se co
+        nejvíc heren „pochytalo. Návod pro zpřesňování pozic a tvarů budov
+        naleznete na: mapyhazardu.cz/neco.</p>
+
+        <p>Pokud chcete vytvořit komplexní a přesnou mapu hazardu ve Vaší obci,
+        využijte prosím starší verze map – www.mapyhazardu.cz/puvodni.</p>
+
+        <h3>Poznamky</h3>
+        <p>Popis nejake interakce, do ktere se muzou lidi zapojit. Zatim ale nic nemame, v uvahu pripada:</p>
+        <ul>
+            <li>neco na zpusob, <a
+            href="http://mps-expenses2.guardian.co.uk/page/30403/">MP expenses</a>
+            od Guardianu, tj. ze by se nad konkretni situaci lide vyjadrovali
+            kliknutim na nekterou moznost; napr. tahle herna je umistena
+            blbe/dobre; nevyhoda je jasna -- jakmile nekdo oznaci hernu jako
+            spatnou, nevime co s tim dal...</li>
+            <li>moznost opravy pozice spendliku -- tj. lidi by mohli sibovat s pozici
+            konkretni herny/budovy na jinou pozici; tohle uz je slozitejsi na realizaci;
+            abychom predesli "vandalum", museli bychom editace skryt za prihlasovani
+            (abychom u kazde upravy meli informaci o tom kdo to dela), a naprgat
+            nastroje, ktere budou vracet editovane body do puvodniho stavu</li>
+            <li>moznost editace tvaru -- asi uplne nejslozitejsi varianta, ale
+            samozrejme take s nejlepsim vysledkem; lidem by se dal nastroj, kterym
+            muzou pretavit kolecka budov do konkretnich obrysu; neco jako "obkresli
+            sve mesto"</li>
+        </ul>
+        <p>Bohuzel, nic z vyse uvedeneho nemame ani nacate...</p>
+    </div>
+
+    <div class="span-12 todo last">
+        nejaky obrazek s okolim, ze je lepsi mit obrys budovy
+    </div>
+{% endblock %}
+
+{# vim: set et si ts=4 sw=4 syn=django: #}

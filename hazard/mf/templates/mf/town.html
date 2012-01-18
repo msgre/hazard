@@ -43,7 +43,6 @@
     <div class="outer-wrapper">
         {% mf_table "town" "machines" %}
     </div>
-
 {% endblock %}
 
 {% block map %}
@@ -60,18 +59,11 @@
 {% block js %}
     {{ block.super }}
     <script type="text/javascript">
-    {% comment %}
-        {% filter shorten_latlon %}
-        window.hells = {{ js_hells|json }};
-        window.gobjects = {{ js_gobjects|json }};
-        window.conflicts = {{ js_conflicts|json }};
-        window.addresses = {{ js_addresses|json }};
-        {% endfilter %}
-    {% endcomment %}
         window.actual = '{{ town.slug }}';
+        window.actual_disctrict = {{ district.id }};
         window.url = '/kampan/mf/ajax/obce/';
     </script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/lib/mf1.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/lib/towns.js"></script>
 {% endblock %}
 
 {# vim: set et si ts=4 sw=4 syn=django: #}

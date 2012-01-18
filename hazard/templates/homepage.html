@@ -4,39 +4,88 @@
 
 {% block main %}
     <h1>MapyHazardu.cz</h1>
+
+    {# uvodni lajna #}
     <div class="span-12">
         <h2 style="line-height:130%">
-            {% chunk "homepage-perex" %}
+            <div class="todo">{% chunk "homepage-perex" %}</div>
         </h2>
-        <p>Jakoze jde o portal ne? -- ukazujeme na problemy, informujeme,
-        vizualizujeme, nabizime syrova data.</p>
     </div>
-    <div class="span-12 last">
-        <div class="box">
-            <p class="quiet todo"><b>co tady?</b><br>
-            bud nejaky uderny obrazek<br>/
-            NEBO nejaky seznam/slideshow s kampanema<br>
-            musi to zaujmout;<br>
-            musime pocitat s tim, ze treba 1/4 roku tady bude viset pouze jedina kampan</p>
-        </div>
+    <div class="span-11 prepend-1 last">
+        {% comment %}
+            TODO: generovat, zadna statika
+            TODO: odkaz na dalsi kampane ukazovat jen tehdy, budou-li alespon 2 kampane
+        {% endcomment %}
+        <h3>Aktuální kampaň</h3>
+        <p><a href="/kampan/mf/">Hazardní přístroje povolené Ministerstvem financí — ignorování sousedství</a></p>
+        <p>V České republice je nejvíce hazardních přístrojů na světě. Za tuto skutečnost nese zodpovědnost Ministerstvo financí. Pod vedením Miroslava Kalouska se vědomě chovalo nezákonně a povolilo v České republice přes X0.000 hazardních přístrojů. Pomozte nám je zmapovat.</p>
+        <p><a href="/kampan/">Prohlédněte si další naše kampaně</a> &rarr;</p>
     </div>
-
     <div class="clear"> </div>
+    <br>
 
-    <div class="span-8">
+    {# druha lajna #}
+    <div class="span-7 colborder">
         <h3>Zprávy</h3>
         {% display_news %}
     </div>
-    <div class="span-8">
-        <h3>Kampaně</h3>
-        {% display_campaigns %}
+    <div class="span-7 colborder">
+        <h3>Situace ve vašem regionu</h3>
+        <p>Zajímá vás situace ve vaší obci, okresu či kraji? Napište do
+        následujícího políčka prvních pár písmen z názvu vašeho regionu:</p>
+        <p><input style="width:95%; height:32px; font-size:18px;" type="text"></p>
     </div>
     <div class="span-8 last">
-        <h3>Podporuji nas</h3>
-        <p>Bud tady, anebo vlastne spis v paticce na kazde strance, at
-        je to na ocich</p>
-        <p>Jeste by nekde mohl byt "stream" poslednich udalosti, tj. kdo
-        kde co na webu uprd (editace, pridani novych dat, apod)</p>
+        <h3>Pomozte nám</h3>
+        <p class="todo">Nejaky uvodni plk, ze muzou budto pomoct s datama a jejich cistenim, nebo muzou poslat prachy na ucet + posledni zprava o tom na co budou penize pouzity konkretne</p>
     </div>
+    <div class="clear"> </div>
+    <br>
+
+    <div class="box">
+        <h3>Kdo jsme a proč to děláme</h3>
+
+        <p>MapyHazardu.cz provozuje občanské sdružení Brnění. Cílem Brnění
+        je regulovat hazard na úroveň vyspělých států. Nechceme herny a
+        podniky s automaty na každém rohu. Nechceme, aby byla Česká
+        republika pračkou peněz. Nechceme, aby u nás žilo nejvíc gamblerů v
+        přepočtu na obyvatele. Chceme dostat hazard do zákonných a únosných
+        mezí. MapyHazardu.cz jsou jen jednou z našich protihazardních
+        aktivit. Vydali jsme manuál Jak ve Vaší obci regulovat hazard, kde
+        podrobně popisujeme, co musí obec udělat pro to, aby se zbavila
+        hazardu. Tento manuál jsme rozeslali na všechny obce v ČR.
+        Poskytujeme poradenství: Čile komunikujeme s mnoha radnicemi i
+        aktivními občany napříč republikou. Radíme jim, jak se zbavit
+        hazardu. Speciálně se zaměřujeme na regulaci hazardu v Brně.</p>
+
+        <p class="todo">zfinalizovat tento text, nejak ho spojit i s "proc to delame"</p>
+    </div>
+    {% comment %}
+    <div class="box">
+        <div class="span-7">
+            <p>MapyHazardu.cz provozuje občanské sdružení Brnění. Cílem Brnění je
+            regulovat hazard na úroveň vyspělých států. Nechceme herny a podniky s
+            automaty na každém rohu. Nechceme, aby byla Česká republika pračkou peněz.
+            Nechceme, aby u nás žilo nejvíc gamblerů v přepočtu na obyvatele. Chceme
+            dostat hazard do zákonných a únosných mezí.</p>
+        </div>
+        <div class="span-7 prepend-1">
+            <p>MapyHazardu.cz jsou jen jednou z našich protihazardních
+            aktivit. Vydali jsme manuál Jak ve Vaší obci regulovat hazard,
+            kde podrobně popisujeme, co musí obec udělat pro to, aby se
+            zbavila hazardu. Tento manuál jsme rozeslali na všechny obce v
+            ČR.</p>
+        </div>
+        <div class="span-7 prepend-1 last">
+            <ul>
+                <li>Poskytujeme poradenství</li>
+                <li>Čile komunikujeme s mnoha radnicemi i aktivními občany napříč republikou.</li>
+                <li>Radíme jim, jak se zbavit hazardu.</li>
+                <li>Speciálně se zaměřujeme na regulaci hazardu v Brně.</li>
+            </ul>
+        </div>
+        <div class="clear"></div>
+    </div>
+    {% endcomment %}
 {% endblock %}
 {# vim: set et si ts=4 sw=4 syn=django: #}
