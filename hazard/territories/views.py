@@ -16,7 +16,6 @@ class TerritoriesBaseView(object):
     """
 
     def get(self, request, *args, **kwargs):
-        print 'pica'
         if not 'campaign' in kwargs and REDIRECT_TO_DEFAULT_CAMPAIGN:
             campaign = Campaign.objects.get(default=True)
             return HttpResponseRedirect("%skampan/%s/" % (request.path, campaign.slug))
