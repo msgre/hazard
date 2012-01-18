@@ -31,6 +31,9 @@ out = 'lib/'
 
 # definuje, ktere soubory z adresare `source` se maji spojit
 appFiles  = {
+  'mf_homepage': [
+    'mf_homepage'
+  ]
   'mf1': [
     'schovavacz'
     'map_common'

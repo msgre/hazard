@@ -1,14 +1,28 @@
 {% extends "mf/campaign_base.html" %}
 
-{% load webdesign %}
+{% block css %}
+    {{ block.super }}
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/ui-lightness/jquery-ui.css" type="text/css" media="screen">
+{% endblock %}
+
+{% block js %}
+    {{ block.super }}
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/lib/mf_homepage.js"></script>
+{% endblock %}
 
 {% block content %}
     {# uvodni lajna #}
     <div class="span-12">
-        <h2>{{ campaign.description|safe }}</h2>{# TODO: nahrazeni nejakeho stringu za aktualni cifru s poctem nezakonne povolenych automatu #}
+        <h2 style="line-height:120%;">{{ campaign.description|safe }}</h2>{# TODO: nahrazeni nejakeho stringu za aktualni cifru s poctem nezakonne povolenych automatu #}
+        <p style="margin-bottom:0"><b>Znáte situaci ve vašem regionu?</b></p>
+        <p style="margin-bottom:0"><input placeholder="Zadejte název obce, okresu nebo kraje" style="width:95%; height:32px; font-size:18px;" type="text" name="search" id="search"></p>
     </div>
     <div class="span-12 last">
-        <div class="box" style="height:240px">obrazek<br>NEBO<br>naseptavac s textem: jak si na tom stoji vase obec</div>
+        <div class="box span-5" style="height:105px">zajimavost 1</div>
+        <div class="box span-5 last" style="height:105px">zajimavost 2</div>
+        <div class="box span-5" style="height:105px">zajimavost 3</div>
+        <div class="box span-5 last" style="height:105px">zajimavost 4</div>
     </div>
     <div class="clear"></div>
     <br><br>
@@ -40,7 +54,7 @@
     </div>
     <div class="span-12 last">
         {# hancina prezentace v prezi #}
-        <div class="prezi-player"><style type="text/css" media="screen">.prezi-player { width: 460px; } .prezi-player-links { text-align: center; }</style><object id="prezi_4cm_pz-namnn" name="prezi_4cm_pz-namnn" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="460" height="350"><param name="movie" value="http://prezi.com/bin/preziloader.swf"/><param name="allowfullscreen" value="true"/><param name="allowscriptaccess" value="always"/><param name="bgcolor" value="#ffffff"/><param name="flashvars" value="prezi_id=4cm_pz-namnn&amp;lock_to_path=0&amp;color=ffffff&amp;autoplay=no&amp;autohide_ctrls=0"/><embed id="preziEmbed_4cm_pz-namnn" name="preziEmbed_4cm_pz-namnn" src="http://prezi.com/bin/preziloader.swf" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="460" height="350" bgcolor="#ffffff" flashvars="prezi_id=4cm_pz-namnn&amp;lock_to_path=0&amp;color=ffffff&amp;autoplay=no&amp;autohide_ctrls=0"></embed></object><div class="prezi-player-links"><p><a title="MINISTERSTVO FINANCÍ A POVOLOVÁNÍ HAZARDNÍCH PŘÍSTROJŮ" href="http://prezi.com/4cm_pz-namnn/ministerstvo-financi-a-povolovani-hazardnich-pristroju/">MINISTERSTVO FINANCÍ A POVOLOVÁNÍ HAZARDNÍCH PŘÍSTROJŮ</a> on <a href="http://prezi.com">Prezi</a></p></div></div>
+        <div style="margin-left:10px;" class="prezi-player"><style type="text/css" media="screen">.prezi-player { width: 450px; } .prezi-player-links { text-align: center; }</style><object id="prezi_4cm_pz-namnn" name="prezi_4cm_pz-namnn" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="450" height="350"><param name="movie" value="http://prezi.com/bin/preziloader.swf"/><param name="allowfullscreen" value="true"/><param name="allowscriptaccess" value="always"/><param name="bgcolor" value="#ffffff"/><param name="flashvars" value="prezi_id=4cm_pz-namnn&amp;lock_to_path=0&amp;color=ffffff&amp;autoplay=no&amp;autohide_ctrls=0"/><embed id="preziEmbed_4cm_pz-namnn" name="preziEmbed_4cm_pz-namnn" src="http://prezi.com/bin/preziloader.swf" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="450" height="350" bgcolor="#ffffff" flashvars="prezi_id=4cm_pz-namnn&amp;lock_to_path=0&amp;color=ffffff&amp;autoplay=no&amp;autohide_ctrls=0"></embed></object><div class="prezi-player-links"><p><a title="MINISTERSTVO FINANCÍ A POVOLOVÁNÍ HAZARDNÍCH PŘÍSTROJŮ" href="http://prezi.com/4cm_pz-namnn/ministerstvo-financi-a-povolovani-hazardnich-pristroju/">MINISTERSTVO FINANCÍ A POVOLOVÁNÍ HAZARDNÍCH PŘÍSTROJŮ</a> on <a href="http://prezi.com">Prezi</a></p></div></div>
     </div>
     <div class="clear"></div>
     <br><hr>
@@ -67,7 +81,7 @@
         <h4>Slovníček pojmů</h4>
         <p>Co je to sousedství?<br>
         Co znamenají zkratky VLT, VHP, EMR?</p>
-        <p><a href="/kampan/mf/slovnicek/">Podrobnosti</a> &rarr;</p>
+        <p><a href="{% url dictionary %}">Podrobnosti</a> &rarr;</p>
     </div>
     <div class="clear"></div>
 {% endblock %}

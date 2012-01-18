@@ -83,6 +83,7 @@ INSTALLED_APPS = (
     'hazard.campaigns',
     'hazard.mf',
     'hazard.conflicts',
+    'hazard.dictionary',
 )
 
 APPEND_SLASH = True
