@@ -1,0 +1,33 @@
+{% extends "bone.html" %}
+
+{% block main %}
+    <h1>Slovník pojmů</h1>
+
+    {# seznam terminu #}
+    <p>
+        Co je to
+        {% for term in terms %}
+            <a href="#{{ term.slug }}">{{ term.title }}</a>{% if forloop.last %}?{% else %}, {% endif %}
+        {% endfor %}
+    </p>
+    <hr>
+
+    {# vypis terminu #}
+    {% for term in terms %}
+        <div id="{{ term.slug }}" class="span-4">
+            <h4>{{ term.title }}</h4>
+        </div>
+        <div class="span-10">
+            {{ term.description|safe }}
+        </div>
+        {% comment %}
+        <div class="span-9 prepend-1 last">
+            <div class="box">obrazek?</div>
+        </div>
+        {% endcomment %}
+        <div class="clear"></div>
+        <br>
+    {% endfor %}
+{% endblock %}
+
+{# vim: set et si ts=4 sw=4 syn=django: #}
