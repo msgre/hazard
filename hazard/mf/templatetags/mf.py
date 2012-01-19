@@ -46,7 +46,8 @@ def mf_table(context, area, type):
     context.update({
         'area': area,
         'type': type,
-        'actual_object': context[area]
+        'actual_object': context[area],
+        'objects_to_hide': []
     })
 
     if area == 'region':
@@ -55,6 +56,7 @@ def mf_table(context, area, type):
     elif area == 'district':
         context['objects'] = context['districts']
         context['object_title'] = u'Okres'
+        context['objects_to_hide'] = [i.id for i in context['districts'].values() if i.region_id != context[area].region_id]
     else:
         context['objects'] = dict([(i.id, i) for i in context['district'].town_set.select_related().all()])
         context['object_title'] = u'Obec'

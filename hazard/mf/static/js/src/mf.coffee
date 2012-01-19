@@ -37,6 +37,14 @@ a data v nem interpretuje jako barevny prouzek na pozadi radku. Povesi na
 tabulku hover obsluhu (zvyrazeneni radku i polygonu v mape).
 ###
 handle_table = () ->
+
+    # rozbalovatko ostatnich okresu kraje
+    $('#other-districts').click () ->
+        $('table.statistics tr.hide').removeClass('hide')
+        $('#other-districts-label').remove()
+        $(@).closest('p').remove()
+        false
+
     $('table.statistics tr').hover () ->
         key = $.trim($(@).attr('class').replace('active', ''))
         google.maps.event.trigger(POLYS[key], 'mouseover')

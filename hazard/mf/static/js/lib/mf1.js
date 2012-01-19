@@ -246,6 +246,12 @@
   tabulku hover obsluhu (zvyrazeneni radku i polygonu v mape).
   */
   handle_table = function() {
+    $('#other-districts').click(function() {
+      $('table.statistics tr.hide').removeClass('hide');
+      $('#other-districts-label').remove();
+      $(this).closest('p').remove();
+      return false;
+    });
     $('table.statistics tr').hover(function() {
       var key;
       key = $.trim($(this).attr('class').replace('active', ''));
