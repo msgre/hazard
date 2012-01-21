@@ -56,21 +56,17 @@ handle_table = () ->
             success: (data) ->
                 $('h1').replaceWith(data.main_header)
                 $('#primer').replaceWith(data.primer_content)
-                $('.sub-objects').schovavacz(SCHOVAVACZ_OPTS)
+                $('#breadcrumb').empty().append(data.breadcrumb)
                 handle_switcher(false)
                 $('table.statistics tr.active').removeClass('active')
-                POLYS[window.actual].setOptions
-                    zIndex: 10
-                    strokeWeight: 0
+                POINTS[window.actual].setOptions
+                    fillColor: '#000000'
+                    zIndex: 30
                 window.actual = $.trim($tr.attr('class').replace('hover', '').replace('hide', ''))
-                POLYS[window.actual].setOptions
-                    zIndex: 20
-                    strokeWeight: 3
-                    strokeColor: "#444444"
+                POINTS[window.actual].setOptions
+                    fillColor: '#ffffff'
+                    zIndex: 40
                 $tr.addClass('active')
-                google.maps.event.addListenerOnce MAP, 'zoom_changed', () ->
-                    MAP.setZoom(MAP.getZoom() - 1)
-                MAP.fitBounds(POLYS[window.actual].getBounds())
                 $('h1').removeClass('loading')
         false
 
@@ -139,6 +135,7 @@ draw_shapes = () ->
     statistics_key = ajax_key()
     delta = window.extrems[statistics_key].max - window.extrems[statistics_key].min
     type = $('#type-switcher').val()
+    update_map_legend(window.extrems[statistics_key])
 
     # vykreslime okresy
     _.each window.shapes, (shape, key) ->
@@ -228,7 +225,7 @@ draw_points = () ->
         # vykresleni obce
         POINTS[slug] = new google.maps.Circle(
             center: new google.maps.LatLng(point.point[1], point.point[0])
-            fillColor: '#000000'
+            fillColor: if slug == window.actual then '#ffffff' else '#000000'
             fillOpacity: 1
             strokeOpacity: 0
             radius: radius
@@ -238,22 +235,30 @@ draw_points = () ->
 
         # hovery
         google.maps.event.addListener POINTS[slug], 'mouseover', () ->
+            $tr = $table.find("tr.#{ slug }")
+            $tr.addClass('hover')
+            if slug == window.actual
+                return
             POINTS[slug].setOptions(
                 fillColor: '#ffffff'
                 zIndex: 40
             )
-            $tr = $table.find("tr.#{ slug }")
-            $tr.addClass('hover')
 
         google.maps.event.addListener POINTS[slug], 'mouseout', () ->
-            POINTS[slug].setOptions(
+            $table.find("tr.#{ slug }").removeClass('hover')
+            if slug == window.actual
+                return
+            POINTS[slug].setOptions
                 fillColor: '#000000'
                 zIndex: 30
-            )
-            $table.find("tr.#{ slug }").removeClass('hover')
 
         # klikanec
         google.maps.event.addListener POINTS[slug], 'click', () ->
+            if window.actual of POINTS
+                POINTS[window.actual].setOptions
+                    fillColor: '#000000'
+                    zIndex: 30
+            window.actual = slug
             $table.find("tr.#{ slug } a").click()
 
 
@@ -298,9 +303,11 @@ v selektitkach a datech v tabulce).
 ###
 update_shapes = () ->
 
+    select_legend_handler2()
     statistics_key = ajax_key()
     delta = window.extrems[statistics_key].max - window.extrems[statistics_key].min
     type = $('#type-switcher').val()
+    update_map_legend(window.extrems[statistics_key])
 
     _.each window.shapes, (shape, key) ->
         if not POLYS[key]
@@ -361,9 +368,15 @@ window.late_map = () ->
         mapTypeControl: false,
         mapTypeId: 'CB'
         streetViewControl: false
+        panControl: false
+        zoomControl: true
+        zoomControlOptions:
+            style: google.maps.ZoomControlStyle.SMALL
+
     MAP = new google.maps.Map(document.getElementById("map"), map_options)
     styledMapType = new google.maps.StyledMapType(MAP_STYLE, {name:'Černobílá'})
     MAP.mapTypes.set('CB', styledMapType)
+    map_legend()
 
     # vykresleni polygonu (kraje/okresy)
     draw_shapes()
@@ -371,11 +384,11 @@ window.late_map = () ->
     draw_points()
     $('h1').removeClass('loading')
 
+    handle_table()
+    handle_switcher()
+    select_legend_handler()
 
 # -----------------------------------------------------------------------------
 
 $(document).ready () ->
     load_maps_api()
-    $('.sub-objects').schovavacz(SCHOVAVACZ_OPTS)
-    handle_table()
-    handle_switcher()

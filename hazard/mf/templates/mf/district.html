@@ -6,6 +6,43 @@
     <h1 class="loading">{{ district.title }}</h1>
 {% endblock %}
 
+{% block select_legend %}
+    {# vysvetleni k hernam #}
+    <div class="hells">
+        <p class="counts">
+            V mapě jsou vykresleny bývalé okresy České republiky. Čím tmavší
+            barva je použita, tím větší počet heren se v okrese vyskytuje.
+        </p>
+        <p class="conflict_counts">
+            V mapě jsou vykresleny bývalé okresy České republiky. Čím tmavší
+            barva je použita, tím se v nich vyskytuje větší počet <a href="#">nezákonně
+            povolených heren</a>.
+        </p>
+        <p class="conflict_perc">
+            V mapě jsou vykresleny bývalé okresy České republiky. Čím tmavší
+            barva je použita, tím je v okrese více <a href="#">nezákonně povolených heren</a>,
+            než těch, jejichž umístění neodporuje žádnému zákonu.
+        </p>
+    </div>
+    {# vysvetleni k matum #}
+    <div class="machines">
+        <p class="counts">
+            V mapě jsou vykresleny bývalé okresy České republiky. Čím tmavší
+            barva je použita, tím větší počet automatů se v okrese vyskytuje.
+        </p>
+        <p class="conflict_counts">
+            V mapě jsou vykresleny bývalé okresy České republiky. Čím tmavší
+            barva je použita, tím se v nich vyskytuje větší počet <a href="#">nezákonně
+            povolených automatů</a>.
+        </p>
+        <p class="conflict_perc">
+            V mapě jsou vykresleny bývalé okresy České republiky. Čím tmavší
+            barva je použita, tím je v okrese více <a href="#">nezákonně povolených automatů</a>,
+            než těch, jejichž umístění neodporuje žádnému zákonu.
+        </p>
+    </div>
+{% endblock %}
+
 {% block text_content %}
     {# uvodni text se zakladnimi udaji a kolacovym grafem #}
     {% block primer_content %}
@@ -37,8 +74,7 @@
 
     <hr />
 
-    <h3>Situace v ostatních okresech<span id="other-districts-label"> kraje</span></h3>
-    <p><a href="#" id="other-districts">Zobrazit všechny okresy České republiky</a></p>
+    <h3>Situace v ostatních okresech kraje</h3>
     <div class="outer-wrapper">
         {% mf_table "district" "hells" %}
     </div>
@@ -55,6 +91,7 @@
     {{ block.super }}
     <script type="text/javascript">
         window.actual = '{{ district.slug }}';
+        window.type = 'district';
         window.url = '/kampan/mf/ajax/okresy/';
     </script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/lib/mf1.js"></script>

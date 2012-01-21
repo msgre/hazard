@@ -20,7 +20,7 @@
         </thead>
         <tbody>
             {% for id, object in objects.items %}
-                <tr class="{{ object.slug }}{% if object.id == actual_object.id %} active{% endif %}{% if object.id in objects_to_hide %} hide{% endif %}">
+                <tr class="{{ object.slug }}{% if object.id == actual_object.id %} active{% endif %} {% firstof parent_class|key:object.id "" %}">
                     {% mf_table_url object as url %}
                     <td>
                         <a href="{{ url }}">{{ object.title|space2nbsp }}</a>

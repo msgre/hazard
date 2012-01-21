@@ -6,6 +6,45 @@
     <h1 class="loading">{{ town.title }}</h1>
 {% endblock %}
 
+{% block select_legend %}
+    {# vysvetleni k hernam #}
+    <div class="hells">
+        <p class="counts">
+            V mapě jsou vykresleny obce vybraného okresu České
+            republiky.  Čím větší počet heren se v obci vyskytuje, tím
+            větší kolečko je vykresleno.
+        </p>
+        <p class="conflict_counts">
+            V mapě jsou vykresleny obce vybraného okresu České republiky.
+            Čím více je v obci <a href="#">nezákonně povolených heren</a>, tím větší kolečko
+            je vykresleno.
+        </p>
+        <p class="conflict_perc">
+            V mapě jsou vykresleny obce vybraného okresu České republiky.
+            Čím více je v obci nezákonně povolených heren, vůči těm, jejichž
+            umístění neodporuje žádnému zákonu, tím je kolečko větší.
+        </p>
+    </div>
+    {# vysvetleni k matum #}
+    <div class="machines">
+        <p class="counts">
+            V mapě jsou vykresleny obce vybraného okresu České
+            republiky.  Čím větší počet automatů se v obci vyskytuje, tím
+            větší kolečko je vykresleno.
+        </p>
+        <p class="conflict_counts">
+            V mapě jsou vykresleny obce vybraného okresu České republiky.
+            Čím více je v obci <a href="#">nezákonně povolených automatů</a>, tím větší kolečko
+            je vykresleno.
+        </p>
+        <p class="conflict_perc">
+            V mapě jsou vykresleny obce vybraného okresu České republiky.
+            Čím více je v obci nezákonně povolených automatů, vůči těm, jejichž
+            umístění neodporuje žádnému zákonu, tím je kolečko větší.
+        </p>
+    </div>
+{% endblock %}
+
 {% block text_content %}
     {# uvodni text se zakladnimi udaji a kolacovym grafem #}
     {% block primer_content %}
@@ -57,6 +96,7 @@
         window.actual = '{{ town.slug }}';
         window.actual_disctrict = {{ district.id }};
         window.url = '/kampan/mf/ajax/obce/{{ district.slug }}/';
+        window.type = 'town';
     </script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/lib/towns.js"></script>
 {% endblock %}

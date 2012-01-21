@@ -107,3 +107,30 @@ get_color = (type, value) ->
     else
         color = interpolate_color('#00FFFF', '#0028FF', value)
     return color
+
+map_legend = () ->
+    pos = $('#map').position()
+    $('#map-legend').css({
+        left: "#{ pos.left + 10 }px";
+        top: "#{ pos.top + 60 }px";
+    })
+
+update_map_legend = (extrems) ->
+    $('#map-legend').attr('class', '').addClass($('#type-switcher').val())
+    $('#map-legend .min').text(Math.round(extrems.min))
+    $('#map-legend .max').text(Math.round(extrems.max))
+
+select_legend_handler = () ->
+    opened = false
+    $('#select-handler').click () ->
+        selector = "#select-legend .#{ $("#type-switcher").val() } .#{ $("#table-switcher").val() }"
+        opened = not opened
+        $(selector).toggleClass('opened', opened).slideToggle('fast')
+        false
+
+select_legend_handler2 = () ->
+    neco = $('#select-legend .opened')
+    if neco.length
+        neco.removeClass('opened').hide()
+        selector = "#select-legend .#{ $("#type-switcher").val() } .#{ $("#table-switcher").val() }"
+        $(selector).addClass('opened').show()

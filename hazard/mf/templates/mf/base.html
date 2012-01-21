@@ -6,12 +6,17 @@
 {% endblock %}
 
 {% block breadcrumb %}
-    <a href="/">Úvodní stránka</a> {% if district %}&raquo; <a href="{% url region region=region.slug %}">{{ region.title }}</a> {% if town %}&raquo; <a href="{% url district region=region.slug district=district.slug %}">{{ district.title }}</a>{% endif %}{% endif %}
+    {% include "mf/breadcrumb.html" %}
 {% endblock %}
 
 {% block submenu %}
     {% if town %}
         <div class="box" style="margin-bottom:0;position:relative;top:-13px;padding:10px;text-decoration:none;color:#E5ECF9;background:#06c;">
+            {% url mf-town region=region.slug district=district.slug town=town.slug campaign="mf" as town_url %}
+            {% url mf-town-map region=region.slug district=district.slug town=town.slug campaign="mf" as town_map_url %}
+            <a style="color:#E5ECF9;text-decoration:none;padding-right:1em;" href="{{ town_url }}">Základní přehled</a>
+            <a style="color:#E5ECF9;text-decoration:none;padding-right:1em;" href="{{ town_map_url }}">Podrobná mapa</a>
+            {% comment %}
             {% url mf-town region=region.slug district=district.slug town=town.slug campaign="mf" as town_url %}
             {% url mf-town-map region=region.slug district=district.slug town=town.slug campaign="mf" as town_map_url %}
             {% url mf-town-hells-list region=region.slug district=district.slug town=town.slug campaign="mf" as hells_list_url %}
@@ -21,6 +26,7 @@
             <a style="color:#E5ECF9;text-decoration:none;padding-right:1em;" href="{{ hells_list_url }}">Seznam heren</a>
             <a style="color:#E5ECF9;text-decoration:none;padding-right:1em;" href="{{ buildings_list_url }}">Seznam budov</a>
             <a style="color:#E5ECF9;text-decoration:none;padding-right:1em;" href="#">Export</a>
+            {% endcomment %}
         </div>
     {% endif %}
 {% endblock %}
@@ -34,21 +40,27 @@
         {# mapa #}
         <div class="span-14 last">
             <p>
-                Zobrazit
-                <select id="type-switcher">
-                    <option title="heren" value="hells">herny</option>
-                    <option title="automatů" value="machines">automaty</option>
-                </select>
-                &mdash;
+                Zobraz
                 <select id="table-switcher">
-                    <option title="celkového počtu" value="counts">jejich celkový počet</option>
+                    <option title="celkového počtu" value="counts">celkový počet</option>
                     <option title="počtu nezákonně povolených" value="conflict_counts">počet nezákonně povolených</option>
                     <option title="poměru nezákonně/zákonně povolených" value="conflict_perc">poměr nezákonně/zákonně povolených</option>
                 </select>
+                <select id="type-switcher">
+                    <option title="heren" value="hells">heren</option>
+                    <option title="automatů" value="machines">automatů</option>
+                </select>
+                <a id="select-handler" href="#">Vysvětlení mapy +</a>
             </p>
-            {% block map %}
-                <div id="map"></div>
-            {% endblock %}
+            <div id="select-legend">
+                {% block select_legend %}{% endblock %}
+            </div>
+            <div style="position:relative">
+                <div id="map-legend" class="hells"><span class="max"></span><span class="min"></span></div>
+                {% block map %}
+                    <div id="map"></div>
+                {% endblock %}
+            </div>
         </div>
     {% endblock %}
 {% endblock %}

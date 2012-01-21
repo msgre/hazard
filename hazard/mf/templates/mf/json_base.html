@@ -1,4 +1,5 @@
 {% load shared %}{% jsonblock %}
     {% jsonitem "main_header" %}{% block main_header %}{% endblock %}{% endjsonitem %}
     {% jsonitem "primer_content" %}{% block primer_content %}{% endblock %}{% endjsonitem %}
+    {% jsonitem "breadcrumb" %}{% include "mf/breadcrumb.html" %}{% endjsonitem %}
 {% endjsonblock %}

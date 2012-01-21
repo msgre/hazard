@@ -1,5 +1,5 @@
 (function() {
-  var $, MAP, MAP_STYLE, POINTS, POINT_MAX_RADIUS, POINT_MIN_RADIUS, POLYS, POLYS_COLORS, SCHOVAVACZ_OPTS, VIEW, ajax_key, convert_to_hex, convert_to_rgb, draw_points, draw_shapes, get_color, handle_switcher, handle_table, hex, interpolate_color, load_maps_api, number_to_graph, trim, update_points, update_shapes;
+  var $, MAP, MAP_STYLE, POINTS, POINT_MAX_RADIUS, POINT_MIN_RADIUS, POLYS, POLYS_COLORS, SCHOVAVACZ_OPTS, VIEW, ajax_key, convert_to_hex, convert_to_rgb, draw_points, draw_shapes, get_color, handle_switcher, handle_table, hex, interpolate_color, load_maps_api, map_legend, number_to_graph, select_legend_handler, select_legend_handler2, trim, update_map_legend, update_points, update_shapes;
   var __indexOf = Array.prototype.indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (this[i] === item) return i;
@@ -224,6 +224,39 @@
     }
     return color;
   };
+  map_legend = function() {
+    var pos;
+    pos = $('#map').position();
+    return $('#map-legend').css({
+      left: "" + (pos.left + 10) + "px",
+      top: "" + (pos.top + 60) + "px"
+    });
+  };
+  update_map_legend = function(extrems) {
+    $('#map-legend').attr('class', '').addClass($('#type-switcher').val());
+    $('#map-legend .min').text(Math.round(extrems.min));
+    return $('#map-legend .max').text(Math.round(extrems.max));
+  };
+  select_legend_handler = function() {
+    var opened;
+    opened = false;
+    return $('#select-handler').click(function() {
+      var selector;
+      selector = "#select-legend ." + ($("#type-switcher").val()) + " ." + ($("#table-switcher").val());
+      opened = !opened;
+      $(selector).toggleClass('opened', opened).slideToggle('fast');
+      return false;
+    });
+  };
+  select_legend_handler2 = function() {
+    var neco, selector;
+    neco = $('#select-legend .opened');
+    if (neco.length) {
+      neco.removeClass('opened').hide();
+      selector = "#select-legend ." + ($("#type-switcher").val()) + " ." + ($("#table-switcher").val());
+      return $(selector).addClass('opened').show();
+    }
+  };
   "TODO:\n- zvyraznovat aktualni kraj/okres?\n    - nebo se na to vykaslat?\n- kua nemam orafnout aspon ten okres?\n    - o tom data mam ne?";
   /*
   Obsluha preklikavani pohledu herny/automaty.
@@ -278,24 +311,19 @@
         success: function(data) {
           $('h1').replaceWith(data.main_header);
           $('#primer').replaceWith(data.primer_content);
-          $('.sub-objects').schovavacz(SCHOVAVACZ_OPTS);
+          $('#breadcrumb').empty().append(data.breadcrumb);
           handle_switcher(false);
           $('table.statistics tr.active').removeClass('active');
-          POLYS[window.actual].setOptions({
-            zIndex: 10,
-            strokeWeight: 0
+          POINTS[window.actual].setOptions({
+            fillColor: '#000000',
+            zIndex: 30
           });
           window.actual = $.trim($tr.attr('class').replace('hover', '').replace('hide', ''));
-          POLYS[window.actual].setOptions({
-            zIndex: 20,
-            strokeWeight: 3,
-            strokeColor: "#444444"
+          POINTS[window.actual].setOptions({
+            fillColor: '#ffffff',
+            zIndex: 40
           });
           $tr.addClass('active');
-          google.maps.event.addListenerOnce(MAP, 'zoom_changed', function() {
-            return MAP.setZoom(MAP.getZoom() - 1);
-          });
-          MAP.fitBounds(POLYS[window.actual].getBounds());
           return $('h1').removeClass('loading');
         }
       });
@@ -369,6 +397,7 @@
     statistics_key = ajax_key();
     delta = window.extrems[statistics_key].max - window.extrems[statistics_key].min;
     type = $('#type-switcher').val();
+    update_map_legend(window.extrems[statistics_key]);
     _.each(window.shapes, function(shape, key) {
       var color, i, item, value;
       if (!shape) {
@@ -468,7 +497,7 @@
       }
       POINTS[slug] = new google.maps.Circle({
         center: new google.maps.LatLng(point.point[1], point.point[0]),
-        fillColor: '#000000',
+        fillColor: slug === window.actual ? '#ffffff' : '#000000',
         fillOpacity: 1,
         strokeOpacity: 0,
         radius: radius,
@@ -477,21 +506,34 @@
       });
       google.maps.event.addListener(POINTS[slug], 'mouseover', function() {
         var $tr;
-        POINTS[slug].setOptions({
+        $tr = $table.find("tr." + slug);
+        $tr.addClass('hover');
+        if (slug === window.actual) {
+          return;
+        }
+        return POINTS[slug].setOptions({
           fillColor: '#ffffff',
           zIndex: 40
         });
-        $tr = $table.find("tr." + slug);
-        return $tr.addClass('hover');
       });
       google.maps.event.addListener(POINTS[slug], 'mouseout', function() {
-        POINTS[slug].setOptions({
+        $table.find("tr." + slug).removeClass('hover');
+        if (slug === window.actual) {
+          return;
+        }
+        return POINTS[slug].setOptions({
           fillColor: '#000000',
           zIndex: 30
         });
-        return $table.find("tr." + slug).removeClass('hover');
       });
       return google.maps.event.addListener(POINTS[slug], 'click', function() {
+        if (window.actual in POINTS) {
+          POINTS[window.actual].setOptions({
+            fillColor: '#000000',
+            zIndex: 30
+          });
+        }
+        window.actual = slug;
         return $table.find("tr." + slug + " a").click();
       });
     });
@@ -534,9 +576,11 @@
   */
   update_shapes = function() {
     var delta, statistics_key, type;
+    select_legend_handler2();
     statistics_key = ajax_key();
     delta = window.extrems[statistics_key].max - window.extrems[statistics_key].min;
     type = $('#type-switcher').val();
+    update_map_legend(window.extrems[statistics_key]);
     return _.each(window.shapes, function(shape, key) {
       var color, value;
       if (!POLYS[key]) {
@@ -602,21 +646,27 @@
       center: new google.maps.LatLng(49.38512, 14.61765),
       mapTypeControl: false,
       mapTypeId: 'CB',
-      streetViewControl: false
+      streetViewControl: false,
+      panControl: false,
+      zoomControl: true,
+      zoomControlOptions: {
+        style: google.maps.ZoomControlStyle.SMALL
+      }
     };
     MAP = new google.maps.Map(document.getElementById("map"), map_options);
     styledMapType = new google.maps.StyledMapType(MAP_STYLE, {
       name: 'Černobílá'
     });
     MAP.mapTypes.set('CB', styledMapType);
+    map_legend();
     draw_shapes();
     draw_points();
-    return $('h1').removeClass('loading');
+    $('h1').removeClass('loading');
+    handle_table();
+    handle_switcher();
+    return select_legend_handler();
   };
   $(document).ready(function() {
-    load_maps_api();
-    $('.sub-objects').schovavacz(SCHOVAVACZ_OPTS);
-    handle_table();
-    return handle_switcher();
+    return load_maps_api();
   });
 }).call(this);

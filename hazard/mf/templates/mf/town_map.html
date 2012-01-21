@@ -3,14 +3,19 @@
 {% load shared %}
 
 {% block main_header %}
-    <h1>Obec {{ town }}</h1>
+    <h1>Obec {{ town.title }}</h1>
 {% endblock %}
 
 {% block content %}
-    <div id="map" class="detail-map" style="height:500px"></div>
+    {#<div id="map" class="detail-map" style="height:500px"></div>#}
+    <p class="todo">
+        tady by mela byt mapa s podrobnou situaci v obci, tak jak ji zname
+        ze soucasnych map hazardu
+    </p>
 {% endblock %}
 
 {% block js %}
+    {% comment %}
     {{ block.super }}
     <script type="text/javascript">
         {% filter shorten_latlon %}
@@ -23,6 +28,7 @@
     <script type="text/javascript" src="{{ STATIC_URL }}js/underscore-min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDw1uicJmcKKdEIvLS9XavLO0RPFvIpOT4&v=3&sensor=false" type="text/javascript"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/mf.js"></script>
+    {% endcomment %}
 {% endblock %}
 
 {# vim: set et si ts=4 sw=4 syn=django: #}

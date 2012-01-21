@@ -79,3 +79,63 @@ div.wrapper {
 #tttop {display:block; height:5px; margin-left:5px; background:url(images/tt_top.gif) top right no-repeat; overflow:hidden}
 #ttcont {display:block; padding:2px 12px 3px 7px; margin-left:5px; background:#666; color:#FFF}
 #ttbot {display:block; height:5px; margin-left:5px; background:url(images/tt_bottom.gif) top right no-repeat; overflow:hidden}
+
+#map-legend {
+    height:300px;
+    width:40px;
+    display:block;
+    position:absolute;
+    z-index:30;
+    font-size:10px;
+    border:1px solid #fff;
+}
+#map-legend .min,
+#map-legend .max {
+    width:30px;
+    text-align:center;
+    position:absolute;
+    top:0;
+    padding:4px;
+    color:#fff;
+}
+#map-legend .min {
+    top:92%;
+    color:#000;
+}
+
+#map-legend.hells {
+    background-image: linear-gradient(bottom, rgb(255,217,0) 0%, rgb(238,0,0) 100%);
+    background-image: -o-linear-gradient(bottom, rgb(255,217,0) 0%, rgb(238,0,0) 100%);
+    background-image: -moz-linear-gradient(bottom, rgb(255,217,0) 0%, rgb(238,0,0) 100%);
+    background-image: -webkit-linear-gradient(bottom, rgb(255,217,0) 0%, rgb(238,0,0) 100%);
+    background-image: -ms-linear-gradient(bottom, rgb(255,217,0) 0%, rgb(238,0,0) 100%);
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0, rgb(255,217,0)),
+        color-stop(1, rgb(238,0,0))
+    );
+}
+#map-legend.machines {
+    background-image: linear-gradient(bottom, rgb(0,255,255) 0%, rgb(0,38,255) 100%);
+    background-image: -o-linear-gradient(bottom, rgb(0,255,255) 0%, rgb(0,38,255) 100%);
+    background-image: -moz-linear-gradient(bottom, rgb(0,255,255) 0%, rgb(0,38,255) 100%);
+    background-image: -webkit-linear-gradient(bottom, rgb(0,255,255) 0%, rgb(0,38,255) 100%);
+    background-image: -ms-linear-gradient(bottom, rgb(0,255,255) 0%, rgb(0,38,255) 100%);
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0, rgb(0,255,255)),
+        color-stop(1, rgb(0,38,255))
+    );
+}
+
+#select-legend p {
+    display:none;
+    font-style:italic;
+}
+#select-handler {
+    float:right;
+}

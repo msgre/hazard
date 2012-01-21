@@ -32,19 +32,22 @@ handle_switcher = (set=true) ->
 
 
 ###
+TODO:
+###
+filter_table = () ->
+    if window.type == 'district'
+        $('table.statistics tr.hide').removeClass('hide')
+        $('table.statistics tr.active').removeClass('active')
+        cls = $('#region-breadcrumb').attr('class')
+        $("table.statistics tr:not(.#{ cls })").addClass('hide')
+
+
+###
 Zjednodusi tabulku na strance -- zobrazi vzdy jen jeden vybrany sloupec
 a data v nem interpretuje jako barevny prouzek na pozadi radku. Povesi na
 tabulku hover obsluhu (zvyrazeneni radku i polygonu v mape).
 ###
 handle_table = () ->
-
-    # rozbalovatko ostatnich okresu kraje
-    $('#other-districts').click () ->
-        $('table.statistics tr.hide').removeClass('hide')
-        $('#other-districts-label').remove()
-        $(@).closest('p').remove()
-        $('#type-switcher').change()
-        false
 
     $('table.statistics tr').hover () ->
         key = $.trim($(@).attr('class').replace('active', '').replace('hide', ''))
@@ -68,13 +71,17 @@ handle_table = () ->
             success: (data) ->
                 $('h1').replaceWith(data.main_header)
                 $('#primer').replaceWith(data.primer_content)
+                $('#breadcrumb').empty().append(data.breadcrumb)
+
+                filter_table()
+
                 $('.sub-objects').schovavacz(SCHOVAVACZ_OPTS)
                 handle_switcher(false)
                 $('table.statistics tr.active').removeClass('active')
                 POLYS[window.actual].setOptions
                     zIndex: 10
                     strokeWeight: 0
-                window.actual = $.trim($tr.attr('class').replace('hover', '').replace('hide', ''))
+                window.actual = _.reject($.trim($tr.attr('class').replace('hover', '').replace('hide', '')).split(' '), (i) -> i.indexOf('region_') == 0)[0]
                 POLYS[window.actual].setOptions
                     zIndex: 20
                     strokeWeight: 3
@@ -225,12 +232,14 @@ v selektitkach a datech v tabulce).
 ###
 update_shapes = () ->
 
+    select_legend_handler2()
     $table = $("table.statistics.#{ VIEW }")
     $select = $('#table-switcher')
     col = $select.val()
     extrems = $table.data(col)
     delta = extrems.max - extrems.min
     type = $('#type-switcher').val()
+    update_map_legend(extrems)
 
     _.each window.shapes, (shape, key) ->
         if not POLYS[key]
@@ -261,8 +270,10 @@ load_maps_api = () ->
     $('h1').addClass('loading')
     $.getJSON window.url, (data) ->
         window.shapes = {}
+        window.regions = {}
         for key in _.keys(data['details'])
             window.shapes[key] = data['details'][key]['shape']
+            window.regions[key] = data['details'][key]['region']
 
         script = document.createElement('script')
         script.type = 'text/javascript'
@@ -294,9 +305,17 @@ window.late_map = () ->
         mapTypeControl: false,
         mapTypeId: 'CB'
         streetViewControl: false
+        panControl: false
+        zoomControl: true
+        zoomControlOptions:
+            style: google.maps.ZoomControlStyle.SMALL
+
+
+
     MAP = new google.maps.Map(document.getElementById("map"), map_options)
     styledMapType = new google.maps.StyledMapType(MAP_STYLE, {name:'Černobílá'})
     MAP.mapTypes.set('CB', styledMapType)
+    map_legend()
 
     # vykresleni polygonu (kraje/okresy)
     draw_shapes()
@@ -310,3 +329,5 @@ $(document).ready () ->
     load_maps_api()
     $('.sub-objects').schovavacz(SCHOVAVACZ_OPTS)
     handle_switcher()
+    select_legend_handler()
+    filter_table()

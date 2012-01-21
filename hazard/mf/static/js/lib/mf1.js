@@ -1,5 +1,5 @@
 (function() {
-  var $, MAP, MAP_STYLE, POLYS, POLYS_COLORS, SCHOVAVACZ_OPTS, VIEW, convert_to_hex, convert_to_rgb, draw_shapes, get_color, handle_switcher, handle_table, hex, interpolate_color, load_maps_api, number_to_graph, trim, update_shapes;
+  var $, MAP, MAP_STYLE, POLYS, POLYS_COLORS, SCHOVAVACZ_OPTS, VIEW, convert_to_hex, convert_to_rgb, draw_shapes, filter_table, get_color, handle_switcher, handle_table, hex, interpolate_color, load_maps_api, map_legend, number_to_graph, select_legend_handler, select_legend_handler2, trim, update_map_legend, update_shapes;
   var __indexOf = Array.prototype.indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (this[i] === item) return i;
@@ -224,6 +224,39 @@
     }
     return color;
   };
+  map_legend = function() {
+    var pos;
+    pos = $('#map').position();
+    return $('#map-legend').css({
+      left: "" + (pos.left + 10) + "px",
+      top: "" + (pos.top + 60) + "px"
+    });
+  };
+  update_map_legend = function(extrems) {
+    $('#map-legend').attr('class', '').addClass($('#type-switcher').val());
+    $('#map-legend .min').text(Math.round(extrems.min));
+    return $('#map-legend .max').text(Math.round(extrems.max));
+  };
+  select_legend_handler = function() {
+    var opened;
+    opened = false;
+    return $('#select-handler').click(function() {
+      var selector;
+      selector = "#select-legend ." + ($("#type-switcher").val()) + " ." + ($("#table-switcher").val());
+      opened = !opened;
+      $(selector).toggleClass('opened', opened).slideToggle('fast');
+      return false;
+    });
+  };
+  select_legend_handler2 = function() {
+    var neco, selector;
+    neco = $('#select-legend .opened');
+    if (neco.length) {
+      neco.removeClass('opened').hide();
+      selector = "#select-legend ." + ($("#type-switcher").val()) + " ." + ($("#table-switcher").val());
+      return $(selector).addClass('opened').show();
+    }
+  };
   "Kod pro stranky s krajem a okresy.\n\nZ tabulky vlozene do stranky dokaze vyzobnout potrebne informace (napr.\nabsolutni pocet heren v kraji), spoji se serverem a vytahne z nej polygony\ngeokrafickych objektu (obrysy kraju/okresu), zavesi na elementy ve strance\nobsluzne funkce a upravi vzhled stranky.\n\nTODO: predelat draw_shapes aby vyuzival getBounds";
   /*
   Obsluha preklikavani pohledu herny/automaty.
@@ -250,18 +283,23 @@
     return $('#type-switcher').change();
   };
   /*
+  TODO:
+  */
+  filter_table = function() {
+    var cls;
+    if (window.type === 'district') {
+      $('table.statistics tr.hide').removeClass('hide');
+      $('table.statistics tr.active').removeClass('active');
+      cls = $('#region-breadcrumb').attr('class');
+      return $("table.statistics tr:not(." + cls + ")").addClass('hide');
+    }
+  };
+  /*
   Zjednodusi tabulku na strance -- zobrazi vzdy jen jeden vybrany sloupec
   a data v nem interpretuje jako barevny prouzek na pozadi radku. Povesi na
   tabulku hover obsluhu (zvyrazeneni radku i polygonu v mape).
   */
   handle_table = function() {
-    $('#other-districts').click(function() {
-      $('table.statistics tr.hide').removeClass('hide');
-      $('#other-districts-label').remove();
-      $(this).closest('p').remove();
-      $('#type-switcher').change();
-      return false;
-    });
     $('table.statistics tr').hover(function() {
       var key;
       key = $.trim($(this).attr('class').replace('active', '').replace('hide', ''));
@@ -285,6 +323,8 @@
         success: function(data) {
           $('h1').replaceWith(data.main_header);
           $('#primer').replaceWith(data.primer_content);
+          $('#breadcrumb').empty().append(data.breadcrumb);
+          filter_table();
           $('.sub-objects').schovavacz(SCHOVAVACZ_OPTS);
           handle_switcher(false);
           $('table.statistics tr.active').removeClass('active');
@@ -292,7 +332,9 @@
             zIndex: 10,
             strokeWeight: 0
           });
-          window.actual = $.trim($tr.attr('class').replace('hover', '').replace('hide', ''));
+          window.actual = _.reject($.trim($tr.attr('class').replace('hover', '').replace('hide', '')).split(' '), function(i) {
+            return i.indexOf('region_') === 0;
+          })[0];
           POLYS[window.actual].setOptions({
             zIndex: 20,
             strokeWeight: 3,
@@ -456,12 +498,14 @@
   */
   update_shapes = function() {
     var $select, $table, col, delta, extrems, type;
+    select_legend_handler2();
     $table = $("table.statistics." + VIEW);
     $select = $('#table-switcher');
     col = $select.val();
     extrems = $table.data(col);
     delta = extrems.max - extrems.min;
     type = $('#type-switcher').val();
+    update_map_legend(extrems);
     return _.each(window.shapes, function(shape, key) {
       var color, value;
       if (!POLYS[key]) {
@@ -493,10 +537,12 @@
     return $.getJSON(window.url, function(data) {
       var key, script, _i, _len, _ref;
       window.shapes = {};
+      window.regions = {};
       _ref = _.keys(data['details']);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         key = _ref[_i];
         window.shapes[key] = data['details'][key]['shape'];
+        window.regions[key] = data['details'][key]['region'];
       }
       script = document.createElement('script');
       script.type = 'text/javascript';
@@ -531,13 +577,19 @@
       center: new google.maps.LatLng(49.38512, 14.61765),
       mapTypeControl: false,
       mapTypeId: 'CB',
-      streetViewControl: false
+      streetViewControl: false,
+      panControl: false,
+      zoomControl: true,
+      zoomControlOptions: {
+        style: google.maps.ZoomControlStyle.SMALL
+      }
     };
     MAP = new google.maps.Map(document.getElementById("map"), map_options);
     styledMapType = new google.maps.StyledMapType(MAP_STYLE, {
       name: 'Černobílá'
     });
     MAP.mapTypes.set('CB', styledMapType);
+    map_legend();
     draw_shapes();
     return $('h1').removeClass('loading');
   };
@@ -545,6 +597,8 @@
     handle_table();
     load_maps_api();
     $('.sub-objects').schovavacz(SCHOVAVACZ_OPTS);
-    return handle_switcher();
+    handle_switcher();
+    select_legend_handler();
+    return filter_table();
   });
 }).call(this);

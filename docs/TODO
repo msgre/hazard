@@ -1,33 +1,46 @@
 Obecne
-------
+===============================================================================
 
-* stale nemam view obrnena vuci nesmyslnym kombinacim kraje/okresu/mesta
-  (valmez v praze, apod)
-* JS by se mel zrychlit, je tam strasna prodleva, nez se stranka dynamicky
-  upravi do finalni podoby. Myslim ze by hodne prospelo asynchronni tahani
-  googlich map, a ajaxove tahani dat o mapach
-  (Korel)
 * Jak s velkymi mesty a jejich dalsim clenenim? (Praha a Brno jsou
-  extremy)
-  (Matej)
-* Nasadim do aplikace chunky
-  V sablonach pak budu pouzivat je, a kluci budou mit moznost editovat i
-  narocneji zalomene stranky pres admin
-* search s naseptavecem pro rychlejsi nalezeni kraje/okresu/obce
+  extremy) (Matej?)
+* Az budou doladeny jakz-takz staticke texty a zakladni layout, pretavit
+  je do chunks at si to kluci mohou sami adminovat
+* U kazde kampane musi by:
+    - vysvetleno o co jde
+    - jak (a jestli vubec) muzou prispet lidi z venku
+    - nejake dusledky (reakce politiku, mashupy, novinarske clanky pro nez se
+      stal nas web zdrojem dat, apod)
+* Na uvodni strance musi byt nejaky vyrazny box s odkazem na puvodni mapy
+  hazardu. Matej psal o nejakem prudivem overlayi s upozornenim, coz udelat
+  muzeme ale radeji bych se na to nespolehal (ja treba zaviram tyhle blbosti
+  jeste pred tim, nez si prectu obsah)
 
 
 Data
-----
+===============================================================================
 
 * vsiml jsem si bordelu v MfPlace -- je tam spousta objektu, ktere se jmenuji
   stejne, ale maji ruzne adresy. Myslim ze jde o adresy malych obecnich
   uradu, ale nekoumal jsem to podrobne.
+* normalizovat:
+    Obce
+    - As, As 1 => As
+    - Adamov 1 => Adamov
+    - Albrechtice u Čes.Těšína => Albrechtice u Českého Těšína
+  Upravit titulky i slug
+* Jak s velkymi obcemi? Mit nekolik Bohuminu, Brn, nebo to slit do jednoho?
+  Kazdopadne by bylo dobre mit to udelane nejak reverzibilne, protoze v urcitem
+  okamziku najednou budu mit potrebu zjistit, v ktere brnenske casti dana
+  herna byla...
 
 
-MF
---
+
+Kampan MF
+===============================================================================
 
 * administrace je velmi hruba
+    - pridat k merge obci kod, ktery prepocita konflikty a smaze celou cache
+      MfPlaceConflict.town_conflicts(town, True)
 * MfPlaceType by mozna mohl byt popisnejsi
     - ted mam jen title a description, pricemz title je lowercase ascii
     - momentalne mame cirkev, lekarny, ministerstvo, obce, skoly, zdravi
@@ -41,11 +54,50 @@ MF
         (u'lekarny', u'?'),
         (u'ministerstvo', u'Budovy státních orgánů'),
         (u'socialni', u'Zařízení sociální péče'),
-* chybi mi cele view (a jeho "podview") pro obce
 * u selektitek nad mapou by melo byt nejake vysvetleni, co dana kombinace
   voleb predstavuje
 * tabulka v prehledech by mohla byt doplnena nejakym JS udelatkem, ktere
   by dokazalo aktualne vybrana data seradit vzestupne/sestupne
-  (Korel)
+  (Korel?)
 * doplneni textu o poradi do uvodniho textu. Budeme to ale vubec delat?
   (Korel, Matej)
+* Javascriptove zalezitosti na Korela
+    - hover v mape by mel byt doprovozen nejakou bublinou s nazvem
+      kraje/okresu/obce
+    - idealni by ale bylo, kdyby v bubline byly i neco dalsiho. Mozna ze tam
+      nemusime opakovat dokola numericke udaje (ty se objevi po kliknuti
+      na patricny objekt a Ajaxem se zaktualizuje stranka se vsemi potrebnymi
+      daty). Stacil by nejaky odkaz na geograficky mensi celky. Napr. v pripade
+      kraje link na okresy, v pripade okresu link na mesta
+    - budeme sibovat se scroll offsetem v tabulce nalevo od mapy, kdyz jezdim
+      mysi v mape? (kdyz je ted patricna polozka mimo viditelnou oblast,
+      zvyrazneni s pomoci .active nejde videt)
+* Jak to udelame s barevnosti? Budeme rozlisovat herny/maty? Budeme zobrazovat
+  obce jako cerne punkty na sedem pozadi?
+* V detailu kraje/okresu -- nevyprdnu se na prime linky na podrazene uzemni
+  celky?
+    - tak jak to je ted, je to trochu nepouzitelne
+    - stacil by jediny link ("okresy kraje", "mesta okresu") a automaticky
+      redirect na prvni z obci
+    - na druhou stranu ale prijdeme o proindexovani ze strany google, coz
+      taky neni moc dobre...
+    - co s tim kua?
+* V detailu obce bychom asi meli mit nejaky placeholder pro kolacovy graf
+  u uvodni vety. Neco jako zdvizeny palec, nebo jina grafika, kterou by se
+  vyjadrovalo, ze to je paradicka (nemit v obci zadne VLTecko)
+* Vysvetlovatko aktualni kombinace hodnot v selektitkach nad mapou. Mozna to
+  je to same co legenda k mape
+    - melo by byt jasne co se na mape zobrazuje
+    - jaky je vyznam barev (tj. jake hodnote odpovida nejsvetlejsi/nejtmavsi
+      barva)
+* Chyba: prepinani selektitka v okresu neaktualizuje hodnoty v tabulce
+  (kraj facha); tyka se prepinatka "herna/automat", prepinani toho druheho
+  jakz takz jede, ale blbe
+* Ma nejaky vyznam mit prepinac v okrese na zobrazeni vsech obci?
+* V AJAX JSON odpovedich se musi objevovat i drobeckova navigace, title
+* Pohled na okresy a tabulka s ostatnimi okresy kraje
+    - pokud pouzivam ajax, tak to hapruje
+    - po kazde zmene okresu je treba zjistit do jakeho kraje jsem se prekliknul
+    - podle toho pak musim v tabulce hide/unhidnout patricne radky
+    - no a pak tu tabulku taky prepocitat
+* kua nejaky ten History plugin by se sikl... (jakoze History API prohlizece)
