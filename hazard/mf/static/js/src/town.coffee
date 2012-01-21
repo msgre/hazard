@@ -1,5 +1,9 @@
 """
 TODO:
+- zvyraznovat aktualni kraj/okres?
+    - nebo se na to vykaslat?
+- kua nemam orafnout aspon ten okres?
+    - o tom data mam ne?
 """
 
 ###
@@ -31,13 +35,13 @@ tabulku hover obsluhu (zvyrazeneni radku i polygonu v mape).
 ###
 handle_table = () ->
     $('table.statistics tr').hover () ->
-        key = $.trim($(@).attr('class').replace('active', ''))
-        google.maps.event.trigger(POLYS[key], 'mouseover')
+        key = $.trim($(@).attr('class').replace('active', '').replace('hide', ''))
+        google.maps.event.trigger(POINTS[key], 'mouseover')
         $(@).addClass('hover')
     , () ->
         $(@).removeClass('hover')
-        key = $.trim($(@).attr('class').replace('active', ''))
-        google.maps.event.trigger(POLYS[key], 'mouseout')
+        key = $.trim($(@).attr('class').replace('active', '').replace('hide', ''))
+        google.maps.event.trigger(POINTS[key], 'mouseout')
 
     # klikance fachaji nad kteroukoliv bunkou v tabulce
     $('table.statistics td').click () ->
@@ -58,11 +62,11 @@ handle_table = () ->
                 POLYS[window.actual].setOptions
                     zIndex: 10
                     strokeWeight: 0
-                window.actual = $.trim($tr.attr('class').replace('hover', ''))
+                window.actual = $.trim($tr.attr('class').replace('hover', '').replace('hide', ''))
                 POLYS[window.actual].setOptions
                     zIndex: 20
                     strokeWeight: 3
-                    strokeColor: "#333333"
+                    strokeColor: "#444444"
                 $tr.addClass('active')
                 google.maps.event.addListenerOnce MAP, 'zoom_changed', () ->
                     MAP.setZoom(MAP.getZoom() - 1)
@@ -100,8 +104,9 @@ handle_table = () ->
             if not $table.data(switcher_value)
                 $table.data(switcher_value, {'min': _.min(values), 'max': if percents then 100.0 else _.max(values)})
             number_to_graph($table, values, percents, switcher_value)
-        console.log 'stary znamy'
         update_shapes()
+        update_points()
+        $('h1').removeClass('loading')
 
     $('.table-switcher').change()
 
@@ -133,6 +138,7 @@ draw_shapes = () ->
     # rozsah zobrazovanych hodnot
     statistics_key = ajax_key()
     delta = window.extrems[statistics_key].max - window.extrems[statistics_key].min
+    type = $('#type-switcher').val()
 
     # vykreslime okresy
     _.each window.shapes, (shape, key) ->
@@ -142,23 +148,148 @@ draw_shapes = () ->
         # vypocet barvy
         value = window.districts[key]['statistics'][statistics_key]
         value = (value - window.extrems[statistics_key].min) / delta
-        color = interpolate_color('#FFD700', '#EE0000', value)
+        color = get_color(type, value)
 
         # vykresleni polygonu do mapy
         POLYS[key] = new google.maps.Polygon
             paths: ((new google.maps.LatLng(i[0], i[1]) for i in item) for item in shape)
-            strokeColor: color
+            strokeColor: if key == window.actual_disctrict.toString() then '#555555' else color
             strokeOpacity: 1
             strokeWeight: 1
-            fillColor: color
+            fillColor: if key == window.actual_disctrict.toString() then '#555555' else color
             fillOpacity: 1
             zIndex: 10
         POLYS_COLORS[key] = color
         POLYS[key].setMap(MAP)
 
+        google.maps.event.addListener POLYS[key], 'mouseover', () ->
+            if key == window.actual_disctrict.toString()
+                return
+            POLYS[key].setOptions
+                fillColor: '#444444'
+                strokeColor: '#444444'
+                zIndex: 15
+
+        google.maps.event.addListener POLYS[key], 'mouseout', () ->
+            if key == window.actual_disctrict.toString()
+                return
+            POLYS[key].setOptions
+                fillColor: POLYS_COLORS[key]
+                strokeColor: POLYS_COLORS[key]
+                zIndex: 10
+
+        google.maps.event.addListener POLYS[key], 'click', () ->
+            if key == window.actual_disctrict.toString()
+                return
+            window.location = "#{ window.districts[key].url }_/"
+
     google.maps.event.addListenerOnce MAP, 'zoom_changed', () ->
-        MAP.setZoom(MAP.getZoom() - 1)
+        MAP.setZoom(MAP.getZoom())
     MAP.fitBounds(POLYS[window.actual_disctrict].getBounds())
+
+
+POINTS = {}
+
+# min/max rozmer kolecka, ktere reprezentuje obci
+# (hodnota je v metrech)
+POINT_MIN_RADIUS = 800
+POINT_MAX_RADIUS = 3000
+
+###
+Vykresli obce ve forme ruzne velkych kolecek (v zavislosti na nastavenych
+hodnotach v selektitkach nad mapou).
+###
+draw_points = () ->
+
+    # pripravime se
+    $table = $("table.statistics.#{ VIEW }")
+    statistics_key = ajax_key()
+    statistics_min = _.min(_.values(window.statistics[statistics_key]))
+    statistics_max = _.max(_.values(window.statistics[statistics_key]))
+    delta = statistics_max - statistics_min
+    type = $('#type-switcher').val()
+    color = get_color(type, .6)
+
+    # vykreslime obce
+    _.each window.points, (point, slug) ->
+        if not point.point
+            return true
+
+        # vypocet velikosti kolca
+        id = window.points[slug].id
+        if id of window.statistics[statistics_key]
+            value = window.statistics[statistics_key][id]
+            value = if value then value else statistics_min
+            value = (value - statistics_min) / delta
+            radius = value * (POINT_MAX_RADIUS - POINT_MIN_RADIUS) + POINT_MIN_RADIUS
+        else
+            radius = POINT_MIN_RADIUS
+
+        # vykresleni obce
+        POINTS[slug] = new google.maps.Circle(
+            center: new google.maps.LatLng(point.point[1], point.point[0])
+            fillColor: '#000000'
+            fillOpacity: 1
+            strokeOpacity: 0
+            radius: radius
+            zIndex: 30
+            map: MAP
+        )
+
+        # hovery
+        google.maps.event.addListener POINTS[slug], 'mouseover', () ->
+            POINTS[slug].setOptions(
+                fillColor: '#ffffff'
+                zIndex: 40
+            )
+            $tr = $table.find("tr.#{ slug }")
+            $tr.addClass('hover')
+
+        google.maps.event.addListener POINTS[slug], 'mouseout', () ->
+            POINTS[slug].setOptions(
+                fillColor: '#000000'
+                zIndex: 30
+            )
+            $table.find("tr.#{ slug }").removeClass('hover')
+
+        # klikanec
+        google.maps.event.addListener POINTS[slug], 'click', () ->
+            $table.find("tr.#{ slug } a").click()
+
+
+###
+Aktualizace velikosti kolecek (mest) na mape (dle aktualne zvolenych voleb
+v selektitkach).
+###
+update_points = () ->
+
+    # rozsah zobrazovanych hodnot
+    $table = $("table.statistics.#{ VIEW }")
+    statistics_key = ajax_key()
+    statistics_min = _.min(_.values(window.statistics[statistics_key]))
+    statistics_max = _.max(_.values(window.statistics[statistics_key]))
+    delta = statistics_max - statistics_min
+    type = $('#type-switcher').val()
+    color = get_color(type, .6)
+
+    # aktualizujeme body
+    _.each window.points, (point, slug) ->
+        if not POINTS[slug]
+            return true
+
+        # vypocet velikosti kolca
+        id = window.points[slug].id
+        if id of window.statistics[statistics_key]
+            value = window.statistics[statistics_key][id]
+            value = if value then value else statistics_min
+            value = (value - statistics_min) / delta
+            radius = value * (POINT_MAX_RADIUS - POINT_MIN_RADIUS) + POINT_MIN_RADIUS
+        else
+            radius = POINT_MIN_RADIUS
+
+        # aktualizace
+        POINTS[slug].setOptions
+            radius: radius
 
 
 ###
@@ -167,25 +298,23 @@ v selektitkach a datech v tabulce).
 ###
 update_shapes = () ->
 
-    # rozsah zobrazovanych hodnot
     statistics_key = ajax_key()
     delta = window.extrems[statistics_key].max - window.extrems[statistics_key].min
+    type = $('#type-switcher').val()
 
-    # aktualizujeme obrysy
     _.each window.shapes, (shape, key) ->
         if not POLYS[key]
             return true
 
-        # vypocet barvy
         value = window.districts[key]['statistics'][statistics_key]
         value = (value - window.extrems[statistics_key].min) / delta
-        color = interpolate_color('#FFD700', '#EE0000', value)
+        color = get_color(type, value)
 
-        # aktualizace
         POLYS_COLORS[key] = color
         POLYS[key].setOptions
-            fillColor: color
-            strokeColor: color
+            strokeColor: if key == window.actual_disctrict.toString() then '#555555' else color
+            fillColor: if key == window.actual_disctrict.toString() then '#555555' else color
+
 
 
 ###
@@ -199,6 +328,8 @@ load_maps_api = () ->
             window.shapes[id] = data['districts'][id]['shape']
         window.extrems = data['extrems']
         window.districts = data['districts']
+        window.points = data['details']
+        window.statistics = data['statistics']
 
         script = document.createElement('script')
         script.type = 'text/javascript'
@@ -236,6 +367,8 @@ window.late_map = () ->
 
     # vykresleni polygonu (kraje/okresy)
     draw_shapes()
+    # vykresleni bodu (obci)
+    draw_points()
     $('h1').removeClass('loading')
 
 

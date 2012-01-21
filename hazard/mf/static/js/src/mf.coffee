@@ -43,15 +43,16 @@ handle_table = () ->
         $('table.statistics tr.hide').removeClass('hide')
         $('#other-districts-label').remove()
         $(@).closest('p').remove()
+        $('#type-switcher').change()
         false
 
     $('table.statistics tr').hover () ->
-        key = $.trim($(@).attr('class').replace('active', ''))
+        key = $.trim($(@).attr('class').replace('active', '').replace('hide', ''))
         google.maps.event.trigger(POLYS[key], 'mouseover')
         $(@).addClass('hover')
     , () ->
         $(@).removeClass('hover')
-        key = $.trim($(@).attr('class').replace('active', ''))
+        key = $.trim($(@).attr('class').replace('active', '').replace('hide', ''))
         google.maps.event.trigger(POLYS[key], 'mouseout')
 
     # klikance fachaji nad kteroukoliv bunkou v tabulce
@@ -73,11 +74,11 @@ handle_table = () ->
                 POLYS[window.actual].setOptions
                     zIndex: 10
                     strokeWeight: 0
-                window.actual = $.trim($tr.attr('class').replace('hover', ''))
+                window.actual = $.trim($tr.attr('class').replace('hover', '').replace('hide', ''))
                 POLYS[window.actual].setOptions
                     zIndex: 20
                     strokeWeight: 3
-                    strokeColor: "#333333"
+                    strokeColor: "#444444"
                 $tr.addClass('active')
                 google.maps.event.addListenerOnce MAP, 'zoom_changed', () ->
                     MAP.setZoom(MAP.getZoom() - 1)
@@ -134,6 +135,7 @@ draw_shapes = () ->
 
     [min_lats, max_lats, min_lons, max_lons] = [[], [], [], []]
     [actual_min_lat, actual_max_lat, actual_min_lon, actual_max_lon] = [null, null, null, null]
+    type = $('#type-switcher').val()
 
     _.each window.shapes, (shape, key) ->
         if not shape
@@ -163,7 +165,8 @@ draw_shapes = () ->
         value = $.trim($table.find("tr.#{ key } td.#{ col }").text())
         value = value.replace('%', '').replace(',', '.')
         value = (value - extrems.min) / delta
-        color = interpolate_color('#FFD700', '#EE0000', value)
+        color = get_color(type, value)
+
         POLYS[key] = new google.maps.Polygon
             paths: polys
             strokeColor: color
@@ -178,24 +181,21 @@ draw_shapes = () ->
         if key == window.actual
             POLYS[key].setOptions
                 zIndex: 20
-                strokeColor: "#333333"
+                strokeColor: "#444444"
                 strokeWeight: 3
 
         google.maps.event.addListener POLYS[key], 'mouseover', () ->
             POLYS[key].setOptions
-                fillColor: '#333333'
-                strokeColor: '#333333'
+                fillColor: '#444444'
+                strokeColor: '#444444'
                 zIndex: 15
             $tr = $table.find("tr.#{ key }")
             $tr.addClass('hover')
 
-            titles = ($(i).text() for i in $select.find('option'))
-            texts = ($.trim($(i).text()) for i in $tr.find('td'))
-
         google.maps.event.addListener POLYS[key], 'mouseout', () ->
             POLYS[key].setOptions
                 fillColor: POLYS_COLORS[key]
-                strokeColor: if key == window.actual then '#333333' else POLYS_COLORS[key]
+                strokeColor: if key == window.actual then '#444444' else POLYS_COLORS[key]
                 zIndex: if key == window.actual then 20 else 10
             $table.find("tr.#{ key }").removeClass('hover')
 
@@ -230,6 +230,7 @@ update_shapes = () ->
     col = $select.val()
     extrems = $table.data(col)
     delta = extrems.max - extrems.min
+    type = $('#type-switcher').val()
 
     _.each window.shapes, (shape, key) ->
         if not POLYS[key]
@@ -238,7 +239,7 @@ update_shapes = () ->
         value = $.trim($table.find("tr.#{ key } td.#{ col }").text())
         value = value.replace('%', '').replace(',', '.')
         value = (value - extrems.min) / delta
-        color = interpolate_color('#FFD700', '#EE0000', value)
+        color = get_color(type, value)
 
         POLYS_COLORS[key] = color
 
@@ -249,7 +250,7 @@ update_shapes = () ->
         if key == window.actual
             POLYS[key].setOptions
                 zIndex: 20
-                strokeColor: "#333333"
+                strokeColor: "#444444"
                 strokeWeight: 3
 
 

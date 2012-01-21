@@ -12,6 +12,7 @@ from hazard.gobjects.models import Hell, MachineCount
 from hazard.territories.models import Region, District
 from hazard.territories.views import TownDetailView
 from hazard.mf.models import MfPlaceConflict, MfPlace
+from hazard.shared.ajax import JSONView
 
 
 class MfCommon(object):
@@ -47,10 +48,11 @@ class MfCommon(object):
             raise Http404
 
 
-class MfTownDetailView(TownDetailView):
+class MfTownDetailView(JSONView, TownDetailView):
     """
     Zakladni prehled o obci.
     """
+    base_template = 'mf/base.html'
     template_name = 'mf/town.html'
 
     def get_context_data(self, **kwargs):
@@ -69,6 +71,7 @@ class MfTownDetailView(TownDetailView):
         out = super(MfTownDetailView, self).get_context_data(**kwargs)
         statistics = MfPlaceConflict.statistics(out['district'], group_by='town')
         out.update({
+            'base_template': self.base_template,
             'regions': dict([(i.id, i) for i in Region.objects.select_related().all()]),
             'districts': dict([(i.id, i) for i in District.objects.select_related().all()]),
             'statistics': statistics,

@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 # vim: set et si ts=4 sw=4:
 
-from django.views.generic import DetailView, ListView, TemplateView
+from django.views.generic import DetailView, ListView, TemplateView, RedirectView
 from django.http import Http404, HttpResponseRedirect
 from django.template.defaultfilters import slugify
+from django.db import models
+from django.shortcuts import get_object_or_404
 
 from hazard.territories.models import Region, District, Town
 from hazard.campaigns.models import Campaign
@@ -124,3 +126,35 @@ class AutocompleteView(TemplateView):
     def render_to_response(self, context, **response_kwargs):
         response_kwargs.update({'mimetype': 'application/json'})
         return super(AutocompleteView, self).render_to_response(context, **response_kwargs)
+
+
+class RedirectorView(RedirectView):
+    """
+    Pomocna trida pro "slepe" presmerovani na podrazeny uzemni celek.
+
+    Priklad:
+
+    Jsem ve zlinskem kraji (/zlinsky/) a chci se rychle dostat na nejaky
+    okres v nem (aniz bych predem znal jmeno nektereho ze zlinskych okresu).
+    Vlozim do prohlizece URL /zlinsky/_/, cimz se zavola tato trida a ta
+    vrati URL /zlinsky/kromeriz/.
+
+    Pouziti (nastaveni v urls.py):
+
+        url(r'^(?P<region>[-0-9a-z]+)/_/$',
+            RedirectorView.as_view(model='region', subobjects='district_set'),
+            name="district-redirector")
+        url(r'^(?P<region>[-0-9a-z]+)/(?P<district>[-0-9a-z]+)/_/$',
+            RedirectorView.as_view(model='district', subobjects='town_set'),
+            name="town-redirector")
+    """
+    model = None
+    subobjects = None
+
+    def get_redirect_url(self, **kwargs):
+        if not self.model or not self.subobjects:
+            raise Http404
+        model = models.get_model('territories', self.model)
+        obj = get_object_or_404(model, slug=self.kwargs[self.model])
+        obj_set = getattr(obj, self.subobjects)
+        return obj_set.all()[0].get_absolute_url()

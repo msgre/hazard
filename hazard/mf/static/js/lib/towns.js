@@ -1,5 +1,5 @@
 (function() {
-  var $, MAP, MAP_STYLE, POLYS, POLYS_COLORS, SCHOVAVACZ_OPTS, VIEW, ajax_key, convert_to_hex, convert_to_rgb, draw_shapes, handle_switcher, handle_table, hex, interpolate_color, load_maps_api, number_to_graph, trim, update_shapes;
+  var $, MAP, MAP_STYLE, POINTS, POINT_MAX_RADIUS, POINT_MIN_RADIUS, POLYS, POLYS_COLORS, SCHOVAVACZ_OPTS, VIEW, ajax_key, convert_to_hex, convert_to_rgb, draw_points, draw_shapes, get_color, handle_switcher, handle_table, hex, interpolate_color, load_maps_api, number_to_graph, trim, update_points, update_shapes;
   var __indexOf = Array.prototype.indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (this[i] === item) return i;
@@ -215,7 +215,16 @@
     c = [Math.round((end[0] - start[0]) * value + start[0]), Math.round((end[1] - start[1]) * value + start[1]), Math.round((end[2] - start[2]) * value + start[2])];
     return convert_to_hex(c);
   };
-  "TODO:";
+  get_color = function(type, value) {
+    var color;
+    if (type === 'hells') {
+      color = interpolate_color('#FFD700', '#EE0000', value);
+    } else {
+      color = interpolate_color('#00FFFF', '#0028FF', value);
+    }
+    return color;
+  };
+  "TODO:\n- zvyraznovat aktualni kraj/okres?\n    - nebo se na to vykaslat?\n- kua nemam orafnout aspon ten okres?\n    - o tom data mam ne?";
   /*
   Obsluha preklikavani pohledu herny/automaty.
   */
@@ -248,14 +257,14 @@
   handle_table = function() {
     $('table.statistics tr').hover(function() {
       var key;
-      key = $.trim($(this).attr('class').replace('active', ''));
-      google.maps.event.trigger(POLYS[key], 'mouseover');
+      key = $.trim($(this).attr('class').replace('active', '').replace('hide', ''));
+      google.maps.event.trigger(POINTS[key], 'mouseover');
       return $(this).addClass('hover');
     }, function() {
       var key;
       $(this).removeClass('hover');
-      key = $.trim($(this).attr('class').replace('active', ''));
-      return google.maps.event.trigger(POLYS[key], 'mouseout');
+      key = $.trim($(this).attr('class').replace('active', '').replace('hide', ''));
+      return google.maps.event.trigger(POINTS[key], 'mouseout');
     });
     $('table.statistics td').click(function() {
       var $tr, href;
@@ -276,11 +285,11 @@
             zIndex: 10,
             strokeWeight: 0
           });
-          window.actual = $.trim($tr.attr('class').replace('hover', ''));
+          window.actual = $.trim($tr.attr('class').replace('hover', '').replace('hide', ''));
           POLYS[window.actual].setOptions({
             zIndex: 20,
             strokeWeight: 3,
-            strokeColor: "#333333"
+            strokeColor: "#444444"
           });
           $tr.addClass('active');
           google.maps.event.addListenerOnce(MAP, 'zoom_changed', function() {
@@ -329,8 +338,9 @@
         }
         return number_to_graph($table, values, percents, switcher_value);
       });
-      console.log('stary znamy');
-      return update_shapes();
+      update_shapes();
+      update_points();
+      return $('h1').removeClass('loading');
     });
     return $('.table-switcher').change();
   };
@@ -355,9 +365,10 @@
   v selektitkach a datech v tabulce).
   */
   draw_shapes = function() {
-    var delta, statistics_key;
+    var delta, statistics_key, type;
     statistics_key = ajax_key();
     delta = window.extrems[statistics_key].max - window.extrems[statistics_key].min;
+    type = $('#type-switcher').val();
     _.each(window.shapes, function(shape, key) {
       var color, i, item, value;
       if (!shape) {
@@ -365,7 +376,7 @@
       }
       value = window.districts[key]['statistics'][statistics_key];
       value = (value - window.extrems[statistics_key].min) / delta;
-      color = interpolate_color('#FFD700', '#EE0000', value);
+      color = get_color(type, value);
       POLYS[key] = new google.maps.Polygon({
         paths: (function() {
           var _i, _len, _results;
@@ -384,29 +395,148 @@
           }
           return _results;
         })(),
-        strokeColor: color,
+        strokeColor: key === window.actual_disctrict.toString() ? '#555555' : color,
         strokeOpacity: 1,
         strokeWeight: 1,
-        fillColor: color,
+        fillColor: key === window.actual_disctrict.toString() ? '#555555' : color,
         fillOpacity: 1,
         zIndex: 10
       });
       POLYS_COLORS[key] = color;
-      return POLYS[key].setMap(MAP);
+      POLYS[key].setMap(MAP);
+      google.maps.event.addListener(POLYS[key], 'mouseover', function() {
+        if (key === window.actual_disctrict.toString()) {
+          return;
+        }
+        return POLYS[key].setOptions({
+          fillColor: '#444444',
+          strokeColor: '#444444',
+          zIndex: 15
+        });
+      });
+      google.maps.event.addListener(POLYS[key], 'mouseout', function() {
+        if (key === window.actual_disctrict.toString()) {
+          return;
+        }
+        return POLYS[key].setOptions({
+          fillColor: POLYS_COLORS[key],
+          strokeColor: POLYS_COLORS[key],
+          zIndex: 10
+        });
+      });
+      return google.maps.event.addListener(POLYS[key], 'click', function() {
+        if (key === window.actual_disctrict.toString()) {
+          return;
+        }
+        return window.location = "" + window.districts[key].url + "_/";
+      });
     });
     google.maps.event.addListenerOnce(MAP, 'zoom_changed', function() {
-      return MAP.setZoom(MAP.getZoom() - 1);
+      return MAP.setZoom(MAP.getZoom());
     });
     return MAP.fitBounds(POLYS[window.actual_disctrict].getBounds());
+  };
+  POINTS = {};
+  POINT_MIN_RADIUS = 800;
+  POINT_MAX_RADIUS = 3000;
+  /*
+  Vykresli obce ve forme ruzne velkych kolecek (v zavislosti na nastavenych
+  hodnotach v selektitkach nad mapou).
+  */
+  draw_points = function() {
+    var $table, color, delta, statistics_key, statistics_max, statistics_min, type;
+    $table = $("table.statistics." + VIEW);
+    statistics_key = ajax_key();
+    statistics_min = _.min(_.values(window.statistics[statistics_key]));
+    statistics_max = _.max(_.values(window.statistics[statistics_key]));
+    delta = statistics_max - statistics_min;
+    type = $('#type-switcher').val();
+    color = get_color(type, .6);
+    return _.each(window.points, function(point, slug) {
+      var id, radius, value;
+      if (!point.point) {
+        return true;
+      }
+      id = window.points[slug].id;
+      if (id in window.statistics[statistics_key]) {
+        value = window.statistics[statistics_key][id];
+        value = value ? value : statistics_min;
+        value = (value - statistics_min) / delta;
+        radius = value * (POINT_MAX_RADIUS - POINT_MIN_RADIUS) + POINT_MIN_RADIUS;
+      } else {
+        radius = POINT_MIN_RADIUS;
+      }
+      POINTS[slug] = new google.maps.Circle({
+        center: new google.maps.LatLng(point.point[1], point.point[0]),
+        fillColor: '#000000',
+        fillOpacity: 1,
+        strokeOpacity: 0,
+        radius: radius,
+        zIndex: 30,
+        map: MAP
+      });
+      google.maps.event.addListener(POINTS[slug], 'mouseover', function() {
+        var $tr;
+        POINTS[slug].setOptions({
+          fillColor: '#ffffff',
+          zIndex: 40
+        });
+        $tr = $table.find("tr." + slug);
+        return $tr.addClass('hover');
+      });
+      google.maps.event.addListener(POINTS[slug], 'mouseout', function() {
+        POINTS[slug].setOptions({
+          fillColor: '#000000',
+          zIndex: 30
+        });
+        return $table.find("tr." + slug).removeClass('hover');
+      });
+      return google.maps.event.addListener(POINTS[slug], 'click', function() {
+        return $table.find("tr." + slug + " a").click();
+      });
+    });
+  };
+  /*
+  Aktualizace velikosti kolecek (mest) na mape (dle aktualne zvolenych voleb
+  v selektitkach).
+  */
+  update_points = function() {
+    var $table, color, delta, statistics_key, statistics_max, statistics_min, type;
+    $table = $("table.statistics." + VIEW);
+    statistics_key = ajax_key();
+    statistics_min = _.min(_.values(window.statistics[statistics_key]));
+    statistics_max = _.max(_.values(window.statistics[statistics_key]));
+    delta = statistics_max - statistics_min;
+    type = $('#type-switcher').val();
+    color = get_color(type, .6);
+    return _.each(window.points, function(point, slug) {
+      var id, radius, value;
+      if (!POINTS[slug]) {
+        return true;
+      }
+      id = window.points[slug].id;
+      if (id in window.statistics[statistics_key]) {
+        value = window.statistics[statistics_key][id];
+        value = value ? value : statistics_min;
+        value = (value - statistics_min) / delta;
+        radius = value * (POINT_MAX_RADIUS - POINT_MIN_RADIUS) + POINT_MIN_RADIUS;
+      } else {
+        radius = POINT_MIN_RADIUS;
+      }
+      return POINTS[slug].setOptions({
+        radius: radius
+      });
+    });
   };
   /*
   Aktualizace barev vykreslenych polygonu na mape (dle aktualne zvolenych voleb
   v selektitkach a datech v tabulce).
   */
   update_shapes = function() {
-    var delta, statistics_key;
+    var delta, statistics_key, type;
     statistics_key = ajax_key();
     delta = window.extrems[statistics_key].max - window.extrems[statistics_key].min;
+    type = $('#type-switcher').val();
     return _.each(window.shapes, function(shape, key) {
       var color, value;
       if (!POLYS[key]) {
@@ -414,11 +544,11 @@
       }
       value = window.districts[key]['statistics'][statistics_key];
       value = (value - window.extrems[statistics_key].min) / delta;
-      color = interpolate_color('#FFD700', '#EE0000', value);
+      color = get_color(type, value);
       POLYS_COLORS[key] = color;
       return POLYS[key].setOptions({
-        fillColor: color,
-        strokeColor: color
+        strokeColor: key === window.actual_disctrict.toString() ? '#555555' : color,
+        fillColor: key === window.actual_disctrict.toString() ? '#555555' : color
       });
     });
   };
@@ -437,6 +567,8 @@
       }
       window.extrems = data['extrems'];
       window.districts = data['districts'];
+      window.points = data['details'];
+      window.statistics = data['statistics'];
       script = document.createElement('script');
       script.type = 'text/javascript';
       script.src = 'http://maps.googleapis.com/maps/api/js?key=AIzaSyDw1uicJmcKKdEIvLS9XavLO0RPFvIpOT4&v=3&sensor=false&callback=window.late_map';
@@ -478,6 +610,7 @@
     });
     MAP.mapTypes.set('CB', styledMapType);
     draw_shapes();
+    draw_points();
     return $('h1').removeClass('loading');
   };
   $(document).ready(function() {

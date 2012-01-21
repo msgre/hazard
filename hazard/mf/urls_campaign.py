@@ -17,5 +17,5 @@ urlpatterns = patterns('',
     url(r'^o-mape/$', MfCampaignBase.as_view(template_name='mf/about.html'), name='campaign-mf-about'),
     # ajaxy
     url(r'^ajax/(?P<type>kraje|okresy)/$', cache_page(MfAjax.as_view(), AJAX_CACHE_TIMEOUT), name='campaign-mf-ajax'),
-    url(r'^ajax/(?P<type>obce)/$', cache_page(MfTownAjax.as_view(), AJAX_CACHE_TIMEOUT), name='campaign-mf-town-ajax'),
+    url(r'^ajax/(?P<type>obce)/(?P<district>[\-a-z]+)/$', cache_page(MfTownAjax.as_view(), AJAX_CACHE_TIMEOUT), name='campaign-mf-town-ajax'),
 )

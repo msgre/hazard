@@ -1,5 +1,5 @@
 (function() {
-  var $, MAP, MAP_STYLE, POLYS, POLYS_COLORS, SCHOVAVACZ_OPTS, VIEW, convert_to_hex, convert_to_rgb, draw_shapes, handle_switcher, handle_table, hex, interpolate_color, load_maps_api, number_to_graph, trim, update_shapes;
+  var $, MAP, MAP_STYLE, POLYS, POLYS_COLORS, SCHOVAVACZ_OPTS, VIEW, convert_to_hex, convert_to_rgb, draw_shapes, get_color, handle_switcher, handle_table, hex, interpolate_color, load_maps_api, number_to_graph, trim, update_shapes;
   var __indexOf = Array.prototype.indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (this[i] === item) return i;
@@ -215,6 +215,15 @@
     c = [Math.round((end[0] - start[0]) * value + start[0]), Math.round((end[1] - start[1]) * value + start[1]), Math.round((end[2] - start[2]) * value + start[2])];
     return convert_to_hex(c);
   };
+  get_color = function(type, value) {
+    var color;
+    if (type === 'hells') {
+      color = interpolate_color('#FFD700', '#EE0000', value);
+    } else {
+      color = interpolate_color('#00FFFF', '#0028FF', value);
+    }
+    return color;
+  };
   "Kod pro stranky s krajem a okresy.\n\nZ tabulky vlozene do stranky dokaze vyzobnout potrebne informace (napr.\nabsolutni pocet heren v kraji), spoji se serverem a vytahne z nej polygony\ngeokrafickych objektu (obrysy kraju/okresu), zavesi na elementy ve strance\nobsluzne funkce a upravi vzhled stranky.\n\nTODO: predelat draw_shapes aby vyuzival getBounds";
   /*
   Obsluha preklikavani pohledu herny/automaty.
@@ -250,17 +259,18 @@
       $('table.statistics tr.hide').removeClass('hide');
       $('#other-districts-label').remove();
       $(this).closest('p').remove();
+      $('#type-switcher').change();
       return false;
     });
     $('table.statistics tr').hover(function() {
       var key;
-      key = $.trim($(this).attr('class').replace('active', ''));
+      key = $.trim($(this).attr('class').replace('active', '').replace('hide', ''));
       google.maps.event.trigger(POLYS[key], 'mouseover');
       return $(this).addClass('hover');
     }, function() {
       var key;
       $(this).removeClass('hover');
-      key = $.trim($(this).attr('class').replace('active', ''));
+      key = $.trim($(this).attr('class').replace('active', '').replace('hide', ''));
       return google.maps.event.trigger(POLYS[key], 'mouseout');
     });
     $('table.statistics td').click(function() {
@@ -282,11 +292,11 @@
             zIndex: 10,
             strokeWeight: 0
           });
-          window.actual = $.trim($tr.attr('class').replace('hover', ''));
+          window.actual = $.trim($tr.attr('class').replace('hover', '').replace('hide', ''));
           POLYS[window.actual].setOptions({
             zIndex: 20,
             strokeWeight: 3,
-            strokeColor: "#333333"
+            strokeColor: "#444444"
           });
           $tr.addClass('active');
           google.maps.event.addListenerOnce(MAP, 'zoom_changed', function() {
@@ -344,7 +354,7 @@
   v selektitkach a datech v tabulce).
   */
   draw_shapes = function() {
-    var $select, $table, actual_max_lat, actual_max_lon, actual_min_lat, actual_min_lon, col, delta, extrems, max_lat, max_lats, max_lon, max_lons, min_lat, min_lats, min_lon, min_lons, _ref, _ref2;
+    var $select, $table, actual_max_lat, actual_max_lon, actual_min_lat, actual_min_lon, col, delta, extrems, max_lat, max_lats, max_lon, max_lons, min_lat, min_lats, min_lon, min_lons, type, _ref, _ref2;
     $table = $("table.statistics." + VIEW);
     $select = $('#table-switcher');
     col = $select.val();
@@ -352,6 +362,7 @@
     delta = extrems.max - extrems.min;
     _ref = [[], [], [], []], min_lats = _ref[0], max_lats = _ref[1], min_lons = _ref[2], max_lons = _ref[3];
     _ref2 = [null, null, null, null], actual_min_lat = _ref2[0], actual_max_lat = _ref2[1], actual_min_lon = _ref2[2], actual_max_lon = _ref2[3];
+    type = $('#type-switcher').val();
     _.each(window.shapes, function(shape, key) {
       var color, i, item, max_lat, max_lon, min_lat, min_lon, polys, value, _i, _j, _len, _len2, _polys, _ref;
       if (!shape) {
@@ -385,7 +396,7 @@
       value = $.trim($table.find("tr." + key + " td." + col).text());
       value = value.replace('%', '').replace(',', '.');
       value = (value - extrems.min) / delta;
-      color = interpolate_color('#FFD700', '#EE0000', value);
+      color = get_color(type, value);
       POLYS[key] = new google.maps.Polygon({
         paths: polys,
         strokeColor: color,
@@ -399,44 +410,24 @@
       if (key === window.actual) {
         POLYS[key].setOptions({
           zIndex: 20,
-          strokeColor: "#333333",
+          strokeColor: "#444444",
           strokeWeight: 3
         });
       }
       google.maps.event.addListener(POLYS[key], 'mouseover', function() {
-        var $tr, i, texts, titles;
+        var $tr;
         POLYS[key].setOptions({
-          fillColor: '#333333',
-          strokeColor: '#333333',
+          fillColor: '#444444',
+          strokeColor: '#444444',
           zIndex: 15
         });
         $tr = $table.find("tr." + key);
-        $tr.addClass('hover');
-        titles = (function() {
-          var _i, _len, _ref, _results;
-          _ref = $select.find('option');
-          _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            i = _ref[_i];
-            _results.push($(i).text());
-          }
-          return _results;
-        })();
-        return texts = (function() {
-          var _i, _len, _ref, _results;
-          _ref = $tr.find('td');
-          _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            i = _ref[_i];
-            _results.push($.trim($(i).text()));
-          }
-          return _results;
-        })();
+        return $tr.addClass('hover');
       });
       google.maps.event.addListener(POLYS[key], 'mouseout', function() {
         POLYS[key].setOptions({
           fillColor: POLYS_COLORS[key],
-          strokeColor: key === window.actual ? '#333333' : POLYS_COLORS[key],
+          strokeColor: key === window.actual ? '#444444' : POLYS_COLORS[key],
           zIndex: key === window.actual ? 20 : 10
         });
         return $table.find("tr." + key).removeClass('hover');
@@ -464,12 +455,13 @@
   v selektitkach a datech v tabulce).
   */
   update_shapes = function() {
-    var $select, $table, col, delta, extrems;
+    var $select, $table, col, delta, extrems, type;
     $table = $("table.statistics." + VIEW);
     $select = $('#table-switcher');
     col = $select.val();
     extrems = $table.data(col);
     delta = extrems.max - extrems.min;
+    type = $('#type-switcher').val();
     return _.each(window.shapes, function(shape, key) {
       var color, value;
       if (!POLYS[key]) {
@@ -478,7 +470,7 @@
       value = $.trim($table.find("tr." + key + " td." + col).text());
       value = value.replace('%', '').replace(',', '.');
       value = (value - extrems.min) / delta;
-      color = interpolate_color('#FFD700', '#EE0000', value);
+      color = get_color(type, value);
       POLYS_COLORS[key] = color;
       POLYS[key].setOptions({
         fillColor: color,
@@ -487,7 +479,7 @@
       if (key === window.actual) {
         return POLYS[key].setOptions({
           zIndex: 20,
-          strokeColor: "#333333",
+          strokeColor: "#444444",
           strokeWeight: 3
         });
       }

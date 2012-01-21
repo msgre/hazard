@@ -11,17 +11,17 @@ Lesteni dat o obcich -- doplneni chybejicich a uprava stavajicich udaju.
 import re
 import sys
 
+from django.db.models import Q
+
 from django.core.management.base import BaseCommand
 from django.template.defaultfilters import slugify
-from django.contrib.gis.geos import Polygon
+from django.contrib.gis.geos import Point
 
-from hazard.territories.models import Region, District, Zip, Town
+from hazard.territories.models import Zip, Town
 from hazard.gobjects.utils import ImporterBase
 from hazard.shared.models import repair_referencies
 
-WHITECHAR_RE = re.compile(r'\s+')
-OUTER_BOUNDARY_RE = re.compile(r'<outerBoundaryIs>\s*<LinearRing>\s*<coordinates>(.+)</coordinates>\s*</LinearRing>\s*</outerBoundaryIs>', re.DOTALL)
-INNER_BOUNDARY_RE = re.compile(r'<innerBoundaryIs>\s*<LinearRing>\s*<coordinates>(.+)</coordinates>\s*</LinearRing>\s*</innerBoundaryIs>', re.DOTALL)
+POINT_RE = re.compile(r'<Point>\s*<coordinates>(.+)</coordinates>\s*</Point>', re.DOTALL)
 
 
 class TownUpdater1(ImporterBase):
@@ -57,20 +57,23 @@ class TownUpdater1(ImporterBase):
             self.log('%i / %i' % (idx + 1, total))
 
             # vytahneme obec
-            code = item['psc']
+            # TODO: nejaky lepsi algoritmus, cca 500 se jich nepozna jednoznacne...
             try:
-                zip = Zip.objects.get(title=code)
-            except Zip.MultipleObjectsReturned:
-                try:
-                    zip = Zip.objects.get(title=code, town__title=item['nazob'])
-                except Zip.DoesNotExist:
-                    self.log('Multiple towns for ZIP code %s. Skipping...' % item['psc'])
-                    continue
-            except Zip.DoesNotExist:
-                self.log("Record for %s (%s) wasn't found in DB. Skipping..." % (item['nazob_a'], item['psc']))
+                town = Town.objects.get(Q(title=item['nazob']) | Q(title=u"Obec %s" % item['nazob']))
+            except Town.MultipleObjectsReturned:
+                self.log('Multiple towns for title %s. Skipping...' % item['nazob_a'])
+                continue
+            except Town.DoesNotExist:
+                # TODO: v idealnim pripade bych mel obec vytvorit
+                # ja tady ale nevim, do jakeho okresu/kraje
+                # bylo by dobre temi predchozimi management prikazy natahnout
+                # i unikatni identifikatory uzemnich celku
+                self.log("Record for %s wasn't found in DB. Skipping..." % (item['nazob_a'], ))
                 continue
 
-            town = zip.town
+            # bod
+            point = POINT_RE.findall(item['geometry'])
+            point = point and [float(i) for i in point[0].strip().split(',')] or None
 
             # aktualizujeme zaznam o obci
             town.title = u"Obec %s" % item['nazob']
@@ -79,6 +82,7 @@ class TownUpdater1(ImporterBase):
             town.lokativ = u"V obci %s" % item['nazob']
             town.surface = float(item['vymera'])
             town.population = int(item['obakt'])
+            town.point = Point(*point)
             town.save()
 
     def repair_anomalies(self):
@@ -97,85 +101,121 @@ class TownUpdater1(ImporterBase):
             slave.delete()
 
         # Pohorelice
-        chief = Town.objects.get(title=u'Pohořelice', district__title=u'Okres Brno-venkov')
-        slave = Town.objects.filter(title=u'Pohořelice', district__title=u'Okres Břeclav')
-        if slave.exists():
-            log = repair_referencies(slave[0], chief)
-            msg = u", ".join([u"%s=%i" % (k, len(log['affected'][k])) for k in log['affected']])
-            self.log('Moving "%s" under "%s" (%s)' % (slave[0].slug, chief.slug, msg))
-            slave.delete()
+        try:
+            chief = Town.objects.get(title=u'Pohořelice', district__title=u'Okres Brno-venkov')
+        except Town.DoesNotExist:
+            pass
+        else:
+            slave = Town.objects.filter(title=u'Pohořelice', district__title=u'Okres Břeclav')
+            if slave.exists():
+                log = repair_referencies(slave[0], chief)
+                msg = u", ".join([u"%s=%i" % (k, len(log['affected'][k])) for k in log['affected']])
+                self.log('Moving "%s" under "%s" (%s)' % (slave[0].slug, chief.slug, msg))
+                slave.delete()
 
         # Vranovice
-        chief = Town.objects.get(title=u'Vranovice', district__title=u'Okres Brno-venkov')
-        slave = Town.objects.filter(title=u'Vranovice', district__title=u'Okres Břeclav')
-        if slave.exists():
-            log = repair_referencies(slave[0], chief)
-            msg = u", ".join([u"%s=%i" % (k, len(log['affected'][k])) for k in log['affected']])
-            self.log('Moving "%s" under "%s" (%s)' % (slave[0].slug, chief.slug, msg))
-            slave.delete()
+        try:
+            chief = Town.objects.get(title=u'Vranovice', district__title=u'Okres Brno-venkov')
+        except Town.DoesNotExist:
+            pass
+        else:
+            slave = Town.objects.filter(title=u'Vranovice', district__title=u'Okres Břeclav')
+            if slave.exists():
+                log = repair_referencies(slave[0], chief)
+                msg = u", ".join([u"%s=%i" % (k, len(log['affected'][k])) for k in log['affected']])
+                self.log('Moving "%s" under "%s" (%s)' % (slave[0].slug, chief.slug, msg))
+                slave.delete()
 
         # Jiřice u Miroslavi
-        chief = Town.objects.get(title=u'Jiřice u Miroslavi', district__title=u'Okres Znojmo')
-        slave = Town.objects.filter(title=u'Jiřice u Miroslavi', district__title=u'Okres Brno-venkov')
-        if slave.exists():
-            log = repair_referencies(slave[0], chief)
-            msg = u", ".join([u"%s=%i" % (k, len(log['affected'][k])) for k in log['affected']])
-            self.log('Moving "%s" under "%s" (%s)' % (slave[0].slug, chief.slug, msg))
-            slave.delete()
+        try:
+            chief = Town.objects.get(title=u'Jiřice u Miroslavi', district__title=u'Okres Znojmo')
+        except Town.DoesNotExist:
+            pass
+        else:
+            slave = Town.objects.filter(title=u'Jiřice u Miroslavi', district__title=u'Okres Brno-venkov')
+            if slave.exists():
+                log = repair_referencies(slave[0], chief)
+                msg = u", ".join([u"%s=%i" % (k, len(log['affected'][k])) for k in log['affected']])
+                self.log('Moving "%s" under "%s" (%s)' % (slave[0].slug, chief.slug, msg))
+                slave.delete()
 
         # Brodek u Přerova
-        chief = Town.objects.get(title=u'Brodek u Přerova', district__title=u'Okres Přerov')
-        slave = Town.objects.filter(title=u'Brodek u Přerova', district__title=u'Okres Olomouc')
-        if slave.exists():
-            log = repair_referencies(slave[0], chief)
-            msg = u", ".join([u"%s=%i" % (k, len(log['affected'][k])) for k in log['affected']])
-            self.log('Moving "%s" under "%s" (%s)' % (slave[0].slug, chief.slug, msg))
-            slave.delete()
+        try:
+            chief = Town.objects.get(title=u'Brodek u Přerova', district__title=u'Okres Přerov')
+        except Town.DoesNotExist:
+            pass
+        else:
+            slave = Town.objects.filter(title=u'Brodek u Přerova', district__title=u'Okres Olomouc')
+            if slave.exists():
+                log = repair_referencies(slave[0], chief)
+                msg = u", ".join([u"%s=%i" % (k, len(log['affected'][k])) for k in log['affected']])
+                self.log('Moving "%s" under "%s" (%s)' % (slave[0].slug, chief.slug, msg))
+                slave.delete()
 
         # Břidličná
-        chief = Town.objects.get(title=u'Břidličná', district__title=u'Okres Bruntál')
-        slave = Town.objects.filter(title=u'Břidličná', district__title=u'Okres Olomouc')
-        if slave.exists():
-            log = repair_referencies(slave[0], chief)
-            msg = u", ".join([u"%s=%i" % (k, len(log['affected'][k])) for k in log['affected']])
-            self.log('Moving "%s" under "%s" (%s)' % (slave[0].slug, chief.slug, msg))
-            slave.delete()
+        try:
+            chief = Town.objects.get(title=u'Břidličná', district__title=u'Okres Bruntál')
+        except Town.DoesNotExist:
+            pass
+        else:
+            slave = Town.objects.filter(title=u'Břidličná', district__title=u'Okres Olomouc')
+            if slave.exists():
+                log = repair_referencies(slave[0], chief)
+                msg = u", ".join([u"%s=%i" % (k, len(log['affected'][k])) for k in log['affected']])
+                self.log('Moving "%s" under "%s" (%s)' % (slave[0].slug, chief.slug, msg))
+                slave.delete()
 
         # Moravský Beroun
-        chief = Town.objects.get(title=u'Moravský Beroun', district__title=u'Okres Olomouc')
-        slave = Town.objects.filter(title=u'Moravský Beroun', district__title=u'Okres Bruntál')
-        if slave.exists():
-            log = repair_referencies(slave[0], chief)
-            msg = u", ".join([u"%s=%i" % (k, len(log['affected'][k])) for k in log['affected']])
-            self.log('Moving "%s" under "%s" (%s)' % (slave[0].slug, chief.slug, msg))
-            slave.delete()
+        try:
+            chief = Town.objects.get(title=u'Moravský Beroun', district__title=u'Okres Olomouc')
+        except Town.DoesNotExist:
+            pass
+        else:
+            slave = Town.objects.filter(title=u'Moravský Beroun', district__title=u'Okres Bruntál')
+            if slave.exists():
+                log = repair_referencies(slave[0], chief)
+                msg = u", ".join([u"%s=%i" % (k, len(log['affected'][k])) for k in log['affected']])
+                self.log('Moving "%s" under "%s" (%s)' % (slave[0].slug, chief.slug, msg))
+                slave.delete()
 
         # Klimkovice
-        chief = Town.objects.get(title=u'Klimkovice', district__title=u'Okres Ostrava-město')
-        slave = Town.objects.filter(title=u'Klimkovice', district__title=u'Okres Nový Jičín')
-        if slave.exists():
-            log = repair_referencies(slave[0], chief)
-            msg = u", ".join([u"%s=%i" % (k, len(log['affected'][k])) for k in log['affected']])
-            self.log('Moving "%s" under "%s" (%s)' % (slave[0].slug, chief.slug, msg))
-            slave.delete()
+        try:
+            chief = Town.objects.get(title=u'Klimkovice', district__title=u'Okres Ostrava-město')
+        except Town.DoesNotExist:
+            pass
+        else:
+            slave = Town.objects.filter(title=u'Klimkovice', district__title=u'Okres Nový Jičín')
+            if slave.exists():
+                log = repair_referencies(slave[0], chief)
+                msg = u", ".join([u"%s=%i" % (k, len(log['affected'][k])) for k in log['affected']])
+                self.log('Moving "%s" under "%s" (%s)' % (slave[0].slug, chief.slug, msg))
+                slave.delete()
 
         # Dolní Lhota
-        chief = Town.objects.get(title=u'Dolní Lhota', district__title=u'Okres Ostrava-město')
-        slave = Town.objects.filter(title=u'Dolní Lhota', district__title=u'Okres Opava')
-        if slave.exists():
-            log = repair_referencies(slave[0], chief)
-            msg = u", ".join([u"%s=%i" % (k, len(log['affected'][k])) for k in log['affected']])
-            self.log('Moving "%s" under "%s" (%s)' % (slave[0].slug, chief.slug, msg))
-            slave.delete()
+        try:
+            chief = Town.objects.get(title=u'Dolní Lhota', district__title=u'Okres Ostrava-město')
+        except Town.DoesNotExist:
+            pass
+        else:
+            slave = Town.objects.filter(title=u'Dolní Lhota', district__title=u'Okres Opava')
+            if slave.exists():
+                log = repair_referencies(slave[0], chief)
+                msg = u", ".join([u"%s=%i" % (k, len(log['affected'][k])) for k in log['affected']])
+                self.log('Moving "%s" under "%s" (%s)' % (slave[0].slug, chief.slug, msg))
+                slave.delete()
 
         # Velká Polom
-        chief = Town.objects.get(title=u'Velká Polom', district__title=u'Okres Ostrava-město')
-        slave = Town.objects.filter(title=u'Velká Polom', district__title=u'Okres Opava')
-        if slave.exists():
-            log = repair_referencies(slave[0], chief)
-            msg = u", ".join([u"%s=%i" % (k, len(log['affected'][k])) for k in log['affected']])
-            self.log('Moving "%s" under "%s" (%s)' % (slave[0].slug, chief.slug, msg))
-            slave.delete()
+        try:
+            chief = Town.objects.get(title=u'Velká Polom', district__title=u'Okres Ostrava-město')
+        except Town.DoesNotExist:
+            pass
+        else:
+            slave = Town.objects.filter(title=u'Velká Polom', district__title=u'Okres Opava')
+            if slave.exists():
+                log = repair_referencies(slave[0], chief)
+                msg = u", ".join([u"%s=%i" % (k, len(log['affected'][k])) for k in log['affected']])
+                self.log('Moving "%s" under "%s" (%s)' % (slave[0].slug, chief.slug, msg))
+                slave.delete()
 
         # dvoji zaznamy pro stejne obce
         doubled = [u'Kostelec nad Černými Lesy', u'Starý Plzenec', u'Podbořany', u'České Meziříčí']

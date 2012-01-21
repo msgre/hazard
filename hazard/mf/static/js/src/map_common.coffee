@@ -101,3 +101,9 @@ interpolate_color = (start_color, end_color, value) ->
     ]
     convert_to_hex(c)
 
+get_color = (type, value) ->
+    if type == 'hells'
+        color = interpolate_color('#FFD700', '#EE0000', value)
+    else
+        color = interpolate_color('#00FFFF', '#0028FF', value)
+    return color

@@ -114,6 +114,10 @@ class Town(geomodels.Model):
     def get_lokativ(self):
         return self.lokativ or self.title
 
+    def get_geo(self):
+        return self.shape or self.point
+    geo = property(get_geo)
+
 
 class Zip(models.Model):
     """
