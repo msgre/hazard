@@ -6,6 +6,7 @@ from django.conf import settings
 
 from chunks.models import Chunk
 
+
 class ClearCacheMixin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         obj.save()
