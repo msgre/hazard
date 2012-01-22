@@ -406,7 +406,7 @@
     _ref2 = [null, null, null, null], actual_min_lat = _ref2[0], actual_max_lat = _ref2[1], actual_min_lon = _ref2[2], actual_max_lon = _ref2[3];
     type = $('#type-switcher').val();
     _.each(window.shapes, function(shape, key) {
-      var color, i, item, max_lat, max_lon, min_lat, min_lon, polys, value, _i, _j, _len, _len2, _polys, _ref;
+      var color, i, item, max_lat, max_lon, min_lat, min_lon, polys, update_timeout, value, _i, _j, _len, _len2, _polys, _ref;
       if (!shape) {
         return true;
       }
@@ -474,8 +474,19 @@
         });
         return $table.find("tr." + key).removeClass('hover');
       });
+      update_timeout = null;
       google.maps.event.addListener(POLYS[key], 'click', function() {
-        return $table.find("tr." + key + " a").click();
+        return update_timeout = setTimeout(function() {
+          $table.find("tr." + key + " a").click();
+          return console.log('single click v mape');
+        }, 300);
+      });
+      google.maps.event.addListener(POLYS[key], 'dblclick', function() {
+        var url;
+        clearTimeout(update_timeout);
+        url = $table.find("tr." + key + " a").attr('href');
+        url = "" + (url.replace('/kampan/mf/', '')) + "/_/";
+        return window.location = url;
       });
       return POLYS[key].setMap(MAP);
     });
@@ -589,6 +600,7 @@
       name: 'Černobílá'
     });
     MAP.mapTypes.set('CB', styledMapType);
+    google.maps.event.clearListeners(MAP, 'dblclick');
     map_legend();
     draw_shapes();
     return $('h1').removeClass('loading');

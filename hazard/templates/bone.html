@@ -6,9 +6,12 @@
     {# Facebook OpenGraph #}
     <meta property="og:site_name" content="MapyHazardu.cz">
 
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/blueprint/screen.css" type="text/css" media="screen">
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/index.css" type="text/css" media="screen">
-    {% block css %}{% endblock %}
+    {% load compress %}
+    {% compress css %}
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/blueprint/screen.css" type="text/css" media="screen">
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/index.css" type="text/css" media="screen">
+        {% block css %}{% endblock %}
+    {% endcompress %}
 </head>
 <body id="body">
     <div class="container">
@@ -16,24 +19,12 @@
         {% block main %}{% endblock %}
         {% include "footer.html" %}
     </div>
-    {% block js %}
-        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.4.2.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}js/underscore-min.js"></script>
-    {% endblock %}
-    {% comment %}
-    <script type="text/javascript">
-        {% load shared %}
-        {% filter shorten_latlon %}
-            {% block inline_js%}
-                window.perc_entries = {{ perc_entries|json }};
-            {% endblock %}
-        {% endfilter %}
-    </script>
-    {% endcomment %}
-    {# TODO: #}
-    <script type="text/javascript">
-        $(document).ready(function(){$('#map-fullscreen').click(function(){$('#map').addClass('fullscreen');return false;})})
-    </script>
+    {% compress js %}
+        {% block js %}
+            <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.4.2.js"></script>
+            <script type="text/javascript" src="{{ STATIC_URL }}js/underscore-min.js"></script>
+        {% endblock %}
+    {% endcompress %}
     {# Google Analytics #}
     {% if not debug %}
         <script type="text/javascript">

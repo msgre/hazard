@@ -54,8 +54,6 @@ Kampan MF
         (u'lekarny', u'?'),
         (u'ministerstvo', u'Budovy státních orgánů'),
         (u'socialni', u'Zařízení sociální péče'),
-* u selektitek nad mapou by melo byt nejake vysvetleni, co dana kombinace
-  voleb predstavuje
 * tabulka v prehledech by mohla byt doplnena nejakym JS udelatkem, ktere
   by dokazalo aktualne vybrana data seradit vzestupne/sestupne
   (Korel?)
@@ -64,11 +62,6 @@ Kampan MF
 * Javascriptove zalezitosti na Korela
     - hover v mape by mel byt doprovozen nejakou bublinou s nazvem
       kraje/okresu/obce
-    - idealni by ale bylo, kdyby v bubline byly i neco dalsiho. Mozna ze tam
-      nemusime opakovat dokola numericke udaje (ty se objevi po kliknuti
-      na patricny objekt a Ajaxem se zaktualizuje stranka se vsemi potrebnymi
-      daty). Stacil by nejaky odkaz na geograficky mensi celky. Napr. v pripade
-      kraje link na okresy, v pripade okresu link na mesta
     - budeme sibovat se scroll offsetem v tabulce nalevo od mapy, kdyz jezdim
       mysi v mape? (kdyz je ted patricna polozka mimo viditelnou oblast,
       zvyrazneni s pomoci .active nejde videt)
@@ -85,19 +78,15 @@ Kampan MF
 * V detailu obce bychom asi meli mit nejaky placeholder pro kolacovy graf
   u uvodni vety. Neco jako zdvizeny palec, nebo jina grafika, kterou by se
   vyjadrovalo, ze to je paradicka (nemit v obci zadne VLTecko)
-* Vysvetlovatko aktualni kombinace hodnot v selektitkach nad mapou. Mozna to
-  je to same co legenda k mape
-    - melo by byt jasne co se na mape zobrazuje
-    - jaky je vyznam barev (tj. jake hodnote odpovida nejsvetlejsi/nejtmavsi
-      barva)
 * Chyba: prepinani selektitka v okresu neaktualizuje hodnoty v tabulce
   (kraj facha); tyka se prepinatka "herna/automat", prepinani toho druheho
   jakz takz jede, ale blbe
-* Ma nejaky vyznam mit prepinac v okrese na zobrazeni vsech obci?
-* V AJAX JSON odpovedich se musi objevovat i drobeckova navigace, title
+* V AJAX JSON odpovedich se musi objevovat i title stranky (a pak jej samozrejme
+  aktualizovat)
 * Pohled na okresy a tabulka s ostatnimi okresy kraje
     - pokud pouzivam ajax, tak to hapruje
     - po kazde zmene okresu je treba zjistit do jakeho kraje jsem se prekliknul
     - podle toho pak musim v tabulce hide/unhidnout patricne radky
     - no a pak tu tabulku taky prepocitat
-* kua nejaky ten History plugin by se sikl... (jakoze History API prohlizece)
+* Kua nejaky ten History plugin by se sikl... (jakoze History API prohlizece)
+  Mozna se to vyresi nasazenim angular.js/backbone.js

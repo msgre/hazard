@@ -206,8 +206,28 @@ draw_shapes = () ->
                 zIndex: if key == window.actual then 20 else 10
             $table.find("tr.#{ key }").removeClass('hover')
 
+        # NOTE: trosku pakarna, ale jinak to asi nejde
+        # Kdyz dblclicknu v mape, Google odpali jak udalost click, tak dblclick
+        # Proto je treba v pripade single clicku zachovat chladnou hlavu a chvilku
+        # poseckat. Pokud se jedna o dbclick, tak je obsluha single clicku
+        # zariznuta.
+
+        update_timeout = null
+
         google.maps.event.addListener POLYS[key], 'click', () ->
-            $table.find("tr.#{ key } a").click()
+            update_timeout = setTimeout(() ->
+                $table.find("tr.#{ key } a").click()
+                console.log 'single click v mape'
+            , 300)
+
+        # dblclick v mape nad polygonem zaridi "zoom" na nizsi uzemni celek
+        # kraj => okres (prvni okres kraje)
+        # okres => mesto (prvni mesto kraje)
+        google.maps.event.addListener POLYS[key], 'dblclick', () ->
+            clearTimeout(update_timeout)
+            url = $table.find("tr.#{ key } a").attr('href')
+            url = "#{ url.replace('/kampan/mf/', '') }/_/"
+            window.location = url
 
         POLYS[key].setMap(MAP)
 
@@ -315,9 +335,10 @@ window.late_map = () ->
     MAP = new google.maps.Map(document.getElementById("map"), map_options)
     styledMapType = new google.maps.StyledMapType(MAP_STYLE, {name:'Černobílá'})
     MAP.mapTypes.set('CB', styledMapType)
-    map_legend()
 
-    # vykresleni polygonu (kraje/okresy)
+    google.maps.event.clearListeners(MAP, 'dblclick')
+
+    map_legend()
     draw_shapes()
     $('h1').removeClass('loading')
 

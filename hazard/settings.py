@@ -76,6 +76,7 @@ INSTALLED_APPS = (
     'debug_toolbar',
     'south',
     'chunks',
+    'compressor',
     'hazard.shared',
     'hazard.news',
     'hazard.territories',
@@ -186,10 +187,15 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'compressor.finders.CompressorFinder',
 )
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 
+COMPRESS_CSS_FILTERS = [
+    'compressor.filters.css_default.CssAbsoluteFilter',
+    'compressor.filters.cssmin.CSSMinFilter'
+]
 
 try:
     from hazard.local import *
