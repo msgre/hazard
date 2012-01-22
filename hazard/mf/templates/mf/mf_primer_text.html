@@ -8,7 +8,7 @@
         {% variable statistics.conflict_hell_counts|key:obj.id as conflict_hell_counts %}
         {% if conflict_hell_counts > 0 %}
             {# nektere z nich jsou v konfliktu se zakonem #}
-            <span class="title"><b>{{ obj.get_lokativ }}</b></span> povolilo Ministerstvo financí k 31. 12. 2011 provoz
+            <span class="title"><b>{{ obj.get_lokativ }}</b></span> povolilo Ministerstvo financí k 23.&nbsp;srpnu&nbsp;2011 provoz nejméně
             {% if hells %}
                 <b>{{ conflict_hell_counts }}&nbsp;{{ conflict_hell_counts|grammar:"0=heren,1=herny,?=heren" }}</b>
                 ({{ statistics.conflict_hell_perc|key:obj.id|floatformat:1 }}% z&nbsp;{{ statistics.hell_counts|key:obj.id }})
@@ -20,24 +20,64 @@
             v rozporu se <a href="#">zákonem</a>.
         {% else %}
             {# herny tu jsou, ale vsechny jsou ok #}
-            <span class="title"><b>{{ obj.get_lokativ }}</b></span> není ani
+            <span class="title"><b>{{ obj.get_lokativ }}</b></span> není
+            Ministerstvem financí povolen ani
             {% if hells %}
                 jedna herna
             {% else %}
-                jeden automat
+                jeden hazardní přístroj
             {% endif %}
-            v rozporu se <a href="#">zákonem</a>.
+            (údaje platné k 23. sprnu 2011).
         {% endif %}
     {% else %}
-        <span class="title"><b>{{ obj.get_lokativ }}</b></span> není provozována ani
+        {# neni tu ani jedna herna #}
+        <span class="title"><b>{{ obj.get_lokativ }}</b></span> není
+        Ministerstvem financí povolen ani
         {% if hells %}
-            jedna herna.
+            jedna herna
         {% else %}
-            jeden automat.
+            jeden hazardní přístroj
         {% endif %}
-        Gratulujeme!
+        (údaje platné k 23. sprnu 2011).
     {% endif %}
 </h2>
+
+{# dovetek k uvodni vete -- co muzete delat #}
+{% if geo == "town" %}
+    {% if hell_counts > 0 %}
+        {% if conflict_hell_counts > 0 %}
+            <p><a href="#" class="what-to-do">Co pro jejich regulaci můžete udělat?</a></p>
+            <div>
+                <ul>
+                    <li>Zjistit, zda má Vaše obec vyhlášku, která regulaci hazardních přístrojů
+                    omezuje (většina obcí má vyhlášky vystaveny na webu) a poslat nám na ni
+                    referenci v <a href="#todo">komentářích</a>.</li>
+                    <li>Pokud Vaše obec vyhlášku nemá, iniciujte její přijetí. Podrobněji v
+                    publikaci <a href="http://www.osbrneni.cz/regulace-hazardu/manual">Jak ve
+                    Vaší obci regulovat hazard</a>.</li>
+                    <li>Pokud obec vyhlášku již má, můžete se s námi
+                    <a href="{% url contact %}">zkontaktovat</a> a promyslet další postup. Více
+                    v návodu <a href="http://www.osbrneni.cz/regulace-hazardu/manual">Jak ve
+                    Vaší obci regulovat hazard</a>.</li>
+                </ul>
+            </div>
+        {% else %}
+            <p>Pokud se v této obci nějaký hazardní
+            přístroj nalézá, jedná se pravděpodobně o VHP povolený Vaší obcí.<br>
+            Obec má možnost zakázat provozování hazardu obecně závaznou
+            vyhláškou. Více v publikaci
+            <a href="http://www.osbrneni.cz/regulace-hazardu/manual">Jak ve Vaší
+            obci regulovat hazard</a>.</p>
+        {% endif %}
+    {% else %}
+        <p>Pokud se v této obci nějaký hazardní
+        přístroj nalézá, jedná se pravděpodobně o VHP povolený Vaší obcí.<br>
+        Obec má možnost zakázat provozování hazardu obecně závaznou
+        vyhláškou. Více v publikaci
+        <a href="http://www.osbrneni.cz/regulace-hazardu/manual">Jak ve Vaší
+        obci regulovat hazard</a>.</p>
+    {% endif %}
+{% endif %}
 
 {# nasleduje veta o poradi, tu ale generuje javascript #}
 
@@ -51,6 +91,3 @@
         {% endfor %}
     </p>
 {% endif %}
-
-{# vysvetleni kampane #}
-<p><a href="{% url campaign-mf-homepage campaign=campaign %}">Podrobné vysvětlení této kampaně</a> &raquo;</p>

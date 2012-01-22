@@ -14,7 +14,7 @@ urlpatterns = patterns('',
     url(r'^pomozte-nam/$', MfCampaignBase.as_view(template_name='mf/help.html'), name='campaign-mf-help'),
     url(r'^porusovani-zakona/$', MfCampaignBase.as_view(template_name='mf/law.html'), name='campaign-mf-law'),
     url(r'^casovy-vyvoj/$', MfCampaignBase.as_view(template_name='mf/timeline.html'), name='campaign-mf-timeline'),
-    url(r'^o-mape/$', MfCampaignBase.as_view(template_name='mf/about.html'), name='campaign-mf-about'),
+    url(r'^podrobne-vysvetleni/$', MfCampaignBase.as_view(template_name='mf/about.html'), name='campaign-mf-about'),
     # ajaxy
     url(r'^ajax/(?P<type>kraje|okresy)/$', cache_page(MfAjax.as_view(), AJAX_CACHE_TIMEOUT), name='campaign-mf-ajax'),
     url(r'^ajax/(?P<type>obce)/(?P<district>[\-a-z]+)/$', cache_page(MfTownAjax.as_view(), AJAX_CACHE_TIMEOUT), name='campaign-mf-town-ajax'),

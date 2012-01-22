@@ -224,6 +224,7 @@ draw_shapes = () ->
         # kraj => okres (prvni okres kraje)
         # okres => mesto (prvni mesto kraje)
         google.maps.event.addListener POLYS[key], 'dblclick', () ->
+            $('h1').addClass('loading')
             clearTimeout(update_timeout)
             url = $table.find("tr.#{ key } a").attr('href')
             url = "#{ url.replace('/kampan/mf/', '') }/_/"
@@ -335,8 +336,6 @@ window.late_map = () ->
     MAP = new google.maps.Map(document.getElementById("map"), map_options)
     styledMapType = new google.maps.StyledMapType(MAP_STYLE, {name:'Černobílá'})
     MAP.mapTypes.set('CB', styledMapType)
-
-    google.maps.event.clearListeners(MAP, 'dblclick')
 
     map_legend()
     draw_shapes()

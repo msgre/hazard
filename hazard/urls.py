@@ -10,7 +10,6 @@ admin.autodiscover()
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', TemplateView.as_view(template_name='pages/homepage.html')),
-    url(r'^kdo-jsme/$', TemplateView.as_view(template_name='pages/who_we_are.html'), name="who-we-are"),
     url(r'^slovnik-pojmu/', include('hazard.dictionary.urls')),
     url(r'^kampane/$', RedirectView.as_view(url='/kampan/')),
     url(r'^kampan/', include('hazard.campaigns.urls')),

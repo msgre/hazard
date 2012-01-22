@@ -1,5 +1,5 @@
 (function() {
-  var $, MAP, MAP_STYLE, POINTS, POINT_MAX_RADIUS, POINT_MIN_RADIUS, POLYS, POLYS_COLORS, SCHOVAVACZ_OPTS, VIEW, ajax_key, convert_to_hex, convert_to_rgb, draw_points, draw_shapes, get_color, handle_switcher, handle_table, hex, interpolate_color, load_maps_api, map_legend, number_to_graph, select_legend_handler, select_legend_handler2, trim, update_map_legend, update_points, update_shapes;
+  var $, MAP, MAP_STYLE, POINTS, POINT_MAX_RADIUS, POINT_MIN_RADIUS, POLYS, POLYS_COLORS, SCHOVAVACZ_OPTS, VIEW, ajax_key, convert_to_hex, convert_to_rgb, draw_points, draw_shapes, get_color, handle_switcher, handle_table, handle_what_to_do, hex, interpolate_color, load_maps_api, map_legend, number_to_graph, select_legend_handler, select_legend_handler2, trim, update_map_legend, update_points, update_shapes;
   var __indexOf = Array.prototype.indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (this[i] === item) return i;
@@ -258,6 +258,19 @@
     }
   };
   "TODO:\n- zvyraznovat aktualni kraj/okres?\n    - nebo se na to vykaslat?\n- kua nemam orafnout aspon ten okres?\n    - o tom data mam ne?";
+  /*
+  Skryvacka v uvodnim textu
+  */
+  handle_what_to_do = function() {
+    var $div, $link;
+    $link = $('.what-to-do');
+    $div = $link.closest('p').next('div');
+    $div.hide();
+    return $link.click(function() {
+      $div.slideToggle('fast');
+      return false;
+    });
+  };
   /*
   Obsluha preklikavani pohledu herny/automaty.
   */
@@ -667,6 +680,7 @@
     return select_legend_handler();
   };
   $(document).ready(function() {
+    handle_what_to_do();
     return load_maps_api();
   });
 }).call(this);

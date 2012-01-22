@@ -33,7 +33,8 @@ def mf_primer_text(context, obj, type):
         'hells': type == 'hells',
         'obj': obj,
         'prefix': prefix,
-        'subobjects': subobjects
+        'subobjects': subobjects,
+        'geo': geo
     })
     return context
 

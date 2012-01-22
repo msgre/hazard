@@ -13,11 +13,11 @@
 
 {% block submenu %}
     <p>
-        <a href="{% url campaign-mf-homepage campaign=campaign.slug %}">Popis</a> |
-        <a href="{% url campaign-mf-help campaign=campaign.slug %}">Pomozte nám</a> |
+        <a href="{% url campaign-mf-homepage campaign=campaign.slug %}">Představení</a> |
+        <a href="{% url campaign-mf-about campaign=campaign.slug %}">Podrobné vysvětlení</a> |
         <a href="{% url campaign-mf-law campaign=campaign.slug %}">Porušování zákona</a> |
         <a href="{% url campaign-mf-timeline campaign=campaign.slug %}">Časový vývoj</a> |
-        <a href="{% url campaign-mf-about campaign=campaign.slug %}">O mapě</a>
+        <a href="{% url campaign-mf-help campaign=campaign.slug %}">Pomozte nám</a>
     </p>
 {% endblock %}
 

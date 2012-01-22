@@ -18,16 +18,32 @@
 
     {# uvodni lajna #}
     <div class="span-12">
-        {#{% chunk "homepage-perex" %}#}
-        <h2 style="line-height:120%;">Mapujeme hazard. Statu je to fuk, kamaradickum na radnici taky, mesta jsou zaplevelena hernama jak nikde jinde v Evrope. Pojdme se na nej podivat z jineho pohledu a dokopejme nase volene zastupce k cinum.</h2>
-        <p class="right"><a href="/kdo-jsme/">Zajímá vás kdo jsme a proč to děláme?</a> &rarr;</p>
+        <h2 style="line-height:120%;">
+            Mapujeme hazard. Státu je to fuk, mnoha radnicím taky, města
+            jsou zaplevelena hernami jak nikde jinde v Evropě. Pojďme se na
+            hazard podívat z jiného úhlu a dokopejme naše volené zástupce k
+            jeho regulaci.
+        </h2>
+        <p class="right"><a href="/kontakt/">Zajímá vás kdo jsme a proč to děláme?</a> &rarr;</p>
         <div class="clear"></div>
         <p style="margin-bottom:0"><b>Znáte situaci ve vašem regionu?</b></p>
         <p style="margin-bottom:0"><input placeholder="Zadejte název obce, okresu nebo kraje" style="width:95%; height:32px; font-size:18px;" type="text" name="search" id="search"></p>
     </div>
-    <div class="span-11 prepend-1 last">
-        <img src="{{ STATIC_URL }}img/mapa.png" width="430">
+    <div class="span-12 last">
+        <div class="box span-5" style="height:105px">
+            <a href="/kampan/mf/"><b>Mapa rozporu sousedství s hazardními přístroji MF</b><br>(výřez mapy)</a>
+        </div>
+        <div class="box span-5 last" style="height:105px">
+            <a href="http://www.mapyhazardu.cz/"><b>Původní MapyHazardu</b><br>(výřez mapy)</a>
+        </div>
+        <div class="box span-5" style="height:105px">
+            <a href="#"><b>Vyhlášky</b><br>(výřez mapy, Jakub Mráček)</a>
+        </div>
+        <div class="box span-5 last" style="height:105px">
+            <a href="/kampan/mf/porusovani-zakona/"><b>Historie porušování</b><br>(výřez časové osy)</a>
+        </div>
     </div>
+
     <div class="clear"> </div>
     <br>
 
@@ -45,7 +61,13 @@
     </div>
     <div class="span-8 last">
         <h3>Pomozte nám</h3>
-        <p class="todo">Nejaky uvodni plk, ze muzou budto pomoct s datama a jejich cistenim, nebo muzou poslat prachy na ucet + posledni zprava o tom na co budou penize pouzity konkretne</p>
+        <p>Sháníme peníze či dobrovolníka na:</p>
+        <ul>
+            <li>čištění dat k mapám hazardu: XX.XXX Kč,- nebo asi XX hodin práce, požadované schopnosti: xxxxxxxx</li>
+            <li>grafika: XX.XXX Kč,- nebo asi XX hodin práce, požadované schopnosti: xxxxxxxx </li>
+            <li>něco (tiskárnu, dobrovolníky...)</li>
+        </ul>
+        <p class="todo">TODO: widget na darování peněz</p>
     </div>
     <div class="clear"> </div>
 {% endblock %}

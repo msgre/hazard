@@ -54,7 +54,7 @@ table.statistics tr.active td {
     border-bottom: 1px dotted #0066CC;
 }
 div.wrapper {
-    height:200px;
+    height:120px;
     overflow:auto;
 }
 

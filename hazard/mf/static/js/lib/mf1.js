@@ -483,6 +483,7 @@
       });
       google.maps.event.addListener(POLYS[key], 'dblclick', function() {
         var url;
+        $('h1').addClass('loading');
         clearTimeout(update_timeout);
         url = $table.find("tr." + key + " a").attr('href');
         url = "" + (url.replace('/kampan/mf/', '')) + "/_/";
@@ -600,7 +601,6 @@
       name: 'Černobílá'
     });
     MAP.mapTypes.set('CB', styledMapType);
-    google.maps.event.clearListeners(MAP, 'dblclick');
     map_legend();
     draw_shapes();
     return $('h1').removeClass('loading');

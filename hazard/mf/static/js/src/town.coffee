@@ -7,6 +7,17 @@ TODO:
 """
 
 ###
+Skryvacka v uvodnim textu
+###
+handle_what_to_do = () ->
+    $link = $('.what-to-do')
+    $div = $link.closest('p').next('div')
+    $div.hide()
+    $link.click () ->
+        $div.slideToggle('fast')
+        false
+
+###
 Obsluha preklikavani pohledu herny/automaty.
 ###
 handle_switcher = (set=true) ->
@@ -391,4 +402,5 @@ window.late_map = () ->
 # -----------------------------------------------------------------------------
 
 $(document).ready () ->
+    handle_what_to_do()
     load_maps_api()
