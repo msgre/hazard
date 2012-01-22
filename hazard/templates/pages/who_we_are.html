@@ -2,17 +2,6 @@
 
 {% load news chunks campaigns %}
 
-{% block css %}
-    {{ block.super }}
-    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/ui-lightness/jquery-ui.css" type="text/css" media="screen">
-{% endblock %}
-
-{% block js %}
-    {{ block.super }}
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/lib/homepage.js"></script>
-{% endblock %}
-
 {% block main %}
     <h1>Kdo jsme a proč to děláme</h1>
 
