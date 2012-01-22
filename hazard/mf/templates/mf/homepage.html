@@ -14,12 +14,15 @@
 {% block content %}
     {# uvodni lajna #}
     <div class="span-12">
-        <h2 style="line-height:120%;">{{ campaign.description|safe }}</h2>{# TODO: nahrazeni nejakeho stringu za aktualni cifru s poctem nezakonne povolenych automatu #}
+        <h2 style="line-height:120%;">{{ campaign.description|safe }}</h2>
         <p style="margin-bottom:0"><b>Znáte situaci ve vašem regionu?</b></p>
         <p style="margin-bottom:0"><input placeholder="Zadejte název obce, okresu nebo kraje" style="width:95%; height:32px; font-size:18px;" type="text" name="search" id="search"></p>
     </div>
     <div class="span-11 prepend-1 last">
-        <img src="{{ STATIC_URL }}img/mapa.png" width="430">
+        <div id="map" style="height:250px"></div>
+        <p><i><b>Interaktivní mapa</b> &mdash; čím červenější region, tím více
+        nezákonně povolených heren. Pro další podrobnosti klikněte na
+        konkrétní kraj v mapě.</i></p>
     </div>
     <div class="clear"></div>
     <br><br>
