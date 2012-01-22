@@ -1,0 +1,34 @@
+{% extends "mf/base.html" %}
+
+{% load shared %}
+
+{% block main_header %}
+    <h1>{{ town.title }}</h1>
+{% endblock %}
+
+{% block content %}
+    <h2>Komentáře</h2>
+    <div class="span-15 append-1 last">
+        <div id="disqus_thread"></div>
+        <a href="http://disqus.com" class="dsq-brlink">Komentáře pohání <span class="logo-disqus">Disqus</span></a>
+    </div>
+    <div class="span-8 last">
+        <p class="todo">nejaky uvodni text, zadne spostoty, bavme se vecne. prosim.</p>
+        <p class="todo">zjistit, jestli chodi nejake notifikace o komentech,
+        pokud ne, realizovat nejaky JS callback a AJAX volani do aplikace</p>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript">
+        {% if debug %}var disqus_developer = 1;{% endif %}
+        var disqus_shortname = 'mapyhazardu';
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+{% endblock %}
+
+{# vim: set et si ts=4 sw=4 syn=django: #}

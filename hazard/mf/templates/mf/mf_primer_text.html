@@ -49,9 +49,10 @@
             <p><a href="#" class="what-to-do">Co pro jejich regulaci můžete udělat?</a></p>
             <div>
                 <ul>
+                    {% url mf-town-comments region=region.slug district=district.slug town=town.slug campaign="mf" as town_comments %}
                     <li>Zjistit, zda má Vaše obec vyhlášku, která regulaci hazardních přístrojů
                     omezuje (většina obcí má vyhlášky vystaveny na webu) a poslat nám na ni
-                    referenci v <a href="#todo">komentářích</a>.</li>
+                    referenci v <a href="{{ town_comments }}">komentářích</a>.</li>
                     <li>Pokud Vaše obec vyhlášku nemá, iniciujte její přijetí. Podrobněji v
                     publikaci <a href="http://www.osbrneni.cz/regulace-hazardu/manual">Jak ve
                     Vaší obci regulovat hazard</a>.</li>

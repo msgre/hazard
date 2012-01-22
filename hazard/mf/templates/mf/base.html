@@ -14,8 +14,10 @@
         <div class="box" style="margin-bottom:0;position:relative;top:-13px;padding:10px;text-decoration:none;color:#E5ECF9;background:#06c;">
             {% url mf-town region=region.slug district=district.slug town=town.slug campaign="mf" as town_url %}
             {% url mf-town-map region=region.slug district=district.slug town=town.slug campaign="mf" as town_map_url %}
+            {% url mf-town-comments region=region.slug district=district.slug town=town.slug campaign="mf" as town_comments %}
             <a style="color:#E5ECF9;text-decoration:none;padding-right:1em;" href="{{ town_url }}">Základní přehled</a>
             <a style="color:#E5ECF9;text-decoration:none;padding-right:1em;" href="{{ town_map_url }}">Podrobná mapa</a>
+            <a style="color:#E5ECF9;text-decoration:none;padding-right:1em;" href="{{ town_comments }}">Komentáře</a>
             {% comment %}
             {% url mf-town region=region.slug district=district.slug town=town.slug campaign="mf" as town_url %}
             {% url mf-town-map region=region.slug district=district.slug town=town.slug campaign="mf" as town_map_url %}

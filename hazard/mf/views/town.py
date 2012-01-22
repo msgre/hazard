@@ -38,6 +38,13 @@ class MfTownMapView(MfTownDetailView):
     template_name = 'mf/town_map.html'
 
 
+class MfTownComments(MfTownDetailView):
+    """
+    Diskuze k dane obci.
+    """
+    template_name = 'mf/town_comments.html'
+
+
 # class MfCommon(object):
 #     """
 #     TODO:
