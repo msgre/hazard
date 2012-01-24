@@ -1,14 +1,19 @@
 # -*- coding: utf-8 -*-
 # vim: set et si ts=4 sw=4:
 
-from django.core.paginator import Paginator, InvalidPage
+import itertools
 
-from hazard.gobjects.models import Hell, MachineCount
+from django.contrib.gis.geos import Polygon
+from django.core.cache import cache
+
+from hazard.gobjects.models import Hell
 from hazard.territories.models import Region, District
 from hazard.territories.views import TownDetailView
-from hazard.mf.models import MfPlaceConflict, MfPlace
+from hazard.mf.models import MfPlaceConflict, MfPlace, MfAddressSurround
 from hazard.shared.ajax import JSONView
 
+
+CACHE_TIMEOUT = 10 * 60 # 10 minut
 
 
 class MfTownDetailView(JSONView, TownDetailView):
@@ -35,7 +40,87 @@ class MfTownMapView(MfTownDetailView):
     """
     Podrobna mapa se situaci herev v obci.
     """
+    base_template = 'mf/base.html'
     template_name = 'mf/town_map.html'
+    json_prefix = 'json_town_'
+
+    def get_context_data(self, **kwargs):
+        """
+        V pripade AJAXoveho dotazu vratime JSON strukturu s podrobnymi daty
+        o budovach a hernach v obci.
+        """
+        out = super(MfTownMapView, self).get_context_data(**kwargs)
+        if self.ajax:
+            key = 'MfTownMapView:ajax:get_context_data:%s' % self.request.path
+            data = cache.get(key)
+            if not data:
+                # vsechny adresy v obci
+                addresses = out['object'].address_set.all()
+                addresses = dict([(i.id, {'title': i.title, \
+                                           'geo_type': i.get_geometry_type(), \
+                                           'geo': list(i.get_geometry().coords)}) \
+                                   for i in addresses])
+
+                # adresy mist
+                places = MfPlace.objects.filter(town=self.object)
+                place_address_ids = list(set(places.values_list('address', flat=True)))
+
+                # adresy heren
+                hells = Hell.objects.filter(town=self.object)
+                hell_address_ids = list(set(hells.values_list('address', flat=True)))
+
+                # okoli mist
+                surrounds = MfAddressSurround.objects.filter(address__id__in=place_address_ids, distance=100)
+                place_surrounds = dict([(i.address_id, list(i.poly.coords)) for i in surrounds])
+
+                # konflikty
+                # NOTE: takovato podminka by mela stacit, myslim ze neni treba ji
+                # omezovat jeste z druhe strany, tj. z MfPlace
+                conflicts = MfPlaceConflict.objects.filter(hell__id__in=hells.values_list('id', flat=True))
+                conflicts = dict([(k, list(set([y[1] for y in g]))) \
+                                   for k, g in itertools.groupby(conflicts.values_list('hell__address', 'place__address'), lambda a: a[0])])
+
+                # sloucene okoli budov
+                hell_surrounds = {}
+                for address_id in conflicts:
+                    if len(conflicts[address_id]) < 2:
+                        continue
+                    else:
+                        merge = None
+                        for surround_address_id in conflicts[address_id]:
+                            if surround_address_id in place_surrounds:
+                                coords = place_surrounds[surround_address_id]
+                                poly = Polygon(*coords)
+                                if not merge:
+                                    merge = poly
+                                else:
+                                    merge = merge.union(poly)
+                        hell_surrounds[address_id] = [list(list(y) for y in i) for i in merge.coords]
+
+                # sup s daty do sablony
+                data = {
+                    # vsechny pouzite adresy v obci (at uz hernami, nebo budovami)
+                    'addresses': addresses,
+                    # IDcka mist/heren
+                    'place_addresses': place_address_ids,
+                    'hell_addresses': hell_address_ids,
+                    # okoli budov
+                    'place_surrounds': place_surrounds,
+                    # sloucene okoli budov
+                    'hell_surrounds': hell_surrounds,
+                    # detaily k mistum/hernam
+                    'places': dict([(k, [y[1] for y in g]) \
+                                    for k, g in itertools.groupby(places.values_list('address_id', 'title'), lambda a: a[0])]),
+                    'hells': dict([(k, [y[1] for y in g]) \
+                                    for k, g in itertools.groupby(hells.values_list('address_id', 'title'), lambda a: a[0])]),
+                    # konflikty mezi adresami
+                    'conflicts': conflicts
+                }
+                cache.set(key, data)
+
+            out.update(data)
+
+        return out
 
 
 class MfTownComments(MfTownDetailView):
@@ -43,106 +128,3 @@ class MfTownComments(MfTownDetailView):
     Diskuze k dane obci.
     """
     template_name = 'mf/town_comments.html'
-
-
-# class MfCommon(object):
-#     """
-#     TODO:
-#     """
-#
-#     PER_PAGE = 20
-#
-#     def paginator(self, qs):
-#         """
-#         Metoda, ktera se stara o strankovani zadaneho QS. Vraci data ve slovniku
-#         vhodna pro pouziti primo v sablonach.
-#
-#         Kopie kodu Django generic ListView.
-#         """
-#         paginator = Paginator(qs, self.PER_PAGE, allow_empty_first_page=True)
-#         page = self.kwargs.get('p') or self.request.GET.get('p') or 1
-#
-#         try:
-#             page_number = int(page)
-#         except ValueError:
-#             raise Http404
-#         try:
-#             page = paginator.page(page_number)
-#             return {
-#                 'paginator': paginator,
-#                 'page_obj': page,
-#                 'is_paginated': page.has_other_pages(),
-#                 'object_list': page.object_list
-#             }
-#         except InvalidPage:
-#             raise Http404
-#
-#
-# class MfTownHellsListView(TownDetailView, MfCommon):
-#     """
-#     Prehled heren ve meste.
-#     """
-#     template_name = 'mf/town_hells_list.html'
-#
-#     def get_context_data(self, **kwargs):
-#         out = super(MfTownHellsListView, self).get_context_data(**kwargs)
-#         statistics = MfPlaceConflict.statistics(self.object)
-#         out.update(statistics)
-#         out.update(self.paginator(statistics['hells_qs']))
-#         out['campaign'] = self.kwargs['campaign']
-#         return out
-#
-#
-# class MfTownHellDetailView(TownDetailView):
-#     """
-#     Detail herny ve meste.
-#     """
-#     template_name = 'mf/town_hell_detail.html'
-#
-#     def get_context_data(self, **kwargs):
-#         out = super(MfTownHellDetailView, self).get_context_data(**kwargs)
-#         statistics = MfPlaceConflict.statistics(self.object)
-#         out.update(statistics)
-#
-#         hell = Hell.objects.get(region=out['region'], district=out['district'], town=out['town'], id=self.kwargs['id'])
-#         out.update({
-#             'hell': hell,
-#             'counts': MachineCount.objects.filter(hell=hell),
-#             'campaign': self.kwargs['campaign']
-#         })
-#         return out
-#
-#
-# class MfTownBuildingsListView(TownDetailView, MfCommon):
-#     """
-#     Prehled budov ve meste.
-#     """
-#     template_name = 'mf/town_buildings_list.html'
-#
-#     def get_context_data(self, **kwargs):
-#         out = super(MfTownBuildingsListView, self).get_context_data(**kwargs)
-#         statistics = MfPlaceConflict.statistics(self.object)
-#         out.update(statistics)
-#         out.update({
-#             'buildings_qs': MfPlace.objects.filter(town=out['town']),
-#             'campaign': self.kwargs['campaign']
-#         })
-#         out.update(self.paginator(out['buildings_qs']))
-#         return out
-#
-#
-# class MfTownBuildingDetailView(TownDetailView):
-#     """
-#     Detail budovy ve meste.
-#     """
-#     template_name = 'mf/town_building_detail.html'
-#
-#     def get_context_data(self, **kwargs):
-#         out = super(MfTownBuildingDetailView, self).get_context_data(**kwargs)
-#         statistics = MfPlaceConflict.statistics(self.object)
-#         out.update(statistics)
-#         out.update({
-#             'building': MfPlace.objects.get(region=out['region'], district=out['district'], town=out['town'], id=self.kwargs['id']),
-#             'campaign': self.kwargs['campaign']
-#         })
-#         return out

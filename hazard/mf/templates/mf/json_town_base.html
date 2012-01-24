@@ -1,0 +1,10 @@
+{% load shared %}{% jsonblock %}
+    "addresses":{{ addresses|json }}
+    "place_addresses":{{ place_addresses|json }}
+    "hell_addresses":{{ hell_addresses|json }}
+    "places":{{ places|json }}
+    "hells":{{ hells|json }}
+    "conflicts":{{ conflicts|json }}
+    "place_surrounds":{{ place_surrounds|json }}
+    "hell_surrounds":{{ hell_surrounds|json }}
+{% endjsonblock %}

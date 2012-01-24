@@ -23,6 +23,7 @@ class JSONView(object):
     Samozrejme je nutne hodnotu self.base_template s pomoci metody
     get_context_data poslat do sablony.
     """
+    json_prefix = 'json_'
 
     def render_to_response(self, context, **response_kwargs):
         """
@@ -48,7 +49,7 @@ class JSONView(object):
             else:
                 path = ''
                 template = self.base_template
-            self.base_template = '%sjson_%s' % (path, template)
+            self.base_template = ''.join([path, self.json_prefix, template])
 
     def get(self, request, *args, **kwargs):
         self.modify_base_template(request)

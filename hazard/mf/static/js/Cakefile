@@ -45,6 +45,10 @@ appFiles  = {
     'map_common'
     'town'
   ]
+  'mf_detailmap': [
+    'map_common'
+    'mf_detailmap'
+  ]
 }
 
 # buffer s nactenymi obsahy souboru
