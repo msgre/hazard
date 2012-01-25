@@ -13,13 +13,13 @@
 
 {% block content %}
     {# uvodni lajna #}
-    <div class="span-12">
+    <div class="span-11 append-1">
         <h2 style="line-height:120%;">{{ campaign.description|safe }}</h2>
         <p style="margin-bottom:0"><b>Znáte situaci ve vašem regionu?</b></p>
         <p style="margin-bottom:0"><input placeholder="Zadejte název obce, okresu nebo kraje" style="width:95%; height:32px; font-size:18px;" type="text" name="search" id="search"></p>
     </div>
-    <div class="span-11 prepend-1 last">
-        <div id="map" style="height:250px"></div>
+    <div class="span-12 last">
+        <div id="map" style="height:290px"></div>
         <p><i><b>Interaktivní mapa</b> &mdash; čím červenější region, tím více
         nezákonně povolených heren. Pro další podrobnosti klikněte na
         konkrétní kraj v mapě.</i></p>
@@ -44,33 +44,46 @@
             zaručí, že za hodinu nelze prohrát více než <span class="todo">X000 Kč</span>.</li>
             <li>Obcházelo ustanovení, které omezuje dobu povolení pro hazardní
             přístroj na jeden rok.</li>
+            <li>Dalším z porušených částí zákona bylo ignorování míst, kam bylo
+            ze zákona zakázáno hazard povolit.</li>
         </ul>
 
-        <div class="box">
-            <p>Dalším z porušených částí zákona bylo ignorování míst, kam bylo
-            ze zákona zakázáno hazard povolit.</p>
-            <h4 style="margin-bottom:0"><a href="/kampan/mf/pomozte-nam/">Pomozte nám toto porušování zmapovat</a> &rarr;</h4>
-        </div>
+        <h4><a href="/kampan/mf/pomozte/">Pomozte nám toto porušování zmapovat</a></h4>
     </div>
     <div class="span-12 last">
-        {# hancina prezentace v prezi #}
-        <div style="margin-left:10px;" class="prezi-player"><style type="text/css" media="screen">.prezi-player { width: 450px; } .prezi-player-links { text-align: center; }</style><object id="prezi_4cm_pz-namnn" name="prezi_4cm_pz-namnn" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="450" height="350"><param name="movie" value="http://prezi.com/bin/preziloader.swf"/><param name="allowfullscreen" value="true"/><param name="allowscriptaccess" value="always"/><param name="bgcolor" value="#ffffff"/><param name="flashvars" value="prezi_id=4cm_pz-namnn&amp;lock_to_path=0&amp;color=ffffff&amp;autoplay=no&amp;autohide_ctrls=0"/><embed id="preziEmbed_4cm_pz-namnn" name="preziEmbed_4cm_pz-namnn" src="http://prezi.com/bin/preziloader.swf" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="450" height="350" bgcolor="#ffffff" flashvars="prezi_id=4cm_pz-namnn&amp;lock_to_path=0&amp;color=ffffff&amp;autoplay=no&amp;autohide_ctrls=0"></embed></object><div class="prezi-player-links"><p><a title="MINISTERSTVO FINANCÍ A POVOLOVÁNÍ HAZARDNÍCH PŘÍSTROJŮ" href="http://prezi.com/4cm_pz-namnn/ministerstvo-financi-a-povolovani-hazardnich-pristroju/">MINISTERSTVO FINANCÍ A POVOLOVÁNÍ HAZARDNÍCH PŘÍSTROJŮ</a> on <a href="http://prezi.com">Prezi</a></p></div></div>
+        <h3>Související informace</h3>
+        <div class="span-5 box" style="height:120px">
+            <h4><a href="/porusovani-zakona/">Porušování zákona</a></h4>
+            <p class="todo">uvodni text doda Matej</p>
+        </div>
+        <div class="span-5 box last" style="height:120px">
+            <h4><a href="/casovy-vyvoj/">Časový vývoj</a></h4>
+            <p>Podívejte se, jak se v čase vyvíjela situace kolem povolování hazardu na území České republiky.</p>
+        </div>
+        <div class="span-5 box">
+            <h4><a href="/kampan/mf/o-mape/" style="height:135px">O mapě</a></h4>
+            <p class="todo">Jak interpretovat údaje z mapy? Z jakých dat jsme vycházeli? Jak jsme je zpracovali? Jaké technologie jsme využili?</p>
+        </div>
+        <div class="span-5 box last" style="height:135px">
+            <h4><a href="{% url dictionary %}">Slovníček pojmů</a></h4>
+            <p>Co je to sousedství? Co znamenají zkratky VLT, VHP, EMR?</p>
+        </div>
+
     </div>
     <div class="clear"></div>
     <br><hr>
 
     {# treti lajna s rozcestnikem #}
+    {% comment %}
     <div class="span-5 colborder">
         <h4>Porušování zákona</h4>
-        <p class="todo">Odkaz na stranku, na ktere budou konkretni reference na zakony,
-        ktere se porusuji. Melo by tam byt i nejak dolozeno, ze k porusovani
-        skutecne dochazelo</p>
-        <p><a href="/kampan/mf/porusovani-zakona/">Podrobnosti</a> &rarr;</p>
+        <p class="todo">uvodni text doda Mate</p>
+        <p><a href="/porusovani-zakona/">Podrobnosti</a> &rarr;</p>
     </div>
     <div class="span-5 colborder">
         <h4>Časový vývoj</h4>
         <p>Podívejte se, jak se v čase vyvíjela situace kolem povolování hazardu na území České republiky.</p>
-        <p><a href="/kampan/mf/casovy-vyvoj/">Podrobnosti</a> &rarr;</p>
+        <p><a href="/casovy-vyvoj/">Podrobnosti</a> &rarr;</p>
     </div>
     <div class="span-5 colborder">
         <h4>O mapě</h4>
@@ -84,6 +97,7 @@
         <p><a href="{% url dictionary %}">Podrobnosti</a> &rarr;</p>
     </div>
     <div class="clear"></div>
+    {% endcomment %}
 {% endblock %}
 
 {# vim: set et si ts=4 sw=4 syn=django: #}

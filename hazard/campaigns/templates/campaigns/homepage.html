@@ -5,7 +5,7 @@
 {% block campaign_menu %}{% endblock %}
 
 {% block main_header %}
-    <h1>Kampaně</h1>
+    <h1>Kampaň</h1>
 {% endblock %}
 
 {% block breadcrumb %}
@@ -22,7 +22,6 @@
     <div class="clear"> </div>
 
     <div class="span-12">
-        <h3>Kampaně</h3>
         {% for campaign in campaigns %}
             <h4><a href="{{ campaign.get_absolute_url }}">{{ campaign.title }}</a></h4>
             <p>{{ campaign.description|striptags }} &mdash; <a href="{{ campaign.get_absolute_url }}">Další podrobnosti</a>…</p>

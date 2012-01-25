@@ -3,10 +3,23 @@
 {% load news %}
 
 {% block main %}
-    <h3>Zprávy</h3>
+    <p id="breadcrumb"><a href="/">Úvodní stránka</a>
+    <h1>Zprávy</h1>
 
     {% if news %}
-        {% display_news news %}
+        {% for new in news %}
+            <div class="span-4">
+                <p>{{ new.created|date }}</p>
+            </div>
+            <div class="span-10">
+                <h3><a href="{{ new.get_absolute_url }}">{{ new.title }}</a></h3>
+            </div>
+            <div class="span-10 last">
+                <p>{{ new.annotation }}</p>
+            </div>
+            <div class="clear"></div>
+            <br>
+        {% endfor %}
     {% else %}
         <p><em>Zatím nebyla publikována žádná zpráva.</em></p>
     {% endif %}

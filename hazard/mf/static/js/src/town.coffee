@@ -68,6 +68,7 @@ handle_table = () ->
                 $('h1').replaceWith(data.main_header)
                 $('#primer').replaceWith(data.primer_content)
                 $('#breadcrumb').empty().append(data.breadcrumb)
+                $('#submenu').replaceWith(data.submenu)
                 handle_switcher(false)
                 $('table.statistics tr.active').removeClass('active')
                 POINTS[window.actual].setOptions

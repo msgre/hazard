@@ -13,16 +13,19 @@
             V mapě jsou vykresleny obce vybraného okresu České
             republiky.  Čím větší počet heren se v obci vyskytuje, tím
             větší kolečko je vykresleno.
+            <br>{% include "mf/map_control.html" %}
         </p>
         <p class="conflict_counts">
             V mapě jsou vykresleny obce vybraného okresu České republiky.
             Čím více je v obci <a href="#">nezákonně povolených heren</a>, tím větší kolečko
             je vykresleno.
+            <br>{% include "mf/map_control.html" %}
         </p>
         <p class="conflict_perc">
             V mapě jsou vykresleny obce vybraného okresu České republiky.
             Čím více je v obci nezákonně povolených heren, vůči těm, jejichž
             umístění neodporuje žádnému zákonu, tím je kolečko větší.
+            <br>{% include "mf/map_control.html" %}
         </p>
     </div>
     {# vysvetleni k matum #}
@@ -31,16 +34,19 @@
             V mapě jsou vykresleny obce vybraného okresu České
             republiky.  Čím větší počet automatů se v obci vyskytuje, tím
             větší kolečko je vykresleno.
+            <br>{% include "mf/map_control.html" %}
         </p>
         <p class="conflict_counts">
             V mapě jsou vykresleny obce vybraného okresu České republiky.
             Čím více je v obci <a href="#">nezákonně povolených automatů</a>, tím větší kolečko
             je vykresleno.
+            <br>{% include "mf/map_control.html" %}
         </p>
         <p class="conflict_perc">
             V mapě jsou vykresleny obce vybraného okresu České republiky.
             Čím více je v obci nezákonně povolených automatů, vůči těm, jejichž
             umístění neodporuje žádnému zákonu, tím je kolečko větší.
+            <br>{% include "mf/map_control.html" %}
         </p>
     </div>
 {% endblock %}
@@ -87,9 +93,14 @@
 
     <br>
     <div class="box">
-        <h4 style="margin-bottom:0">
-            <a href="{% url campaign-mf-about campaign=campaign %}">Podrobné vysvětlení této kampaně</a> &raquo;
-        </h4>
+        <p>
+            Mapa zobrazuje herny a automaty povolené Ministerstvem
+            financí v rozporu se zákonem o loteriích v blízkosti škol,
+            zdravotnických a sociálních zařízení, budov úřadů a církví.
+        </p>
+        <p class="right">
+            <a href="{% url campaign-mf-about campaign=campaign %}">Podrobné vysvětlení</a>
+        </p>
     </div>
 {% endblock %}
 

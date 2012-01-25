@@ -15,6 +15,8 @@ urlpatterns = patterns('',
     url(r'^kampan/', include('hazard.campaigns.urls')),
     url(r'^zpravy/', include('hazard.news.urls')),
     url(r'^kontakt/$', TemplateView.as_view(template_name='pages/contact.html'), name="contact"),
+    url(r'^porusovani-zakona/$', TemplateView.as_view(template_name='pages/law.html'), name='law'),
+    url(r'^casovy-vyvoj/$', TemplateView.as_view(template_name='pages/timeline.html'), name='timeline'),
     url(r'^', include('hazard.territories.urls'))
 )
 

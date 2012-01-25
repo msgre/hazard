@@ -10,27 +10,7 @@
 {% endblock %}
 
 {% block submenu %}
-    {% if town %}
-        <div class="box" style="margin-bottom:0;position:relative;top:-13px;padding:10px;text-decoration:none;color:#E5ECF9;background:#06c;">
-            {% url mf-town region=region.slug district=district.slug town=town.slug campaign="mf" as town_url %}
-            {% url mf-town-map region=region.slug district=district.slug town=town.slug campaign="mf" as town_map_url %}
-            {% url mf-town-comments region=region.slug district=district.slug town=town.slug campaign="mf" as town_comments %}
-            <a style="color:#E5ECF9;text-decoration:none;padding-right:1em;" href="{{ town_url }}">Základní přehled</a>
-            <a style="color:#E5ECF9;text-decoration:none;padding-right:1em;" href="{{ town_map_url }}">Podrobná mapa</a>
-            <a style="color:#E5ECF9;text-decoration:none;padding-right:1em;" href="{{ town_comments }}">Komentáře</a>
-            {% comment %}
-            {% url mf-town region=region.slug district=district.slug town=town.slug campaign="mf" as town_url %}
-            {% url mf-town-map region=region.slug district=district.slug town=town.slug campaign="mf" as town_map_url %}
-            {% url mf-town-hells-list region=region.slug district=district.slug town=town.slug campaign="mf" as hells_list_url %}
-            {% url mf-town-buildings-list region=region.slug district=district.slug town=town.slug campaign="mf" as buildings_list_url %}
-            <a style="color:#E5ECF9;text-decoration:none;padding-right:1em;" href="{{ town_url }}">Základní přehled</a>
-            <a style="color:#E5ECF9;text-decoration:none;padding-right:1em;" href="{{ town_map_url }}">Podrobná mapa</a>
-            <a style="color:#E5ECF9;text-decoration:none;padding-right:1em;" href="{{ hells_list_url }}">Seznam heren</a>
-            <a style="color:#E5ECF9;text-decoration:none;padding-right:1em;" href="{{ buildings_list_url }}">Seznam budov</a>
-            <a style="color:#E5ECF9;text-decoration:none;padding-right:1em;" href="#">Export</a>
-            {% endcomment %}
-        </div>
-    {% endif %}
+    {% include "mf/submenu.html" %}
 {% endblock %}
 
 {% block content %}
@@ -64,6 +44,7 @@
                 {% endblock %}
             </div>
         </div>
+        <div class="clear"></div>
     {% endblock %}
 {% endblock %}
 

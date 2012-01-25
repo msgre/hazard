@@ -156,6 +156,7 @@ click_on_hell = (key, icon_type) ->
         INFO_WINDOW_MARKER = null
 
     # zaveseni obsluhy na odkazy uvnitr infowindow
+    # viz: http://stackoverflow.com/questions/6378007/adding-event-to-element-inside-google-maps-api-infowindow
     google.maps.event.addListener INFO_WINDOW, 'domready', () ->
         $('#infowindow-list abbr[class^="#b-"]').hover(() ->
             id = $(@).attr('class').split('-')[1]

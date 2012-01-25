@@ -3,13 +3,19 @@
 {% load markup %}
 
 {% block main %}
-    <h3>{{ new.title }}</h3>
+    <p id="breadcrumb"><a href="/">Úvodní stránka</a> &raquo; <a href="{% url new-list %}">Zprávy</a></p>
+    <h1>{{ new.title }}</h1>
+    <p>{{ new.created|date }}</p>
 
-    {% if new.annotation %}
-        <p>{{ new.created|date }} &mdash; <b>{{ new.annotation }}</b></p>
-    {% else %}
-        <p>{{ new.created|date }}</p>
-    {% endif %}
+    <div class="span-8">
+        {% if new.annotation %}
+            <p><b>{{ new.annotation }}</b></p>
+        {% endif %}
+    </div>
 
-    {{ new.content|markdown }}
+    <div class="span-15 prepend-1 last">
+        {{ new.content|markdown }}
+    </div>
+
+    <div class="clear"></div>
 {% endblock %}
