@@ -10,7 +10,7 @@ register = template.Library()
 
 
 @register.inclusion_tag('mf/mf_primer_text.html', takes_context=True)
-def mf_primer_text(context, obj, type):
+def mf_primer_text(context, obj):
     """
     Generuje uvodni text se zakladnimi informacemi o poctech a procentech
     heren/automatu v dane oblasti.
@@ -30,7 +30,6 @@ def mf_primer_text(context, obj, type):
         prefix = 'Okres'
     context.update({
         'detail_title': detail_title,
-        'hells': type == 'hells',
         'obj': obj,
         'prefix': prefix,
         'subobjects': subobjects,
@@ -38,15 +37,40 @@ def mf_primer_text(context, obj, type):
     })
     return context
 
+@register.inclusion_tag('mf/mf_primer_text.html', takes_context=True)
+def old_mf_primer_text(context, obj):
+    """
+    Generuje uvodni text se zakladnimi informacemi o poctech a procentech
+    heren/automatu v dane oblasti.
+    """
+    geo = obj.__class__.__name__.lower()
+    prefix = 'neco dlouheho a nesmyslneho'
+    if geo == 'town':
+        detail_title = ''
+        subobjects = None
+    elif geo == 'district':
+        detail_title = 'obcích okresu'
+        subobjects = obj.town_set.all()
+        prefix = 'Obec'
+    else:
+        detail_title = 'okresech kraje'
+        subobjects = obj.district_set.all()
+        prefix = 'Okres'
+    context.update({
+        'detail_title': detail_title,
+        'obj': obj,
+        'prefix': prefix,
+        'subobjects': subobjects,
+        'geo': geo
+    })
+    return context
 
 @register.inclusion_tag('mf/mf_table.html', takes_context=True)
-def mf_table(context, area, type):
+def mf_table(context, area):
     """
     Generuje tabulku s pocty heren ci automatu v dane oblasti.
     """
     context.update({
-        'area': area,
-        'type': type,
         'actual_object': context[area],
         'parent_class': {}
     })
@@ -62,16 +86,18 @@ def mf_table(context, area, type):
         context['objects'] = dict([(i.id, i) for i in context['district'].town_set.select_related().all()])
         context['object_title'] = u'Obec'
 
-    if type == 'hells':
-        context['counts'] = context['statistics']['hell_counts']
-        context['conflict_counts'] = context['statistics']['conflict_hell_counts']
-        context['conflict_perc'] = context['statistics']['conflict_hell_perc']
-        context['type_title'] = u'heren'
-    else:
-        context['counts'] = context['statistics']['machine_counts']
-        context['conflict_counts'] = context['statistics']['conflict_machine_counts']
-        context['conflict_perc'] = context['statistics']['conflict_machine_perc']
-        context['type_title'] = u'automatů'
+    # premapovani statistickych informaci pod jine klice
+    # TODO: kua, tohle by se mohlo dit uz ve view, ale neni ted cas to resit
+    context['statistics']['hells'] = {
+        'counts': context['statistics']['hell_counts'],
+        'conflict_counts': context['statistics']['conflict_hell_counts'],
+        'conflict_perc': context['statistics']['conflict_hell_perc']
+    }
+    context['statistics']['machines'] = {
+        'counts': context['statistics']['machine_counts'],
+        'conflict_counts': context['statistics']['conflict_machine_counts'],
+        'conflict_perc': context['statistics']['conflict_machine_perc']
+    }
 
     return context
 

@@ -6,110 +6,45 @@
     <h1>{{ region.title }}</h1>
 {% endblock %}
 
-{% block select_legend %}
-    {# vysvetleni k hernam #}
-    <div class="hells">
-        <p class="counts">
-            V mapě jsou vykresleny kraje České republiky. Čím tmavší
-            barva je použita, tím větší počet heren se v kraji vyskytuje.
-            <br>{% include "mf/map_control.html" %}
-        </p>
-        <p class="conflict_counts">
-            V mapě jsou vykresleny kraje České republiky. Čím tmavší
-            barva je použita, tím se v nich vyskytuje větší počet <a href="#">nezákonně
-            povolených heren</a>.
-            <br>{% include "mf/map_control.html" %}
-        </p>
-        <p class="conflict_perc">
-            V mapě jsou vykresleny kraje České republiky. Čím tmavší
-            barva je použita, tím je v kraji více <a href="#">nezákonně povolených heren</a>,
-            než těch, jejichž umístění neodporuje žádnému zákonu.
-            <br>{% include "mf/map_control.html" %}
-        </p>
+{% block left_col %}
+    {# uvodni text #}
+    <div id="primer">
+        {% block primer_content %}
+            {# TODO: mohl bych tu konecne zrealizovat i to vyrazeni grafu, pokud v obci nic neni #}
+            {% mf_primer_text region %}
+        {% endblock %}
     </div>
-    {# vysvetleni k matum #}
-    <div class="machines">
-        <p class="counts">
-            V mapě jsou vykresleny kraje České republiky. Čím tmavší
-            barva je použita, tím větší počet automatů se v kraji vyskytuje.
-            <br>{% include "mf/map_control.html" %}
-        </p>
-        <p class="conflict_counts">
-            V mapě jsou vykresleny kraje České republiky. Čím tmavší
-            barva je použita, tím se v nich vyskytuje větší počet <a href="#">nezákonně
-            povolených automatů</a>.
-            <br>{% include "mf/map_control.html" %}
-        </p>
-        <p class="conflict_perc">
-            V mapě jsou vykresleny kraje České republiky. Čím tmavší
-            barva je použita, tím je v kraji více <a href="#">nezákonně povolených automatů</a>,
-            než těch, jejichž umístění neodporuje žádnému zákonu.
-            <br>{% include "mf/map_control.html" %}
-        </p>
-    </div>
-{% endblock %}
 
-{% block text_content %}
-    {# uvodni text se zakladnimi udaji a kolacovym grafem #}
-    {% block primer_content %}
-        <div id="primer">
-            <div class="hells">
-                <div class="span-2">
-                    {% variable statistics.conflict_hell_perc|key:region.id as chells %}
-                    {% variable statistics.nonconflict_hell_perc|key:region.id as nchells %}
-                    <img title="Poměr nezákonně (červená výseč) a zákonně (zelená) povolených heren" alt="Poměr nezákonně/zákonně povolených heren" src="http://chart.googleapis.com/chart?chs=70x70&cht=p&chd=t:{{ chells|floatformat:0 }},{{ nchells|floatformat:0 }}&chco=FF0000,00FF00"/>
-                </div>
-                <div class="span-8 last">
-                    {% mf_primer_text region "hells" %}
-                </div>
-            </div>
-            <div class="machines">
-                <div class="span-2">
-                    {% variable statistics.conflict_machine_perc|key:region.id as cmachines %}
-                    {% variable statistics.nonconflict_machine_perc|key:region.id as ncmachines %}
-                    <img title="Poměr nezákonně (červená výseč) a zákonně (zelená) povolených automatů" alt="Poměr nezákonně/zákonně povolených automatů" src="http://chart.googleapis.com/chart?chs=70x70&cht=p&chd=t:{{ cmachines|floatformat:0 }},{{ ncmachines|floatformat:0 }}&chco=FF0000,00FF00"/>
-                </div>
-                <div class="span-8 last">
-                    {% mf_primer_text region "machines" %}
-                </div>
-            </div>
-        </div>
-    {% endblock %}
-
-    <hr />
-
+    {# tabulka s kraji #}
     <h3>Situace v ostatních krajích</h3>
-    <div class="outer-wrapper hells">
-        {% mf_table "region" "hells" %}
-    </div>
-    <div class="outer-wrapper machines">
-        {% mf_table "region" "machines" %}
-    </div>
+    {% mf_table "region" %}
 
-    <br>
-    <div class="box">
-        <p>
-            Mapa zobrazuje herny a automaty povolené Ministerstvem
-            financí v rozporu se zákonem o loteriích v blízkosti škol,
-            zdravotnických a sociálních zařízení, budov úřadů a církví.
-        </p>
-        <p class="right">
-            <a href="{% url campaign-mf-about campaign=campaign %}">Podrobné vysvětlení</a>
-        </p>
+    {# linky na nizsi uzemni celky #}
+    <div id="subobjects">
+        {# TODO: tohle budu muset vyriznout z puvodniho mf_primer_text #}
+        {% comment %}
+        <p>Zajímá vás podrobná situace v <b>okresech</b> Zlínského kraje?</p>
+        <ul>
+            <li><a href="/zlinsky/kromeriz/kampan/mf/">Kroměříž</a></li>
+            <li><a href="/zlinsky/uherske-hradiste/kampan/mf/">Uherské Hradiště</a></li>
+            <li><a href="/zlinsky/vsetin/kampan/mf/">Vsetín</a></li>
+            <li><a href="/zlinsky/zlin/kampan/mf/">Zlín</a></li>
+        </ul>
+        {% endcomment %}
     </div>
-{% endblock %}
-
-{% block map %}
-    {{ block.super }}
 {% endblock %}
 
 {% block js %}
     {{ block.super }}
-    <script type="text/javascript">
-        window.actual = '{{ region.slug }}';
-        window.url = '/kampan/mf/ajax/kraje/';
-        window.type = 'region';
+    <script type="text/javascript" src="{{ STATIC_URL }}js/backbone.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.scrollTo-min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/lib/region.js"></script>
+    {# sablona pro radek s krajem #}
+    <script type="text/template" id="region-item-template">
+        <td>
+            <a href="<%= url %>"><%= title %></a>
+        </td>
+        <% _.each(statistics, function(item){ %> <td class="<%= item.type %> <%= item.parameter %><%= (item.type != type || item.parameter != parameter) ? ' hide' : '' %>"><%= item.value %></td> <% }); %>
     </script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/lib/mf1.js"></script>
 {% endblock %}
 {# vim: set et si ts=4 sw=4 syn=django: #}

@@ -1,5 +1,5 @@
 h1.loading {
-    background: transparent url(../img/ajax-loader3.gif) 100% 50% no-repeat;
+    background: transparent url(http://nove.mapyhazardu.cz/static/img/ajax-loader3.gif) 100% 50% no-repeat;
 }
 
 .text-right {
@@ -27,6 +27,27 @@ ul.local-menu li a {
 }
 
 /* styly pro tabulky s "teplomerem" */
+/* zvyraznovani radku v tabulce */
+#statistics tr.active * {
+    font-weight:bold;
+}
+#statistics tr.hover td {
+    background-color:yellow;
+}
+
+/* styly pro tabulky s "teplomerem" */
+#statistics td {
+    text-align:right;
+}
+#statistics tr td:first-child {
+    text-align:left;
+}
+#statistics td {
+    background: #E5ECF9 url(../img/white_bg_line.png) no-repeat 1000px 0;
+    cursor: pointer;
+}
+
+/*
 table.statistics .counts,
 table.statistics .conflict_counts,
 table.statistics .conflict_perc,
@@ -46,13 +67,13 @@ table.statistics tr.active td {
 }
 table.statistics tr.hover td *,
 table.statistics tr.active td * {
-    /*color:#333;*/
     text-decoration:none;
 }
 table.statistics tr.active td {
     border-top: 1px dotted #0066CC;
     border-bottom: 1px dotted #0066CC;
 }
+*/
 div.wrapper {
     height:120px;
     overflow:auto;

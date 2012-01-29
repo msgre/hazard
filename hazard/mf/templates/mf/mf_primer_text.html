@@ -1,94 +1,30 @@
+{# TODO: nemam osetreno stav kdy je 0 #}
+
 {% load shared mf %}
 {% variable statistics.hell_counts|key:obj.id as hell_counts %}
 
-{# uvodni veta #}
 <h2>
-    {% if hell_counts > 0 %}
-        {# nejake herny v dane oblasti jsou #}
-        {% variable statistics.conflict_hell_counts|key:obj.id as conflict_hell_counts %}
-        {% if conflict_hell_counts > 0 %}
-            {# nektere z nich jsou v konfliktu se zakonem #}
-            <span class="title"><b>{{ obj.get_lokativ }}</b></span> povolilo Ministerstvo financí k 23.&nbsp;srpnu&nbsp;2011 provoz nejméně
-            {% if hells %}
-                <b>{{ conflict_hell_counts }}&nbsp;{{ conflict_hell_counts|grammar:"0=heren,1=herny,?=heren" }}</b>
-                ({{ statistics.conflict_hell_perc|key:obj.id|floatformat:1 }}% z&nbsp;{{ statistics.hell_counts|key:obj.id }})
-            {% else %}
-                {% variable statistics.conflict_machine_counts|key:obj.id as conflict_machine_counts %}
-                <b>{{ conflict_machine_counts }}&nbsp;{{ conflict_machine_counts|grammar:"0=automatů,1=automatu,?=automatů" }}</b>
-                ({{ statistics.conflict_machine_perc|key:obj.id|floatformat:1 }}% z&nbsp;{{ statistics.machine_counts|key:obj.id }})
-            {% endif %}
-            v rozporu se <a href="#">zákonem</a>.
-        {% else %}
-            {# herny tu jsou, ale vsechny jsou ok #}
-            <span class="title"><b>{{ obj.get_lokativ }}</b></span> není
-            Ministerstvem financí
-            {% if hells %}
-                povolena ani jedna herna
-            {% else %}
-                povolen ani jeden hazardní přístroj
-            {% endif %}
-            (údaje platné k 23. sprnu 2011).
-        {% endif %}
-    {% else %}
-        {# neni tu ani jedna herna #}
-        <span class="title"><b>{{ obj.get_lokativ }}</b></span> není
-        Ministerstvem financí povolen ani
-        {% if hells %}
-            jedna herna
-        {% else %}
-            jeden hazardní přístroj
-        {% endif %}
-        (údaje platné k 23. sprnu 2011).
-    {% endif %}
+    {# uvod; kde #}
+    {{ obj.get_lokativ }} povolilo Ministerstvo financí k 23. srpnu 2011 provoz nejméně
+
+    {# cisla heren #}
+    {% variable statistics.conflict_hell_counts|key:obj.id as conflict_hell_counts %}
+    <span class="hells snippet">
+        {{ conflict_hell_counts }}&nbsp;{{ conflict_hell_counts|grammar:"0=heren,1=herny,?=heren" }}
+        ({{ statistics.conflict_hell_perc|key:obj.id|floatformat:1 }}%
+        z&nbsp;{{ statistics.hell_counts|key:obj.id }})
+    </span>
+
+    <span class="snippet">a</span>
+
+    {# cisla automatu #}
+    {% variable statistics.conflict_machine_counts|key:obj.id as conflict_machine_counts %}
+    <span class="machines snippet">
+        {{ conflict_machine_counts }}&nbsp;{{ conflict_machine_counts|grammar:"0=automatů,1=automat,?=automatů" }}
+        ({{ statistics.conflict_machine_perc|key:obj.id|floatformat:1 }}%
+        z&nbsp;{{ statistics.machine_counts|key:obj.id }})
+    </span>
+
+    {# konec #}
+    v rozporu se zákonem.
 </h2>
-
-{# dovetek k uvodni vete -- co muzete delat #}
-{% if geo == "town" %}
-    {% if hell_counts > 0 %}
-        {% if conflict_hell_counts > 0 %}
-            <p><a href="#" class="what-to-do">Co pro jejich regulaci můžete udělat?</a></p>
-            <div>
-                <ul>
-                    {% url mf-town-comments region=region.slug district=district.slug town=town.slug campaign="mf" as town_comments %}
-                    <li>Zjistit, zda má Vaše obec vyhlášku, která regulaci hazardních přístrojů
-                    omezuje (většina obcí má vyhlášky vystaveny na webu) a poslat nám na ni
-                    referenci v <a href="{{ town_comments }}">komentářích</a>.</li>
-                    <li>Pokud Vaše obec vyhlášku nemá, iniciujte její přijetí. Podrobněji v
-                    publikaci <a href="http://www.osbrneni.cz/regulace-hazardu/manual">Jak ve
-                    Vaší obci regulovat hazard</a>.</li>
-                    <li>Pokud obec vyhlášku již má, můžete se s námi
-                    <a href="{% url contact %}">zkontaktovat</a> a promyslet další postup. Více
-                    v návodu <a href="http://www.osbrneni.cz/regulace-hazardu/manual">Jak ve
-                    Vaší obci regulovat hazard</a>.</li>
-                </ul>
-            </div>
-        {% else %}
-            <p>Pokud se v této obci nějaký hazardní
-            přístroj nalézá, jedná se pravděpodobně o VHP povolený Vaší obcí.<br>
-            Obec má možnost zakázat provozování hazardu obecně závaznou
-            vyhláškou. Více v publikaci
-            <a href="http://www.osbrneni.cz/regulace-hazardu/manual">Jak ve Vaší
-            obci regulovat hazard</a>.</p>
-        {% endif %}
-    {% else %}
-        <p>Pokud se v této obci nějaký hazardní
-        přístroj nalézá, jedná se pravděpodobně o VHP povolený Vaší obcí.<br>
-        Obec má možnost zakázat provozování hazardu obecně závaznou
-        vyhláškou. Více v publikaci
-        <a href="http://www.osbrneni.cz/regulace-hazardu/manual">Jak ve Vaší
-        obci regulovat hazard</a>.</p>
-    {% endif %}
-{% endif %}
-
-{# nasleduje veta o poradi, tu ale generuje javascript #}
-
-{# vypis podrazenych geo oblasti #}
-{% if detail_title %}
-    <p class="sub-objects">
-        Další podrobnosti o {{ detail_title }}:
-        {% for subobject in subobjects %}
-            {% mf_table_url subobject as subobject_url %}
-            <span><a href="{{ subobject_url }}">{{ subobject|remove_str:prefix }}</a>{% if forloop.last %}.{% else %},{% endif %}</span>
-        {% endfor %}
-    </p>
-{% endif %}

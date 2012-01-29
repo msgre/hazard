@@ -1,39 +1,69 @@
 {% load shared mf %}
 
 <div class="wrapper">
-    <table class="statistics {{ type }}">
+    <table id="statistics">
         <thead>
             <tr>
-                <th>
+                <th rowspan="2">
                     {{ object_title }}
                 </th>
-                <th class="counts">
-                    Celkem {{ type_title }}
+                <th colspan="3" class="hells">
+                    Herny
                 </th>
-                <th class="conflict_counts">
-                    Počet konfliktních {{ type_title }}
+                <th colspan="3" class="machines">
+                    Automaty
                 </th>
-                <th class="conflict_perc">
-                    Poměr konfliktních/nekonfliktích {{ type_title }}
+            </tr>
+            <tr>
+                <th class="hells counts">
+                    Celkem
+                </th>
+                <th class="hells conflict_counts">
+                    Počet konfliktních
+                </th>
+                <th class="hells conflict_perc">
+                    Poměr konfliktních/nekonfliktích
+                </th>
+                <th class="machines counts">
+                    Celkem
+                </th>
+                <th class="machines conflict_counts">
+                    Počet konfliktních
+                </th>
+                <th class="machines conflict_perc">
+                    Poměr konfliktních/nekonfliktích
                 </th>
             </tr>
         </thead>
         <tbody>
             {% for id, object in objects.items %}
-                <tr class="{{ object.slug }}{% if object.id == actual_object.id %} active{% endif %} {% firstof parent_class|key:object.id "" %}">
+                <tr id="region_{{ object.slug }}" class="{% if object.id == actual_object.id %}active{% endif %} {% firstof parent_class|key:object.id "" %}">
                     {% mf_table_url object as url %}
                     <td>
                         <a href="{{ url }}">{{ object.title|space2nbsp }}</a>
                     </td>
-                    <td class="counts">
-                        {{ counts|key:object.id|default:"" }}
+                    {# herny #}
+                    <td class="hells counts">
+                        {{ statistics.hells.counts|key:object.id|default:"" }}
                     </td>
-                    <td class="conflict_counts">
-                        {{ conflict_counts|key:object.id|default:"" }}
+                    <td class="hells conflict_counts">
+                        {{ statistics.hells.conflict_counts|key:object.id|default:"" }}
                     </td>
-                    <td class="conflict_perc">
-                        {% if conflict_perc|key:object.id %}
-                            {{ conflict_perc|key:object.id|floatformat:1 }}%
+                    <td class="hells conflict_perc">
+                        {% if statistics.hells.conflict_perc|key:object.id %}
+                            {{ statistics.hells.conflict_perc|key:object.id|floatformat:1 }}%
+                        {% endif %}
+                    </td>
+                    {# maty #}
+                    <td class="machines counts">
+                        {{ statistics.machines.counts|key:object.id|default:"" }}
+                    </td>
+                    <td class="machines conflict_counts">
+                        {{ statistics.machines.conflict_counts|key:object.id|default:"" }}
+                    </td>
+                    <td class="machines conflict_perc">
+                        {% if statistics.machines.conflict_perc|key:object.id %}
+                            {{ statistics.machines.conflict_perc|key:object.id|floatformat:1 }}%
                         {% endif %}
                     </td>
                 </tr>

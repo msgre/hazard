@@ -15,35 +15,13 @@
 
 {% block content %}
     {% block main_content %}
-        <div class="span-10">
-            {% block text_content %}{% endblock %}
+        {# levy sloupec s textem #}
+        <div class="span-10" id="left-col">
+            {% block left_col %}{% endblock %}
         </div>
 
-        {# mapa #}
-        <div class="span-14 last">
-            <p>
-                Zobraz
-                <select id="table-switcher">
-                    <option title="celkového počtu" value="counts">celkový počet</option>
-                    <option title="počtu nezákonně povolených" value="conflict_counts">počet nezákonně povolených</option>
-                    <option title="poměru nezákonně/zákonně povolených" value="conflict_perc">poměr nezákonně/zákonně povolených</option>
-                </select>
-                <select id="type-switcher">
-                    <option title="heren" value="hells">heren</option>
-                    <option title="automatů" value="machines">automatů</option>
-                </select>
-                <a id="select-handler" href="#">Legenda +</a>
-            </p>
-            <div id="select-legend">
-                {% block select_legend %}{% endblock %}
-            </div>
-            <div style="position:relative">
-                <div id="map-legend" class="hells"><span class="max"></span><span class="min"></span></div>
-                {% block map %}
-                    <div id="map"></div>
-                {% endblock %}
-            </div>
-        </div>
+        {# pravy sloupec s mapou #}
+        <div class="span-14 last" id="right-col"></div>
         <div class="clear"></div>
     {% endblock %}
 {% endblock %}

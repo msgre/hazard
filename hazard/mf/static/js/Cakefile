@@ -31,6 +31,15 @@ out = 'lib/'
 
 # definuje, ktere soubory z adresare `source` se maji spojit
 appFiles  = {
+  'region': [
+    'common'
+    'colors'
+    'region/events'
+    'region/models'
+    'region/collections'
+    'region/views'
+    'region/app'
+  ]
   'mf_homepage': [
     'map_common'
     'mf_homepage'

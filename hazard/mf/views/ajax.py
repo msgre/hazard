@@ -18,6 +18,8 @@ class MfCommonAjax(TemplateView):
 class MfAjax(MfCommonAjax):
     """
     Vraci JSON informace o krajich/okresech.
+
+    TODO: saham do sablon, mozna to bude mit dusledky i zde...
     """
     template_name = 'mf/ajax.html'
 
