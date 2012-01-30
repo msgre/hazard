@@ -37,7 +37,7 @@
         </thead>
         <tbody>
             {% for id, object in objects.items %}
-                <tr id="region_{{ object.slug }}" class="{% if object.id == actual_object.id %}active{% endif %} {% firstof parent_class|key:object.id "" %}">
+                <tr id="{{ area }}_{{ object.slug }}" class="{% if object.id == actual_object.id %}active{% endif %} {% firstof parent_class|key:object.id "" %}">
                     {% mf_table_url object as url %}
                     <td>
                         <a href="{{ url }}">{{ object.title|space2nbsp }}</a>

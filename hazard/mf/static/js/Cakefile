@@ -38,6 +38,7 @@ appFiles  = {
     'region/models'
     'region/collections'
     'region/views'
+    #'region/routes'
     'region/app'
   ]
   'mf_homepage': [

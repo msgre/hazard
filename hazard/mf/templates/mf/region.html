@@ -38,7 +38,6 @@
     {{ block.super }}
     <script type="text/javascript" src="{{ STATIC_URL }}js/backbone.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.scrollTo-min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/lib/region.js"></script>
     {# sablona pro radek s krajem #}
     <script type="text/template" id="region-item-template">
         <td>
@@ -46,5 +45,6 @@
         </td>
         <% _.each(statistics, function(item){ %> <td class="<%= item.type %> <%= item.parameter %><%= (item.type != type || item.parameter != parameter) ? ' hide' : '' %>"><%= item.value %></td> <% }); %>
     </script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/lib/region.js"></script>
 {% endblock %}
 {# vim: set et si ts=4 sw=4 syn=django: #}

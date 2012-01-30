@@ -1,12 +1,17 @@
 # min/max hodnoty sledovanych parametru
 EXTREMS = {}
 
+# URL adresy, na kterych je mozne ziskat dodatecne informace k datum vyzobnutym ze stranky
+COLLECTION_URLS =
+    region: '/kampan/mf/ajax/kraje/'
+    district: '/kampan/mf/ajax/okresy/'
+
 ###
 Kolekce vsech kraju v republice.
 ###
 class RegionList extends Backbone.Collection
     model: Region
-    url: '/kampan/mf/ajax/kraje/'
+    url: COLLECTION_URLS[window.PAGE_TYPE]
 
     initialize: () ->
         @type = $('#type')
@@ -23,7 +28,7 @@ class RegionList extends Backbone.Collection
             tds = tr.find('td')
 
             active = tr.hasClass('active')
-            slug = tr.attr('id').replace('region_', '')
+            slug = tr.attr('id').replace("#{ window.PAGE_TYPE }_", '')
             title = $.trim($(tds[0]).text())
             url = $(tds[0]).find('a').attr('href')
             statistics = _.map(_.last(tds, 6), (i) ->
@@ -84,7 +89,6 @@ class RegionList extends Backbone.Collection
         parseFloat($.trim(str.replace(',', '.').replace('%', '')))
 
     redraw: () ->
-        console.log 'redraw'
         @each (region) ->
             region.trigger('change')
         @trigger('redraw:done')

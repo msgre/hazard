@@ -4,6 +4,8 @@
 from django import template
 from django.core.urlresolvers import reverse
 
+from hazard.territories.models import Region, District, Town
+
 import ttag
 
 register = template.Library()
@@ -71,6 +73,7 @@ def mf_table(context, area):
     Generuje tabulku s pocty heren ci automatu v dane oblasti.
     """
     context.update({
+        'area': area,
         'actual_object': context[area],
         'parent_class': {}
     })
@@ -81,7 +84,8 @@ def mf_table(context, area):
     elif area == 'district':
         context['objects'] = context['districts']
         context['object_title'] = u'Okres'
-        context['parent_class'] = dict([(i.id, 'region_%s' % i.region.slug) for i in context['districts'].values()])
+        region_lut = dict(Region.objects.all().values_list('id', 'slug'))
+        context['parent_class'] = dict([(i.id, 'region_%s' % region_lut[i.region_id]) for i in context['districts'].values()])
     else:
         context['objects'] = dict([(i.id, i) for i in context['district'].town_set.select_related().all()])
         context['object_title'] = u'Obec'

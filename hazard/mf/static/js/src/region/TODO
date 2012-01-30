@@ -1,0 +1,31 @@
+* teplomer do mapy
+* seznam obci do html stranky
+    - musi se vracet i v jsonu
+    - aktualizace fragmentu stranky
+    - mam takovy pocit, ze mf_primer_text zbytecne generuje nejake
+      kontextove promenne, ze kterych se driv generoval ten seznam
+      obci; musim to rozdelit asik...
+* pokud budu zobecnovat, tak musim prejmenovat tridy a promenne
+  (region)
+* prejmenovat udalosti, porad nevim z ktereho konce to vzit
+    - udalost by mela reprezentovat stav ktery se stal a ne
+      akci, ktera se teprve ma stat
+* doladit primer text
+    - chybi tam google graf
+    - nemam osetrenou variantu ze je vse ok
+* k legende se musi prilepit jeste konstantni text s popisem ovladani
+* musim nekam umistit tu vysvetlujici hlasku:
+    <div class="box">
+        <p>
+            Mapa zobrazuje herny a automaty povolené Ministerstvem
+            financí v rozporu se zákonem o loteriích v blízkosti škol,
+            zdravotnických a sociálních zařízení, budov úřadů a církví.
+        </p>
+        <p class="right">
+            <a href="{% url campaign-mf-about campaign=campaign %}">Podrobné vysvětlení</a>
+        </p>
+    </div>
+* budu muset nastavit http hlavicky pro json odpovedi, at je prohlizece
+  nekesuji kua...
+* sablony v javascriptu
+    - ony jsou mozna obecne pro vsechno, nemusi se jmenovat region...

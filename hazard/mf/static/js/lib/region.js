@@ -1,5 +1,5 @@
 (function() {
-  var AppView, EXTREMS, HazardEvents, LEGENDS, LegendView, MAP, MAP_ACTIVE_POLY_COLOR, MAP_ACTIVE_POLY_ZINDEX, MAP_HOVER_POLY_COLOR, MAP_POLY_ZINDEX, MAP_SEMAPHORE, ModifyHtml, PARAMETERS, PrimerView, Region, RegionList, RegionRowView, RegionTableView, SEMAPHORE, TYPES, convert_to_hex, convert_to_rgb, get_color, hex, interpolate_color, trim;
+  var AppView, COLLECTION_URLS, EXTREMS, HazardEvents, LEGENDS, LegendView, MAP, MAP_ACTIVE_POLY_COLOR, MAP_ACTIVE_POLY_ZINDEX, MAP_HOVER_POLY_COLOR, MAP_POLY_ZINDEX, MAP_STYLE, ModifyHtml, PARAMETERS, PrimerView, Region, RegionList, RegionRowView, RegionTableView, SEMAPHORE, TYPES, convert_to_hex, convert_to_rgb, get_color, hex, interpolate_color, path, trim;
   var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
     for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
     function ctor() { this.constructor = child; }
@@ -23,22 +23,150 @@
     machines: 'automatů'
   };
   LEGENDS = {
-    hells: {
-      counts: "V mapě jsou vykresleny kraje České republiky. Čím tmavší\nbarva je použita, tím větší počet heren se v kraji vyskytuje.",
-      conflict_counts: "V mapě jsou vykresleny kraje České republiky. Čím tmavší\nbarva je použita, tím se v nich vyskytuje větší počet <a href=\"#\">nezákonně\npovolených heren",
-      conflict_perc: "V mapě jsou vykresleny kraje České republiky. Čím tmavší\nbarva je použita, tím je v kraji více <a href=\"#\">nezákonně povolených heren</a>,\nnež těch, jejichž umístění neodporuje žádnému zákonu."
+    region: {
+      hells: {
+        counts: "V mapě jsou vykresleny kraje České republiky. Čím tmavší\nbarva je použita, tím větší počet heren se v kraji vyskytuje.",
+        conflict_counts: "V mapě jsou vykresleny kraje České republiky. Čím tmavší\nbarva je použita, tím se v nich vyskytuje větší počet <a href=\"#\">nezákonně\npovolených heren",
+        conflict_perc: "V mapě jsou vykresleny kraje České republiky. Čím tmavší\nbarva je použita, tím je v kraji více <a href=\"#\">nezákonně povolených heren</a>,\nnež těch, jejichž umístění neodporuje žádnému zákonu."
+      },
+      machines: {
+        counts: "V mapě jsou vykresleny kraje České republiky. Čím tmavší\nbarva je použita, tím větší počet automatů se v kraji vyskytuje.",
+        conflict_counts: "V mapě jsou vykresleny kraje České republiky. Čím tmavší\nbarva je použita, tím se v nich vyskytuje větší počet <a href=\"#\">nezákonně\npovolených automatů</a>.",
+        conflict_perc: "V mapě jsou vykresleny kraje České republiky. Čím tmavší\nbarva je použita, tím je v kraji více <a href=\"#\">nezákonně povolených automatů</a>,\nnež těch, jejichž umístění neodporuje žádnému zákonu."
+      }
     },
-    machines: {
-      counts: "V mapě jsou vykresleny kraje České republiky. Čím tmavší\nbarva je použita, tím větší počet automatů se v kraji vyskytuje.",
-      conflict_counts: "V mapě jsou vykresleny kraje České republiky. Čím tmavší\nbarva je použita, tím se v nich vyskytuje větší počet <a href=\"#\">nezákonně\npovolených automatů</a>.",
-      conflict_perc: "V mapě jsou vykresleny kraje České republiky. Čím tmavší\nbarva je použita, tím je v kraji více <a href=\"#\">nezákonně povolených automatů</a>,\nnež těch, jejichž umístění neodporuje žádnému zákonu."
+    district: {
+      hells: {
+        counts: "V mapě jsou vykresleny bývalé okresy České republiky. Čím tmavší\nbarva je použita, tím větší počet heren se v okrese vyskytuje.",
+        conflict_counts: "V mapě jsou vykresleny bývalé okresy České republiky. Čím tmavší\nbarva je použita, tím se v nich vyskytuje větší počet <a href=\"#\">nezákonně\npovolených heren</a>.",
+        conflict_perc: "V mapě jsou vykresleny bývalé okresy České republiky. Čím tmavší\nbarva je použita, tím je v okrese více <a href=\"#\">nezákonně povolených heren</a>,\nnež těch, jejichž umístění neodporuje žádnému zákonu."
+      },
+      machines: {
+        counts: "V mapě jsou vykresleny bývalé okresy České republiky. Čím tmavší\nbarva je použita, tím větší počet automatů se v okrese vyskytuje.",
+        conflict_counts: "V mapě jsou vykresleny bývalé okresy České republiky. Čím tmavší\nbarva je použita, tím se v nich vyskytuje větší počet <a href=\"#\">nezákonně\npovolených automatů</a>.",
+        conflict_perc: "V mapě jsou vykresleny bývalé okresy České republiky. Čím tmavší\nbarva je použita, tím je v okrese více <a href=\"#\">nezákonně povolených automatů</a>,\nnež těch, jejichž umístění neodporuje žádnému zákonu."
+      }
     }
   };
-  MAP_SEMAPHORE = [];
   MAP_POLY_ZINDEX = 10;
   MAP_ACTIVE_POLY_COLOR = '#333333';
   MAP_ACTIVE_POLY_ZINDEX = 20;
   MAP_HOVER_POLY_COLOR = '#333333';
+  MAP_STYLE = [
+    {
+      featureType: "water",
+      stylers: [
+        {
+          visibility: "off"
+        }
+      ]
+    }, {
+      featureType: "transit",
+      stylers: [
+        {
+          visibility: "off"
+        }
+      ]
+    }, {
+      featureType: "landscape.natural",
+      stylers: [
+        {
+          visibility: "off"
+        }
+      ]
+    }, {
+      featureType: "road",
+      stylers: [
+        {
+          visibility: "off"
+        }
+      ]
+    }, {
+      featureType: "landscape.man_made",
+      stylers: [
+        {
+          visibility: "off"
+        }
+      ]
+    }, {
+      featureType: "poi",
+      stylers: [
+        {
+          visibility: "off"
+        }
+      ]
+    }, {
+      featureType: "administrative.province",
+      stylers: [
+        {
+          visibility: "off"
+        }
+      ]
+    }, {
+      featureType: "administrative.locality",
+      stylers: [
+        {
+          visibility: "off"
+        }
+      ]
+    }, {
+      featureType: "administrative",
+      elementType: "labels",
+      stylers: [
+        {
+          visibility: "off"
+        }
+      ]
+    }, {
+      featureType: "administrative.country",
+      elementType: "geometry",
+      stylers: [
+        {
+          visibility: "on"
+        }, {
+          lightness: 58
+        }
+      ]
+    }
+  ];
+  ({
+    setPolygonBoundsFn: function() {
+      if (!google.maps.Polygon.prototype.getBounds) {
+        return google.maps.Polygon.prototype.getBounds = function(latLng) {
+          var bounds, item, path, paths, _i, _j, _len, _len2, _ref, _ref2;
+          bounds = new google.maps.LatLngBounds();
+          paths = this.getPaths();
+          _ref = paths.getArray();
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            path = _ref[_i];
+            _ref2 = path.getArray();
+            for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+              item = _ref2[_j];
+              bounds.extend(item);
+            }
+          }
+          return bounds;
+        };
+      }
+    }
+  });
+  MAP = void 0;
+  path = _.filter(window.location.pathname.split('/'), function(i) {
+    return i.length > 0;
+  });
+  if (path.length === 3) {
+    window.PAGE_TYPE = 'region';
+    window.PAGE_REGION = path[0];
+  } else if (path.length === 4) {
+    window.PAGE_TYPE = 'district';
+    window.PAGE_REGION = path[0];
+    window.PAGE_DISTRICT = path[1];
+  } else if (path.length === 5) {
+    window.PAGE_TYPE = 'town';
+    window.PAGE_REGION = path[0];
+    window.PAGE_DISTRICT = path[1];
+    window.PAGE_TOWN = path[2];
+  }
   /*
   Funkce pro vypocet interpolovanych barev mezi dvema zadanymi body.
   */
@@ -81,7 +209,7 @@
     return color;
   };
   /*
-  TODO:
+  Synchronizatko.
   */
   SEMAPHORE = {};
   HazardEvents = {};
@@ -115,6 +243,10 @@
     return Region;
   })();
   EXTREMS = {};
+  COLLECTION_URLS = {
+    region: '/kampan/mf/ajax/kraje/',
+    district: '/kampan/mf/ajax/okresy/'
+  };
   /*
   Kolekce vsech kraju v republice.
   */
@@ -124,7 +256,7 @@
     }
     __extends(RegionList, Backbone.Collection);
     RegionList.prototype.model = Region;
-    RegionList.prototype.url = '/kampan/mf/ajax/kraje/';
+    RegionList.prototype.url = COLLECTION_URLS[window.PAGE_TYPE];
     RegionList.prototype.initialize = function() {
       this.type = $('#type');
       this.type.bind('change', _.bind(this.redraw, this));
@@ -139,7 +271,7 @@
         tr = $(el);
         tds = tr.find('td');
         active = tr.hasClass('active');
-        slug = tr.attr('id').replace('region_', '');
+        slug = tr.attr('id').replace("" + window.PAGE_TYPE + "_", '');
         title = $.trim($(tds[0]).text());
         url = $(tds[0]).find('a').attr('href');
         statistics = _.map(_.last(tds, 6), function(i) {
@@ -213,7 +345,6 @@
       return parseFloat($.trim(str.replace(',', '.').replace('%', '')));
     };
     RegionList.prototype.redraw = function() {
-      console.log('redraw');
       this.each(function(region) {
         return region.trigger('change');
       });
@@ -237,6 +368,7 @@
     PrimerView.prototype.initialize = function() {
       this.type = $('#type');
       this.type.bind('change', _.bind(this.render, this));
+      this.collection.bind('redraw:done', this.render, this);
       return this.collection.bind('fragments:change', this.render, this);
     };
     PrimerView.prototype.render = function() {
@@ -266,14 +398,15 @@
     RegionRowView.prototype.events = {
       "mouseover": "mouseover",
       "mouseout": "mouseout",
-      "click": "click"
+      "click": "click",
+      "dblclick": "dblclick"
     };
     RegionRowView.prototype.initialize = function() {
       this.model.bind('change', this.render, this);
       return this.model.bind('map:update_polys', this.updatePolys, this);
     };
     RegionRowView.prototype.createPolys = function() {
-      var i, item, poly, shape;
+      var i, item, poly, shape, update_timeout;
       shape = this.model.get('shape');
       poly = new google.maps.Polygon({
         paths: (function() {
@@ -295,21 +428,30 @@
         })(),
         strokeColor: MAP_ACTIVE_POLY_COLOR,
         strokeOpacity: 1,
-        strokeWeight: 1,
+        strokeWeight: 2,
         fillColor: MAP_ACTIVE_POLY_COLOR,
         fillOpacity: 1,
         zIndex: MAP_POLY_ZINDEX,
         map: MAP
       });
       google.maps.event.addListener(poly, 'mouseover', __bind(function() {
-        $('#statistics').parent().scrollTo("#region_" + (this.model.get('slug')), 200);
+        $('#statistics').parent().stop().scrollTo("#" + window.PAGE_TYPE + "_" + (this.model.get('slug')), 200, {
+          stop: true
+        });
         return this.el.trigger('mouseover');
       }, this));
       google.maps.event.addListener(poly, 'mouseout', __bind(function() {
         return this.el.trigger('mouseout');
       }, this));
+      update_timeout = null;
       google.maps.event.addListener(poly, 'click', __bind(function() {
-        return this.el.trigger('click');
+        return update_timeout = setTimeout(__bind(function() {
+          return this.el.trigger('click');
+        }, this), 300);
+      }, this));
+      google.maps.event.addListener(poly, 'dblclick', __bind(function() {
+        clearTimeout(update_timeout);
+        return this.el.trigger('dblclick');
       }, this));
       this.model.set({
         poly: poly
@@ -354,7 +496,9 @@
           this.renderPolys('normal');
         }
       }
-      if (changed.length > 1 || (__indexOf.call(changed, 'hover') < 0 && __indexOf.call(changed, 'active') < 0 && __indexOf.call(changed, 'color') < 0 && __indexOf.call(changed, 'fragments') < 0)) {
+      if (changed.length > 1 || !_.any(changed, function(i) {
+        return i === 'hover' || i === 'active' || i === 'color' || i === 'fragments';
+      })) {
         context = this.model.toJSON();
         _.extend(context, {
           type: this.collection.type.val(),
@@ -412,7 +556,7 @@
         $('h1').text(this.model.get('title'));
         $('#primer').html(resp.primer_content);
         this.model.trigger('fragments:change');
-        Backbone.history.navigate("/" + (this.model.get('slug')) + "/kampan/mf/");
+        Backbone.history.navigate(this.el.find('a').attr('href'));
         return $h1.removeClass('loading');
       }, this);
       if (!fragments) {
@@ -433,6 +577,14 @@
       this.model.set({
         active: true
       });
+      return false;
+    };
+    RegionRowView.prototype.dblclick = function() {
+      var url;
+      $('h1').addClass('loading');
+      url = this.el.find('a').attr('href');
+      url = "" + (url.replace('/kampan/mf/', '')) + "/_/";
+      window.location = url;
       return false;
     };
     return RegionRowView;
@@ -463,20 +615,21 @@
     grafu potrebuji znat jejich rozmery.
     */
     RegionTableView.prototype.render = function() {
-      var max, parameter, td1_w, td2_w, type, width;
+      var max, min, parameter, td1_w, td2_w, type, width;
       width = this.el.width();
-      td1_w = this.el.find('td:first').width();
+      td1_w = this.el.find('tr:not(.hide) td:first').width();
       td2_w = width - td1_w;
       type = this.type.val();
       parameter = this.parameter.val();
       max = parameter === 'conflict_perc' ? 100 : EXTREMS[type][parameter].max;
+      min = parameter === 'conflict_perc' ? 0 : EXTREMS[type][parameter].min;
       this.collection.each(__bind(function(region, idx) {
         var $td1, $td2, $tr, color, statistics_map, w, x1, x2;
         $tr = this.$("tr:eq(" + idx + ")");
         $td1 = $tr.find('td:first');
         $td2 = $tr.find(":not(:first):not(.hide)");
         statistics_map = region.get('statistics_map');
-        w = Math.round(statistics_map[type][parameter] / max * width);
+        w = Math.round((statistics_map[type][parameter] - min) / max * width);
         if (w > td1_w) {
           x1 = 1000;
           x2 = w - td1_w;
@@ -507,20 +660,21 @@
       this.type = $('#type');
       this.parameter = $('#parameter');
       this.parameter.bind('change', _.bind(this.render, this));
-      return this.type.bind('change', _.bind(this.render, this));
+      this.type.bind('change', _.bind(this.render, this));
+      return this.collection.bind('redraw:done', this.render, this);
     };
     LegendView.prototype.render = function() {
       var parameter, type;
       type = this.type.val();
       parameter = this.parameter.val();
       this.el.empty();
-      this.el.append(LEGENDS[type][parameter]);
+      this.el.append(LEGENDS[window.PAGE_TYPE][type][parameter]);
       return this;
     };
     return LegendView;
   })();
   /*
-  Aplikace.
+  Aplikace. Hlavni view. Matka matek.
   */
   AppView = (function() {
     function AppView() {
@@ -537,7 +691,7 @@
         view = new RegionRowView({
           model: region,
           collection: this.options.regions,
-          el: $("#region_" + (region.get('slug')))
+          el: $("#" + window.PAGE_TYPE + "_" + (region.get('slug')))
         });
         return region.trigger('change');
       }, this));
@@ -550,7 +704,8 @@
         collection: this.options.regions
       });
       new LegendView({
-        el: $("#legend")
+        el: $("#legend"),
+        collection: this.options.regions
       });
       Backbone.history = new Backbone.History;
       return Backbone.history.start({
@@ -559,11 +714,6 @@
     };
     return AppView;
   })();
-  /*
-  TODO:
-
-  - nacist informace o krajich z JSONu ze serveru
-  */
   /*
   Upravy HTML stranky.
 
@@ -574,6 +724,7 @@
     function ModifyHtml() {}
     ModifyHtml.prototype.modify = function() {
       this.modifyTable();
+      this.modifyDistrictTable();
       this.injectControl();
       this.injectLegend();
       return this.injectMap();
@@ -604,27 +755,58 @@
       $('#legend').after(html);
       script = document.createElement('script');
       script.type = 'text/javascript';
-      script.src = 'http://maps.googleapis.com/maps/api/js?key=AIzaSyDw1uicJmcKKdEIvLS9XavLO0RPFvIpOT4&v=3&sensor=false&callback=window.late_map';
+      script.src = 'http://maps.googleapis.com/maps/api/js?key=AIzaSyDw1uicJmcKKdEIvLS9XavLO0RPFvIpOT4&v=3&sensor=false&callback=window.init_map';
       return document.body.appendChild(script);
+    };
+    ModifyHtml.prototype.modifyDistrictTable = function() {
+      var $link, $table;
+      if (window.PAGE_TYPE === 'district') {
+        $table = $('#statistics');
+        $table.find('tr').each(function() {
+          var $tr, classes, region;
+          $tr = $(this);
+          classes = _.filter($tr.attr('class').split(' '), function(i) {
+            return i.length > 0 && i.indexOf('region_') === 0;
+          });
+          region = classes[0].replace('region_', '');
+          if (region !== window.PAGE_REGION) {
+            return $tr.addClass('hide');
+          }
+        });
+        $table.parent().after("<p><i>Poznámka: V tabulce jsou vypsány pouze okresy z aktuálního\nkraje. Chcete raději zobrazit <a href=\"#\" id=\"show-all-districts\">všechny\nokresy ČR</a>?</i></p>");
+        $link = $('#show-all-districts');
+        return $link.click(function() {
+          var first;
+          first = $table.find('tr:not(.hide):first');
+          $table.find('tr').removeClass('hide');
+          $table.parent().stop().scrollTo(first);
+          $link.closest('p').fadeOut(200, function() {
+            return $(this).remove();
+          });
+          return false;
+        });
+      }
     };
     return ModifyHtml;
   })();
-  MAP = void 0;
-  window.late_map = function() {
-    var map_options;
-    map_options = {
+  window.init_map = function() {
+    MAP = new google.maps.Map(document.getElementById("map"), {
+      disableDoubleClickZoom: true,
+      scrollwheel: false,
       zoom: 6,
       center: new google.maps.LatLng(49.38512, 14.61765),
       mapTypeControl: false,
-      mapTypeId: google.maps.MapTypeId.ROADMAP,
+      mapTypeId: 'CB',
       streetViewControl: false,
       panControl: false,
       zoomControl: true,
       zoomControlOptions: {
         style: google.maps.ZoomControlStyle.SMALL
       }
-    };
-    MAP = new google.maps.Map(document.getElementById("map"), map_options);
+    });
+    MAP.mapTypes.set('CB', new google.maps.StyledMapType(MAP_STYLE, {
+      name: 'Černobílá'
+    }));
     return HazardEvents.trigger('map:init');
   };
   $(document).ready(function() {
