@@ -1,0 +1,23 @@
+Seznam signalu
+--------------
+
+* GeoObjectList:extras_loaded
+  - odpaluje se po uspesnem nacteni extra dat
+  - pro pripomenuti -- zakladni data se nejdrive vyparsuji z HTML stranky,
+    a pak se k nim na dotaz ze serveru prilepi extra porce
+
+* GeoObjectList:redraw_done
+  - odpaluje se po prekresleni vsech GeoObject objektu na strance
+    (ty jsou reprezentovany jako radky <tr>)
+
+* TableRowView:page_fragments_prepared
+  - odpaluje se ve chvili, kdy jsou pripraveny JSON fragmenty k aktualizaci
+    stranky. Ty se ziskaji budto dotazem ze serveru, anebo uz jsou ulozene
+    v modelu
+
+* TableRowView:page_fragments_changed
+  - pote co jsou fragmenty pripraveny (viz predchozi signal), dojde
+    k aktualizaci stranky a nasledne je odpalen tento signal.
+
+* Google:map_initialized
+  - odpaluje se, kdyz se na strance uspesne inicializuje Google mapa

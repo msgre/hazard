@@ -37,3 +37,5 @@ get_color = (type, value) ->
     else
         color = interpolate_color('#00FFFF', '#0028FF', value)
     return color
+
+window.hovno = get_color

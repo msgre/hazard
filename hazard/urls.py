@@ -17,7 +17,6 @@ urlpatterns = patterns('',
     url(r'^kontakt/$', TemplateView.as_view(template_name='pages/contact.html'), name="contact"),
     url(r'^porusovani-zakona/$', TemplateView.as_view(template_name='pages/law.html'), name='law'),
     url(r'^casovy-vyvoj/$', TemplateView.as_view(template_name='pages/timeline.html'), name='timeline'),
-    url(r'^', include('hazard.territories.urls'))
 )
 
 # debug static media server
@@ -26,4 +25,9 @@ import os
 if settings.DEBUG:
     urlpatterns += patterns('',
         (r'^%s(?P<path>.*)$' % settings.MEDIA_URL[1:], 'django.views.static.serve', {'document_root': os.path.join(settings.MEDIA_ROOT, '')}),
+        #(r'^%s(?P<path>.*)$' % settings.STATIC_URL[1:], 'django.views.static.serve', {'document_root': os.path.join(settings.STATIC_ROOT, '')}),
     )
+
+urlpatterns += patterns('',
+    url(r'^', include('hazard.territories.urls'))
+)

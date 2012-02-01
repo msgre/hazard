@@ -1,5 +1,5 @@
 (function() {
-  var AppView, COLLECTION_URLS, EXTREMS, HazardEvents, LEGENDS, LegendView, MAP, MAP_ACTIVE_POLY_COLOR, MAP_ACTIVE_POLY_ZINDEX, MAP_HOVER_POLY_COLOR, MAP_POLY_ZINDEX, MAP_STYLE, ModifyHtml, PARAMETERS, PrimerView, Region, RegionList, RegionRowView, RegionTableView, SEMAPHORE, TYPES, convert_to_hex, convert_to_rgb, get_color, hex, interpolate_color, path, trim;
+  var AppView, CONTROL_LEGEND, DEBUG, EVENTS_CACHE, EXTREMS, GEO_OBJECTS_URLS, GeoObject, GeoObjectList, HazardEvents, LEGENDS, LegendView, MAP, MAP_ACTIVE_POLY_COLOR, MAP_ACTIVE_POLY_ZINDEX, MAP_HOVER_POLY_COLOR, MAP_POLY_ZINDEX, MAP_STYLE, ModifyHtml, PAGE_TYPE, PARAMETERS, PrimerView, TYPES, TableRowView, TableView, convert_to_hex, convert_to_rgb, get_color, hex, interpolate_color, log, parseUrl, path, trim;
   var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
     for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
     function ctor() { this.constructor = child; }
@@ -13,6 +13,7 @@
     }
     return -1;
   };
+  DEBUG = true;
   PARAMETERS = {
     counts: 'celkový počet',
     conflict_counts: 'počet nezákonně povolených',
@@ -46,8 +47,21 @@
         conflict_counts: "V mapě jsou vykresleny bývalé okresy České republiky. Čím tmavší\nbarva je použita, tím se v nich vyskytuje větší počet <a href=\"#\">nezákonně\npovolených automatů</a>.",
         conflict_perc: "V mapě jsou vykresleny bývalé okresy České republiky. Čím tmavší\nbarva je použita, tím je v okrese více <a href=\"#\">nezákonně povolených automatů</a>,\nnež těch, jejichž umístění neodporuje žádnému zákonu."
       }
+    },
+    town: {
+      hells: {
+        counts: "V mapě jsou vykresleny obce vybraného okresu České\nrepubliky.  Čím větší počet heren se v obci vyskytuje, tím\nvětší kolečko je vykresleno.",
+        conflict_counts: "V mapě jsou vykresleny obce vybraného okresu České republiky.\nČím více je v obci <a href=\"#\">nezákonně povolených heren</a>, tím větší kolečko\nje vykresleno.",
+        conflict_perc: "V mapě jsou vykresleny obce vybraného okresu České republiky.\nČím více je v obci nezákonně povolených heren, vůči těm, jejichž\numístění neodporuje žádnému zákonu, tím je kolečko větší."
+      },
+      machines: {
+        counts: "V mapě jsou vykresleny obce vybraného okresu České\nrepubliky.  Čím větší počet automatů se v obci vyskytuje, tím\nvětší kolečko je vykresleno.",
+        conflict_counts: "V mapě jsou vykresleny obce vybraného okresu České republiky.\nČím více je v obci <a href=\"#\">nezákonně povolených automatů</a>, tím větší kolečko\nje vykresleno.",
+        conflict_perc: "V mapě jsou vykresleny obce vybraného okresu České republiky.\nČím více je v obci nezákonně povolených automatů, vůči těm, jejichž\numístění neodporuje žádnému zákonu, tím je kolečko větší."
+      }
     }
   };
+  CONTROL_LEGEND = "Ovládání mapy: najeďte myší nad region či obec která vás zajímá a kliknutím\naktualizujete informace na stránce. Pokud v případě krajů a okresů nad oblastí\nprovedete dvojklik, aplikace vám zobrazí územně nižší celky (např. pokud si\nprohlížíte nějaký kraj, dvojklikem se dostanete na zobrazení okresů).";
   MAP_POLY_ZINDEX = 10;
   MAP_ACTIVE_POLY_COLOR = '#333333';
   MAP_ACTIVE_POLY_ZINDEX = 20;
@@ -155,18 +169,38 @@
     return i.length > 0;
   });
   if (path.length === 3) {
-    window.PAGE_TYPE = 'region';
-    window.PAGE_REGION = path[0];
+    PAGE_TYPE = 'region';
   } else if (path.length === 4) {
-    window.PAGE_TYPE = 'district';
-    window.PAGE_REGION = path[0];
-    window.PAGE_DISTRICT = path[1];
+    PAGE_TYPE = 'district';
   } else if (path.length === 5) {
-    window.PAGE_TYPE = 'town';
-    window.PAGE_REGION = path[0];
-    window.PAGE_DISTRICT = path[1];
-    window.PAGE_TOWN = path[2];
+    PAGE_TYPE = 'town';
   }
+  parseUrl = function() {
+    var out;
+    out = {
+      district: void 0,
+      town: void 0
+    };
+    path = _.filter(window.location.pathname.split('/'), function(i) {
+      return i.length > 0;
+    });
+    if (PAGE_TYPE === 'region') {
+      out.region = path[0];
+    } else if (PAGE_TYPE === 'district') {
+      out.region = path[0];
+      out.district = path[1];
+    } else if (PAGE_TYPE === 'town') {
+      out.region = path[0];
+      out.district = path[1];
+      out.town = path[2];
+    }
+    return out;
+  };
+  log = function(message) {
+    if (DEBUG) {
+      return console.log(message);
+    }
+  };
   /*
   Funkce pro vypocet interpolovanych barev mezi dvema zadanymi body.
   */
@@ -208,70 +242,134 @@
     }
     return color;
   };
+  window.hovno = get_color;
   /*
   Synchronizatko.
+
+  Co se v EVENTS_CACHE muze objevit:
+
+  * zaznamenani signalu Google:map_initialized a GeoObjectList:extras_loaded
+  * flag MapDrawingAllowed, ktery rika, ze uz se muze kreslit do mapy
   */
-  SEMAPHORE = {};
+  EVENTS_CACHE = {};
   HazardEvents = {};
   _.extend(HazardEvents, Backbone.Events);
   HazardEvents.bind('all', function(name, arg) {
-    var parts;
-    parts = name.split(':');
-    if (!(parts[0] in SEMAPHORE)) {
-      SEMAPHORE[parts[0]] = {};
+    var extras_loaded, map_init, parts;
+    if (arg == null) {
+      arg = true;
     }
-    SEMAPHORE[parts[0]][parts[1]] = arg;
-    if ('map' in SEMAPHORE && 'extras_loaded' in SEMAPHORE.map && 'init' in SEMAPHORE.map) {
-      SEMAPHORE['map']['initialized'] = true;
-      SEMAPHORE.map.extras_loaded.trigger('redraw:done');
-      delete SEMAPHORE.map.init;
-      delete SEMAPHORE.map.extras_loaded;
+    parts = name.split(':');
+    if (!(parts[0] in EVENTS_CACHE)) {
+      EVENTS_CACHE[parts[0]] = {};
+    }
+    EVENTS_CACHE[parts[0]][parts[1]] = arg;
+    extras_loaded = 'GeoObjectList' in EVENTS_CACHE && 'extras_loaded' in EVENTS_CACHE.GeoObjectList;
+    map_init = 'Google' in EVENTS_CACHE && 'map_initialized' in EVENTS_CACHE.Google;
+    if (map_init && extras_loaded) {
+      log('HazardEvents:map initialized');
+      EVENTS_CACHE['MapDrawingAllowed'] = true;
+      EVENTS_CACHE.GeoObjectList.extras_loaded.trigger('GeoObjectList:redraw_done');
+      delete EVENTS_CACHE.Google.map_initialized;
+      delete EVENTS_CACHE.GeoObjectList.extras_loaded;
       return $('h1').removeClass('loading');
     }
   });
   /*
-  Popis jednoho kraje.
+  Popis geografickeho objektu v mape.
   */
-  Region = (function() {
-    function Region() {
-      Region.__super__.constructor.apply(this, arguments);
+  GeoObject = (function() {
+    function GeoObject() {
+      GeoObject.__super__.constructor.apply(this, arguments);
     }
-    __extends(Region, Backbone.Model);
-    Region.prototype.defaults = {
+    __extends(GeoObject, Backbone.Model);
+    GeoObject.prototype.defaults = {
       hover: false
     };
-    return Region;
+    return GeoObject;
   })();
+  /*
+  * json_fragments
+    Obsahuje fragmenty stranky. Pri kliknuti na jiny radek v tabulce se vyvola
+    dotaz na server, stahnou JSON data a podle nich se zaktualizuje stranka.
+    To co prijde ze serveru se ulozi do tohoto atributu, at se priste JSON
+    dotaz nemusi znovu podavat.
+  */
   EXTREMS = {};
-  COLLECTION_URLS = {
+  GEO_OBJECTS_URLS = {
     region: '/kampan/mf/ajax/kraje/',
-    district: '/kampan/mf/ajax/okresy/'
+    district: '/kampan/mf/ajax/okresy/',
+    town: '/kampan/mf/ajax/obce/'
   };
   /*
-  Kolekce vsech kraju v republice.
+  Kolekce geografickych objektu, ktere se vyzobly z HTML stranky.
   */
-  RegionList = (function() {
-    function RegionList() {
-      RegionList.__super__.constructor.apply(this, arguments);
+  GeoObjectList = (function() {
+    function GeoObjectList() {
+      GeoObjectList.__super__.constructor.apply(this, arguments);
     }
-    __extends(RegionList, Backbone.Collection);
-    RegionList.prototype.model = Region;
-    RegionList.prototype.url = COLLECTION_URLS[window.PAGE_TYPE];
-    RegionList.prototype.initialize = function() {
+    __extends(GeoObjectList, Backbone.Collection);
+    GeoObjectList.prototype.model = GeoObject;
+    GeoObjectList.prototype.url = GEO_OBJECTS_URLS[PAGE_TYPE];
+    GeoObjectList.prototype.initialize = function() {
       this.type = $('#type');
       this.type.bind('change', _.bind(this.redraw, this));
       this.parameter = $('#parameter');
       return this.parameter.bind('change', _.bind(this.redraw, this));
     };
-    RegionList.prototype.scrape = function() {
+    /*
+    Natahne data do kolekce.
+
+    Primarnim zdrojem je tabulka v HTML strance. To co v ni chybi se nasledne
+    dososne ze serveru.
+    */
+    GeoObjectList.prototype.fetch = function() {
+      log('GeoObjectList.fetch:start');
+      this.scrapePage();
+      this.fetchExtras();
+      return log('GeoObjectList.fetch:done');
+    };
+    /*
+    Natahne extra data ze serveru a prilepi je ke stavajicim polozkam v kolekci.
+    */
+    GeoObjectList.prototype.fetchExtras = function() {
+      var options, url;
+      log('GeoObjectList.fetchExtras:ready to launch request');
+      url = PAGE_TYPE === 'town' ? "" + this.url + (parseUrl().town) + "/" : this.url;
+      options = {
+        url: url,
+        success: __bind(function(resp, status, xhr) {
+          log('GeoObjectList.fetchExtras:extras data loaded');
+          this.each(function(gobj) {
+            var data;
+            data = {};
+            _.each(resp.details[gobj.get('slug')], function(value, key) {
+              return data[key] = value;
+            });
+            return gobj.set(data);
+          });
+          log("GeoObjectList.fetchExtras:collection data succesfully updated (" + this.length + ")");
+          return HazardEvents.trigger('GeoObjectList:extras_loaded', this);
+        }, this),
+        error: function(model, resp, options) {
+          return log('GeoObjectList.fetchExtras:extras data loading error');
+        }
+      };
+      return Backbone.sync('read', this, options);
+    };
+    /*
+    Vyzobne z HTML tabulky data a udela z nich kolekci geografickych objektu.
+    */
+    GeoObjectList.prototype.scrapePage = function() {
       var that;
+      log('GeoObjectList.scrapePage:ready to scrape data from HTML to collection');
       that = this;
-      return $('#statistics tbody tr').each(__bind(function(idx, el) {
+      $('#statistics tbody tr').each(__bind(function(idx, el) {
         var active, item, slug, statistics, statistics_map, tds, title, tr, url, _i, _len;
         tr = $(el);
         tds = tr.find('td');
         active = tr.hasClass('active');
-        slug = tr.attr('id').replace("" + window.PAGE_TYPE + "_", '');
+        slug = tr.attr('id').replace("" + PAGE_TYPE + "_", '');
         title = $.trim($(tds[0]).text());
         url = $(tds[0]).find('a').attr('href');
         statistics = _.map(_.last(tds, 6), function(i) {
@@ -292,11 +390,13 @@
             };
           }
           num_value = that.getValue($i.text());
-          if (num_value > EXTREMS[type][parameter].max) {
-            EXTREMS[type][parameter].max = num_value;
-          }
-          if (num_value < EXTREMS[type][parameter].min) {
-            EXTREMS[type][parameter].min = num_value;
+          if (num_value !== void 0) {
+            if (num_value > EXTREMS[type][parameter].max) {
+              EXTREMS[type][parameter].max = num_value;
+            }
+            if (num_value < EXTREMS[type][parameter].min) {
+              EXTREMS[type][parameter].min = num_value;
+            }
           }
           return {
             type: type,
@@ -313,49 +413,41 @@
           }
           statistics_map[item.type][item.parameter] = item.num_value;
         }
-        return this.add(new Region({
+        return this.add(new GeoObject({
           title: title,
           slug: slug,
           statistics: statistics,
           statistics_map: statistics_map,
           url: url,
-          active: active
+          active: active,
+          type: PAGE_TYPE
         }));
       }, this));
+      return log('GeoObjectList.scrapePage:found #{ @length } records on page; scraping is done');
     };
-    RegionList.prototype.fetch = function() {
-      var options;
-      options = {
-        url: this.url,
-        success: __bind(function(resp, status, xhr) {
-          this.each(function(region) {
-            var data;
-            data = {};
-            _.each(resp['details'][region.get('slug')], function(value, key) {
-              return data[key] = value;
-            });
-            return region.set(data);
-          });
-          return HazardEvents.trigger('map:extras_loaded', this);
-        }, this)
-      };
-      return Backbone.sync('read', this, options);
+    GeoObjectList.prototype.getValue = function(str) {
+      var text;
+      text = $.trim(str.replace(',', '.').replace('%', ''));
+      if (text.length) {
+        return parseFloat(text);
+      } else {
+        return;
+      }
     };
-    RegionList.prototype.getValue = function(str) {
-      return parseFloat($.trim(str.replace(',', '.').replace('%', '')));
-    };
-    RegionList.prototype.redraw = function() {
-      this.each(function(region) {
-        return region.trigger('change');
+    GeoObjectList.prototype.redraw = function() {
+      log('GeoObjectList.redraw:start');
+      this.each(function(gobj) {
+        return gobj.trigger('change');
       });
-      return this.trigger('redraw:done');
+      log('GeoObjectList.redraw:done');
+      return this.trigger('GeoObjectList:redraw_done');
     };
-    RegionList.prototype.active = function() {
-      return this.filter(function(region) {
-        return region.get('active');
+    GeoObjectList.prototype.active = function() {
+      return this.filter(function(gobj) {
+        return gobj.get('active');
       });
     };
-    return RegionList;
+    return GeoObjectList;
   })();
   /*
   Uvodni text.
@@ -366,13 +458,13 @@
     }
     __extends(PrimerView, Backbone.View);
     PrimerView.prototype.initialize = function() {
-      this.type = $('#type');
-      this.type.bind('change', _.bind(this.render, this));
-      this.collection.bind('redraw:done', this.render, this);
-      return this.collection.bind('fragments:change', this.render, this);
+      this.collection.bind('TableRowView:page_fragments_changed', this.render, this);
+      this.collection.bind('GeoObjectList:redraw_done', this.render, this);
+      return this.type = $('#type');
     };
     PrimerView.prototype.render = function() {
       var type;
+      log('PrimerView.render');
       type = this.type.val();
       this.el.find('.snippet').each(function() {
         var snippet;
@@ -388,25 +480,90 @@
     return PrimerView;
   })();
   /*
-  Jeden radek tabulky == jeden kraj.
+  Jeden radek tabulky == jeden kraj/okres/obec.
+
+  Kazdemu radku odpovida nejaky graficky objekt v mape, se kterym pak spolecne
+  reaguje na udalosti od uzivatele (hover, click).
   */
-  RegionRowView = (function() {
-    function RegionRowView() {
-      RegionRowView.__super__.constructor.apply(this, arguments);
+  TableRowView = (function() {
+    function TableRowView() {
+      TableRowView.__super__.constructor.apply(this, arguments);
     }
-    __extends(RegionRowView, Backbone.View);
-    RegionRowView.prototype.events = {
+    __extends(TableRowView, Backbone.View);
+    TableRowView.prototype.events = {
       "mouseover": "mouseover",
       "mouseout": "mouseout",
       "click": "click",
       "dblclick": "dblclick"
     };
-    RegionRowView.prototype.initialize = function() {
+    TableRowView.prototype.initialize = function() {
+      this.model.bind('change:hover', this.renderHover, this);
+      this.model.bind('change:active', this.renderActiveAndColor, this);
+      this.model.bind('change:color', this.renderActiveAndColor, this);
       this.model.bind('change', this.render, this);
-      return this.model.bind('map:update_polys', this.updatePolys, this);
+      return this.model.bind('TableRowView:page_fragments_prepared', this.renderFragments, this);
     };
-    RegionRowView.prototype.createPolys = function() {
+    TableRowView.prototype.renderHover = function() {
+      log('TableRowView.renderHover');
+      this.el.toggleClass('hover');
+      if (this.el.hasClass('hover')) {
+        return this.updateGObject('hover');
+      } else {
+        if (this.model.get('active')) {
+          return this.updateGObject('active');
+        } else {
+          return this.updateGObject('normal');
+        }
+      }
+    };
+    TableRowView.prototype.renderActiveAndColor = function() {
+      var changed;
+      log('TableRowView.renderActiveAndColor');
+      changed = _.keys(this.model.changedAttributes() || {});
+      if (__indexOf.call(changed, 'active') >= 0) {
+        this.el.toggleClass('active');
+      }
+      if (this.el.hasClass('active')) {
+        if (this.el.hasClass('hover')) {
+          return this.updateGObject('hover');
+        } else {
+          return this.updateGObject('active');
+        }
+      } else {
+        return this.updateGObject('normal');
+      }
+    };
+    TableRowView.prototype.renderFragments = function() {
+      var fragments;
+      fragments = this.model.get('json_fragments');
+      $('#breadcrumb').html(fragments.breadcrumb);
+      $('#primer').html(fragments.primer_content);
+      $('h1').text(this.model.get('title'));
+      return this.model.trigger('TableRowView:page_fragments_changed');
+    };
+    TableRowView.prototype.render = function() {
+      var changed, content, context, ignore;
+      log('TableRowView.render');
+      ignore = ['hover', 'active', 'shape', 'poly', 'color', 'json_fragments'];
+      changed = _.keys(this.model.changedAttributes() || []);
+      if (changed.length && _.all(changed, function(i) {
+        return __indexOf.call(ignore, i) >= 0;
+      })) {
+        log('TableRowView.render:shortcut');
+        return this;
+      }
+      context = this.model.toJSON();
+      _.extend(context, {
+        type: this.collection.type.val(),
+        parameter: this.collection.parameter.val()
+      });
+      content = _.template($('#gobj-item-template').html(), context);
+      this.el.html(content);
+      return this;
+    };
+    TableRowView.prototype.drawGObject = function() {
       var i, item, poly, shape, update_timeout;
+      log('TableRowView.drawGObject');
       shape = this.model.get('shape');
       poly = new google.maps.Polygon({
         paths: (function() {
@@ -435,7 +592,7 @@
         map: MAP
       });
       google.maps.event.addListener(poly, 'mouseover', __bind(function() {
-        $('#statistics').parent().stop().scrollTo("#" + window.PAGE_TYPE + "_" + (this.model.get('slug')), 200, {
+        $('#statistics').parent().stop().scrollTo("#" + PAGE_TYPE + "_" + (this.model.get('slug')), 200, {
           stop: true
         });
         return this.el.trigger('mouseover');
@@ -458,119 +615,77 @@
       });
       return poly;
     };
-    RegionRowView.prototype.updatePolys = function(options) {
-      var poly;
-      if (options == null) {
-        options = {};
-      }
-      if ('map' in SEMAPHORE && 'initialized' in SEMAPHORE.map) {
-        poly = this.model.get('poly') || this.createPolys();
-        return poly.setOptions(options);
-      }
-    };
-    RegionRowView.prototype.render = function() {
-      var changed, content, context;
-      changed = _.keys(this.model.changedAttributes() || {});
-      if ((__indexOf.call(changed, 'shape') >= 0 && changed.length === 1) || (__indexOf.call(changed, 'poly') >= 0 && changed.length === 1)) {
-        return this;
-      }
-      if (__indexOf.call(changed, 'hover') >= 0) {
-        this.el.toggleClass('hover');
-        if (this.el.hasClass('hover')) {
-          this.renderPolys('hover');
-        } else {
-          if (this.model.get('active')) {
-            this.renderPolys('active');
-          } else {
-            this.renderPolys('normal');
-          }
-        }
-      }
-      if (__indexOf.call(changed, 'active') >= 0 || __indexOf.call(changed, 'color') >= 0) {
-        if (__indexOf.call(changed, 'active') >= 0) {
-          this.el.toggleClass('active');
-        }
-        if (this.el.hasClass('active')) {
-          this.renderPolys('active');
-        } else {
-          this.renderPolys('normal');
-        }
-      }
-      if (changed.length > 1 || !_.any(changed, function(i) {
-        return i === 'hover' || i === 'active' || i === 'color' || i === 'fragments';
-      })) {
-        context = this.model.toJSON();
-        _.extend(context, {
-          type: this.collection.type.val(),
-          parameter: this.collection.parameter.val()
-        });
-        content = _.template($('#region-item-template').html(), context);
-        this.el.html(content);
-      }
-      return this;
-    };
-    RegionRowView.prototype.renderPolys = function(state) {
-      var color;
+    TableRowView.prototype.updateGObject = function(state) {
+      var color, options, poly;
       color = this.model.get('color');
+      log("TableRowView.updateGObject:state=" + state + ", color=" + color);
+      if (!('MapDrawingAllowed' in EVENTS_CACHE)) {
+        log("TableRowView.updateGObject:map drawing is disallowed now");
+        return;
+      }
+      poly = this.model.get('poly') || this.drawGObject();
+      if (!poly) {
+        log("TableRowView.updateGObject:no geo object to update");
+        return;
+      }
       if (state === 'hover') {
-        return this.model.trigger('map:update_polys', {
+        options = {
           fillColor: MAP_HOVER_POLY_COLOR,
           strokeColor: MAP_HOVER_POLY_COLOR,
           zIndex: MAP_POLY_ZINDEX
-        });
+        };
       } else if (state === 'active') {
-        return this.model.trigger('map:update_polys', {
+        options = {
           fillColor: color,
           strokeColor: MAP_ACTIVE_POLY_COLOR,
           zIndex: MAP_ACTIVE_POLY_ZINDEX
-        });
+        };
       } else {
-        return this.model.trigger('map:update_polys', {
+        options = {
           fillColor: color,
           strokeColor: color,
           zIndex: MAP_POLY_ZINDEX
-        });
+        };
       }
+      poly.setOptions(options);
+      return log('TableRowView.updateGObject:done');
     };
-    RegionRowView.prototype.mouseover = function() {
+    TableRowView.prototype.mouseover = function() {
       return this.model.set({
         hover: true
       });
     };
-    RegionRowView.prototype.mouseout = function() {
+    TableRowView.prototype.mouseout = function() {
       return this.model.set({
         hover: false
       });
     };
-    RegionRowView.prototype.click = function() {
-      var $h1, fragments, options, success;
-      fragments = this.model.get('fragments');
+    TableRowView.prototype.click = function() {
+      var $h1, json_fragments, options, prepare_fragments;
+      json_fragments = this.model.get('json_fragments');
       $h1 = $('h1');
-      success = __bind(function(resp, status, xhr) {
-        if (!fragments) {
+      prepare_fragments = __bind(function(resp, status, xhr) {
+        if (!json_fragments) {
           this.model.set({
-            fragments: resp
+            json_fragments: resp
           });
         }
-        $('#breadcrumb').html(resp.breadcrumb);
-        $('h1').text(this.model.get('title'));
-        $('#primer').html(resp.primer_content);
-        this.model.trigger('fragments:change');
+        this.model.trigger('TableRowView:page_fragments_prepared');
         Backbone.history.navigate(this.el.find('a').attr('href'));
         return $h1.removeClass('loading');
       }, this);
-      if (!fragments) {
+      if (!json_fragments) {
         $h1.addClass('loading');
         options = {
           url: this.el.find('a').attr('href'),
-          success: success
+          success: prepare_fragments
         };
         Backbone.sync('read', this, options);
       } else {
-        success(fragments);
+        prepare_fragments(json_fragments);
       }
-      _.each(this.collection.active(), function(region) {
-        return region.set({
+      _.each(this.collection.active(), function(gobj) {
+        return gobj.set({
           active: false
         });
       });
@@ -579,7 +694,7 @@
       });
       return false;
     };
-    RegionRowView.prototype.dblclick = function() {
+    TableRowView.prototype.dblclick = function() {
       var url;
       $('h1').addClass('loading');
       url = this.el.find('a').attr('href');
@@ -587,66 +702,77 @@
       window.location = url;
       return false;
     };
-    return RegionRowView;
+    return TableRowView;
   })();
   /*
-  Tabulka kraju.
+  Tabulka kraju/okresu/mest.
   */
-  RegionTableView = (function() {
-    function RegionTableView() {
-      RegionTableView.__super__.constructor.apply(this, arguments);
+  TableView = (function() {
+    function TableView() {
+      TableView.__super__.constructor.apply(this, arguments);
     }
-    __extends(RegionTableView, Backbone.View);
-    RegionTableView.prototype.initialize = function() {
+    __extends(TableView, Backbone.View);
+    TableView.prototype.initialize = function() {
       this.type = $('#type');
       this.parameter = $('#parameter');
-      return this.collection.bind('redraw:done', this.render, this);
+      return this.collection.bind('GeoObjectList:redraw_done', this.render, this);
     };
     /*
     Projede tabulku s regiony a interpretuje hodnotu v druhem sloupci do podoby
     grafu (napozicuje obrazek na pozadi radku tabulky).
 
-    Poznamka: tato metoda je povesena na udalost "redraw:done", kterou odpaluje
-    kolekce RegionList na konci metody redraw.
-    Puvodne jsem si myslel, ze tuhle funkcionalitu bude delat primo RegionRowView,
+    Poznamka: tato metoda je povesena na udalost "GeoObjectList:redraw_done",
+    kterou odpaluje kolekce GeoObjectList na konci metody redraw.
+    Puvodne jsem si myslel, ze tuhle funkcionalitu bude delat primo TableRowView,
     ale nejde to. Nejdrive je totiz treba vykreslit vsechny radky tabulky
-    (tj. RegionRowView.render) a teprve **potom** muzu kreslit grafy. Duvod je
+    (tj. TableRowView.render) a teprve **potom** muzu kreslit grafy. Duvod je
     ten, ze dynamicky nalevany obsah sibuje s rozmery bunek a pro vykresleni
     grafu potrebuji znat jejich rozmery.
     */
-    RegionTableView.prototype.render = function() {
+    TableView.prototype.render = function() {
       var max, min, parameter, td1_w, td2_w, type, width;
+      log('TableView.render');
       width = this.el.width();
       td1_w = this.el.find('tr:not(.hide) td:first').width();
       td2_w = width - td1_w;
       type = this.type.val();
       parameter = this.parameter.val();
       max = parameter === 'conflict_perc' ? 100 : EXTREMS[type][parameter].max;
-      min = parameter === 'conflict_perc' ? 0 : EXTREMS[type][parameter].min;
-      this.collection.each(__bind(function(region, idx) {
+      min = 0;
+      log(this.collection.length);
+      this.collection.each(__bind(function(gobj, idx) {
         var $td1, $td2, $tr, color, statistics_map, w, x1, x2;
         $tr = this.$("tr:eq(" + idx + ")");
         $td1 = $tr.find('td:first');
         $td2 = $tr.find(":not(:first):not(.hide)");
-        statistics_map = region.get('statistics_map');
-        w = Math.round((statistics_map[type][parameter] - min) / max * width);
-        if (w > td1_w) {
-          x1 = 1000;
-          x2 = w - td1_w;
+        statistics_map = gobj.get('statistics_map');
+        if (statistics_map[type][parameter] !== void 0) {
+          w = Math.round((statistics_map[type][parameter] - min) / max * width);
+          if (w > td1_w) {
+            x1 = 1000;
+            x2 = w - td1_w;
+          } else {
+            x1 = w;
+            x2 = 0;
+          }
         } else {
-          x1 = w;
+          x1 = 0;
           x2 = 0;
         }
         $td1.css('background-position', "" + x1 + "px 0");
         $td2.css('background-position', "" + x2 + "px 0");
-        color = get_color(type, (statistics_map[type][parameter] - EXTREMS[type][parameter].min) / EXTREMS[type][parameter].max);
-        return region.set({
+        if (statistics_map[type][parameter] !== void 0) {
+          color = get_color(type, (statistics_map[type][parameter] - EXTREMS[type][parameter].min) / EXTREMS[type][parameter].max);
+        } else {
+          color = get_color(type, 0);
+        }
+        return gobj.set({
           color: color
         });
       }, this));
       return this;
     };
-    return RegionTableView;
+    return TableView;
   })();
   /*
   Napoveda k mape.
@@ -659,16 +785,16 @@
     LegendView.prototype.initialize = function() {
       this.type = $('#type');
       this.parameter = $('#parameter');
-      this.parameter.bind('change', _.bind(this.render, this));
-      this.type.bind('change', _.bind(this.render, this));
-      return this.collection.bind('redraw:done', this.render, this);
+      return this.collection.bind('GeoObjectList:redraw_done', this.render, this);
     };
     LegendView.prototype.render = function() {
-      var parameter, type;
+      var content, parameter, type;
+      log('LegendView.render');
       type = this.type.val();
       parameter = this.parameter.val();
       this.el.empty();
-      this.el.append(LEGENDS[window.PAGE_TYPE][type][parameter]);
+      content = "" + LEGENDS[PAGE_TYPE][type][parameter] + "<br>" + CONTROL_LEGEND;
+      this.el.append(content);
       return this;
     };
     return LegendView;
@@ -684,28 +810,31 @@
     AppView.prototype.el = $('#app');
     AppView.prototype.initialize = function() {
       $('h1').addClass('loading');
-      this.options.regions.scrape();
-      this.options.regions.fetch();
-      this.options.regions.each(__bind(function(region) {
-        var view;
-        view = new RegionRowView({
-          model: region,
-          collection: this.options.regions,
-          el: $("#" + window.PAGE_TYPE + "_" + (region.get('slug')))
+      log('AppView.initialize:fetch');
+      this.options.geo_objects.fetch();
+      log('AppView.initialize:TableRowView');
+      this.options.geo_objects.each(__bind(function(gobj) {
+        new TableRowView({
+          model: gobj,
+          collection: this.options.geo_objects,
+          el: $("#" + PAGE_TYPE + "_" + (gobj.get('slug')))
         });
-        return region.trigger('change');
+        return gobj.trigger('change');
       }, this));
-      new RegionTableView({
+      log('AppView.initialize:TableView');
+      new TableView({
         el: $("#statistics"),
-        collection: this.options.regions
+        collection: this.options.geo_objects
       });
+      log('AppView.initialize:PrimerView');
       new PrimerView({
         el: $("#primer"),
-        collection: this.options.regions
+        collection: this.options.geo_objects
       });
+      log('AppView.initialize:LegendView');
       new LegendView({
         el: $("#legend"),
-        collection: this.options.regions
+        collection: this.options.geo_objects
       });
       Backbone.history = new Backbone.History;
       return Backbone.history.start({
@@ -760,7 +889,7 @@
     };
     ModifyHtml.prototype.modifyDistrictTable = function() {
       var $link, $table;
-      if (window.PAGE_TYPE === 'district') {
+      if (PAGE_TYPE === 'district') {
         $table = $('#statistics');
         $table.find('tr').each(function() {
           var $tr, classes, region;
@@ -769,7 +898,7 @@
             return i.length > 0 && i.indexOf('region_') === 0;
           });
           region = classes[0].replace('region_', '');
-          if (region !== window.PAGE_REGION) {
+          if (region !== parseUrl().region) {
             return $tr.addClass('hide');
           }
         });
@@ -807,15 +936,14 @@
     MAP.mapTypes.set('CB', new google.maps.StyledMapType(MAP_STYLE, {
       name: 'Černobílá'
     }));
-    return HazardEvents.trigger('map:init');
+    return HazardEvents.trigger('Google:map_initialized');
   };
   $(document).ready(function() {
-    var App, Regions, modify;
+    var App, modify;
     modify = new ModifyHtml;
     modify.modify();
-    Regions = new RegionList;
     return App = new AppView({
-      regions: Regions
+      geo_objects: new GeoObjectList
     });
   });
 }).call(this);

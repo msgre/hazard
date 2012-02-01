@@ -27,10 +27,44 @@ class MfAjax(MfCommonAjax):
         out = super(MfAjax, self).get_context_data(**kwargs)
         if self.kwargs['type'] == 'kraje':
             out['json_details'] = dict([(i.id, i) for i in Region.objects.select_related().all()])
-            out['statistics'] = MfPlaceConflict.statistics(None, group_by='region')
         elif self.kwargs['type'] == 'okresy':
             out['json_details'] = dict([(i.id, i) for i in District.objects.select_related().all()])
-            out['statistics'] = MfPlaceConflict.statistics(None, group_by='district')
+            if 'detailni' in self.request.GET:
+                statistics = MfPlaceConflict.statistics(None, group_by='district')
+
+                # regroup
+                # puvodni tvar
+                #   parameter1:
+                #       id: value
+                # novy tvar
+                #   slug:
+                #       type:
+                #           parameter2: value
+                district_lut = dict(District.objects.all().values_list('id', 'slug'))
+                parameter_lut = {
+                    'hell_counts': 'counts',
+                    'machine_counts': 'counts',
+                    'conflict_hell_counts': 'conflict_counts',
+                    'conflict_machine_counts': 'conflict_counts',
+                    'conflict_hell_perc': 'conflict_perc',
+                    'conflict_machine_perc': 'conflict_perc',
+                }
+                regrouped = {}
+                for parameter in statistics:
+                    for id in statistics[parameter]:
+                        slug = district_lut[id]
+                        if slug not in regrouped:
+                            regrouped[slug] = {}
+                        type = 'hell_' in parameter and 'hells' or 'machines'
+                        if type not in regrouped[slug]:
+                            regrouped[slug][type] = {}
+                        if parameter not in parameter_lut:
+                            continue
+                        _parameter = parameter_lut[parameter]
+                        regrouped[slug][type][_parameter] = statistics[parameter][id]
+
+                out['statistics'] = regrouped
+
         return out
 
 

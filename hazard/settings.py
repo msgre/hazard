@@ -1,4 +1,4 @@
-# Django settings for hazard project.
+## Django settings for hazard project.
 
 import os
 PROJECT_PATH = os.path.join(os.path.dirname(__file__))

@@ -1,3 +1,34 @@
+tak, okamzik pravdy
+    - je opravdu dobre tahat do stejne kolekce i jina data
+    - tj. michat napr. zaznamy obci a okresu dohromady?
+        - musim je fakeove vlozit do tabulky
+        - musim jim fakeove nastavit nektere parametry
+        - musim nejak jinak zaridit vypocet extremu
+        - musim hlidat duplicitni klice v kolekci
+
+    - na druhou stranu, pokud to neudelam, musim nejaz vyriznout kod pro
+      praci s mapou
+        - kazdemu radku v tabulce odpovida polygon v mape
+        - kazda aktualizace radku je spojena s aktualizaci mapy
+
+    - neni to spatne? nemel bych nekde do stranky generovat nejakou
+      fake strukturu, ktera by odpovidala objektum v mape?
+
+jo a pak je zde jeste problem s tim poradim kurva...
+    - u tabulek je to v poho -- poradi v kolekci odpovida poradi v tabulce,
+      protoze tabulka je zdroj a kolekce produkt
+    - v pripade dat ze serveru uz to ale nesedi...
+
+budu chtit do mapy nacist jeste doprovodne informace, jako napr. obrysy
+okresu
+
+
+NAPAD HODNY ZREALIZOVANI
+- na urovni okresu by bylo dobre zobrazovat obrysy kraju v zindexu nad polygony
+- na urovni obci totez, plus okresy (ruzne intenzivnim obrysem)
+
+
+* jednou vypocitane barvy by se mohly zapamatovat
 * teplomer do mapy
 * seznam obci do html stranky
     - musi se vracet i v jsonu
@@ -29,3 +60,44 @@
   nekesuji kua...
 * sablony v javascriptu
     - ony jsou mozna obecne pro vsechno, nemusi se jmenovat region...
+* mel bych zoomovat na danou oblast asik
+
+Mesta
+-------------
+
+* potrebuji ty sama data, co posilaji /okresy/
+    + statisticka data pro okresy
+        - v jakem formatu?
+        - v pripade kraje/okresu jsem je mel v HTML
+        - data o hernach i matech, pro kazdy zaznam
+        - vcetne geograficke prislusnosti
+
+  - mozna prepisu scrape
+    - udelam z toho novy fetch
+        - na miste samem se rozhodnu pro strategii, jak data vyzobnu
+            - kraje/okresy
+                - vyscrapuju html tabulku
+                - co chybi, to natahnu z JSONu ze serveru
+                - done
+            - obce
+                - ve strance bude seznam obci pouze pro vybrany okres
+                - do mapy budu kreslit pouze obce z aktualniho okresu
+                - ostatni okresy vykreslim jako okresy
+                    - k nim ale nemam zadna data
+                    - ty mi bude muset dodat serve
+
+                - v pripade obci tedy budu po serveru pozadovat dvoje data
+                    - doplnit shapes/points k obcim
+                    - dodat "kompletni" data o okresech
+                        ? url
+                        - statistika
+
+                        extras
+                            slug
+                                shape
+                                title
+
+                    - ale!
+                        - je treba myslet na cache
+                        - data k obcim jsou na url ../obce/vsetin/
+                        - je nesmysl k nim rvat stale dokola nejaka extra data

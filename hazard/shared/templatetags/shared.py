@@ -53,6 +53,19 @@ def shorten_latlon(text):
     return mark_safe(LATLNG_RE.sub(do_shorten_latlon, text))
 
 
+FLOAT_RE = re.compile(r'(\d+\.)(\d+)', re.M)
+
+@register.filter
+def shorten_float(text, precision=3):
+    """
+    Hleda v zadanem textu "XX.YY" a zkracuje YY na zadanou presnost.
+    """
+    def do_shorten_float(m):
+        return m.group(1) + m.group(2)[:precision]
+
+    return mark_safe(FLOAT_RE.sub(do_shorten_float, text))
+
+
 KML_NAME_RE = re.compile(r'<name>Herny v obci ([^<]+)</name>')
 CZECH_ALPHABET = list(u'aábcčdďeéěfghiíjklmnňoóprřsštťuúůvwxyýzž')
 

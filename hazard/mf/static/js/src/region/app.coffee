@@ -53,7 +53,7 @@ class ModifyHtml
     # specielni osetreni tabulky s vypisem okresu -- schovame vsechny radky
     # ktere nepatri do aktualniho kraje a prida za tabulku jejich odkryvatko
     modifyDistrictTable: () ->
-        if window.PAGE_TYPE == 'district'
+        if PAGE_TYPE == 'district'
             $table = $('#statistics')
 
             # schovame radky z jinych kraju
@@ -61,7 +61,7 @@ class ModifyHtml
                 $tr = $(@)
                 classes = _.filter($tr.attr('class').split(' '), (i) -> i.length > 0 and i.indexOf('region_') == 0)
                 region = classes[0].replace('region_', '')
-                if region != window.PAGE_REGION
+                if region != parseUrl().region
                     $tr.addClass('hide')
 
             # vlozime link za tabulku na odhaleni i zbytku okresu
@@ -95,19 +95,16 @@ window.init_map = () ->
         zoomControlOptions:
             style: google.maps.ZoomControlStyle.SMALL
     MAP.mapTypes.set('CB', new google.maps.StyledMapType(MAP_STYLE, {name:'Černobílá'}))
-    HazardEvents.trigger('map:init')
+    HazardEvents.trigger('Google:map_initialized')
 
 
-# --- maso --------------------------------------------------------------------
-
+# --- meso (stara mama) -------------------------------------------------------
 
 $(document).ready () ->
     # nejdriv si upravime HTML...
     modify = new ModifyHtml
     modify.modify()
 
-    # a teprve pak nasuneme pater...
-    Regions = new RegionList
+    # a teprve pak zasuneme pater...
     App = new AppView
-        regions: Regions
-
+        geo_objects: new GeoObjectList

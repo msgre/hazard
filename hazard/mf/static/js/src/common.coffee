@@ -1,3 +1,5 @@
+DEBUG = false
+
 # hodnoty a labely pro ovladaci selektitka
 PARAMETERS =
     counts: 'celkový počet'
@@ -62,6 +64,41 @@ LEGENDS =
                 """V mapě jsou vykresleny bývalé okresy České republiky. Čím tmavší
                 barva je použita, tím je v okrese více <a href="#">nezákonně povolených automatů</a>,
                 než těch, jejichž umístění neodporuje žádnému zákonu."""
+    # popisky k obcim
+    town:
+        hells:
+            counts:
+                """V mapě jsou vykresleny obce vybraného okresu České
+                republiky.  Čím větší počet heren se v obci vyskytuje, tím
+                větší kolečko je vykresleno."""
+            conflict_counts:
+                """V mapě jsou vykresleny obce vybraného okresu České republiky.
+                Čím více je v obci <a href="#">nezákonně povolených heren</a>, tím větší kolečko
+                je vykresleno."""
+            conflict_perc:
+                """V mapě jsou vykresleny obce vybraného okresu České republiky.
+                Čím více je v obci nezákonně povolených heren, vůči těm, jejichž
+                umístění neodporuje žádnému zákonu, tím je kolečko větší."""
+        machines:
+            counts:
+                """V mapě jsou vykresleny obce vybraného okresu České
+                republiky.  Čím větší počet automatů se v obci vyskytuje, tím
+                větší kolečko je vykresleno."""
+            conflict_counts:
+                """V mapě jsou vykresleny obce vybraného okresu České republiky.
+                Čím více je v obci <a href="#">nezákonně povolených automatů</a>, tím větší kolečko
+                je vykresleno."""
+            conflict_perc:
+                """V mapě jsou vykresleny obce vybraného okresu České republiky.
+                Čím více je v obci nezákonně povolených automatů, vůči těm, jejichž
+                umístění neodporuje žádnému zákonu, tím je kolečko větší."""
+
+# navod, jak mapu ovladat
+CONTROL_LEGEND = """
+    Ovládání mapy: najeďte myší nad region či obec která vás zajímá a kliknutím
+    aktualizujete informace na stránce. Pokud v případě krajů a okresů nad oblastí
+    provedete dvojklik, aplikace vám zobrazí územně nižší celky (např. pokud si
+    prohlížíte nějaký kraj, dvojklikem se dostanete na zobrazení okresů)."""
 
 
 # barvy a z-indexy polygonu v mape
@@ -99,18 +136,30 @@ setPolygonBoundsFn: () ->
 MAP = undefined
 
 # detekce typu stranky
-# TODO: tohle je kokotina -- typ stranky poznavat muzu, ale ty dalsi veci ne!
-# (vlivem ajaxu se to meni pod rukama)
 path = _.filter(window.location.pathname.split('/'), (i) -> i.length > 0)
 if path.length == 3             # /zlinsky/kampan/mf/
-    window.PAGE_TYPE = 'region'
-    window.PAGE_REGION = path[0]
+    PAGE_TYPE = 'region'
 else if path.length == 4        # /zlinsky/vsetin/kampan/mf/
-    window.PAGE_TYPE = 'district'
-    window.PAGE_REGION = path[0]
-    window.PAGE_DISTRICT = path[1]
+    PAGE_TYPE = 'district'
 else if path.length == 5        # /zlinsky/vsetin/valasske-mezirici/kampan/mf/
-    window.PAGE_TYPE = 'town'
-    window.PAGE_REGION = path[0]
-    window.PAGE_DISTRICT = path[1]
-    window.PAGE_TOWN = path[2]
+    PAGE_TYPE = 'town'
+
+# vyzobne z aktualniho URL slug kraje/okresu/mesta
+parseUrl = () ->
+    out = {district: undefined, town: undefined}
+    path = _.filter(window.location.pathname.split('/'), (i) -> i.length > 0)
+    if PAGE_TYPE == 'region'
+        out.region = path[0]
+    else if PAGE_TYPE == 'district'
+        out.region = path[0]
+        out.district = path[1]
+    else if PAGE_TYPE == 'town'
+        out.region = path[0]
+        out.district = path[1]
+        out.town = path[2]
+    out
+
+# pomocna logovaci fce (pokud je DEBUG == false, nic se neloguje)
+log = (message) ->
+    if DEBUG
+        console.log message
