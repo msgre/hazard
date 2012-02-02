@@ -18,54 +18,61 @@ def mf_primer_text(context, obj):
     heren/automatu v dane oblasti.
     """
     geo = obj.__class__.__name__.lower()
-    prefix = 'neco dlouheho a nesmyslneho'
-    if geo == 'town':
-        detail_title = ''
-        subobjects = None
-    elif geo == 'district':
-        detail_title = 'obcích okresu'
-        subobjects = obj.town_set.all()
-        prefix = 'Obec'
-    else:
-        detail_title = 'okresech kraje'
-        subobjects = obj.district_set.all()
-        prefix = 'Okres'
     context.update({
-        'detail_title': detail_title,
         'obj': obj,
-        'prefix': prefix,
-        'subobjects': subobjects,
         'geo': geo
     })
     return context
 
-@register.inclusion_tag('mf/mf_primer_text.html', takes_context=True)
-def old_mf_primer_text(context, obj):
+
+@register.inclusion_tag('mf/mf_sub_objects.html', takes_context=True)
+def mf_sub_objects(context, obj):
     """
-    Generuje uvodni text se zakladnimi informacemi o poctech a procentech
-    heren/automatu v dane oblasti.
+    Generuje seznam geograficky podrizenych objektu (v pripade kraje okresy,
+    v pripade okresu mesta).
     """
     geo = obj.__class__.__name__.lower()
-    prefix = 'neco dlouheho a nesmyslneho'
-    if geo == 'town':
-        detail_title = ''
-        subobjects = None
-    elif geo == 'district':
-        detail_title = 'obcích okresu'
+    if geo == 'district':
         subobjects = obj.town_set.all()
-        prefix = 'Obec'
+        prefix = u'Obec'
     else:
-        detail_title = 'okresech kraje'
         subobjects = obj.district_set.all()
-        prefix = 'Okres'
+        prefix = u'Okres'
     context.update({
-        'detail_title': detail_title,
-        'obj': obj,
-        'prefix': prefix,
         'subobjects': subobjects,
-        'geo': geo
+        'obj': obj,
+        'prefix': prefix
     })
     return context
+
+
+# @register.inclusion_tag('mf/mf_primer_text.html', takes_context=True)
+# def old_mf_primer_text(context, obj):
+#     """
+#     Generuje uvodni text se zakladnimi informacemi o poctech a procentech
+#     heren/automatu v dane oblasti.
+#     """
+#     geo = obj.__class__.__name__.lower()
+#     prefix = 'neco dlouheho a nesmyslneho'
+#     if geo == 'town':
+#         detail_title = ''
+#         subobjects = None
+#     elif geo == 'district':
+#         detail_title = 'obcích okresu'
+#         subobjects = obj.town_set.all()
+#         prefix = 'Obec'
+#     else:
+#         detail_title = 'okresech kraje'
+#         subobjects = obj.district_set.all()
+#         prefix = 'Okres'
+#     context.update({
+#         'detail_title': detail_title,
+#         'obj': obj,
+#         'prefix': prefix,
+#         'subobjects': subobjects,
+#         'geo': geo
+#     })
+#     return context
 
 @register.inclusion_tag('mf/mf_table.html', takes_context=True)
 def mf_table(context, area):

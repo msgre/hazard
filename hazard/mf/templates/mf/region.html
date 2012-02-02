@@ -15,23 +15,14 @@
         {% endblock %}
     </div>
 
-    {# tabulka s kraji #}
     <h3>Situace v ostatních krajích</h3>
     {% mf_table "region" %}
 
-    {# linky na nizsi uzemni celky #}
-    <div id="subobjects">
-        {# TODO: tohle budu muset vyriznout z puvodniho mf_primer_text #}
-        {% comment %}
-        <p>Zajímá vás podrobná situace v <b>okresech</b> Zlínského kraje?</p>
-        <ul>
-            <li><a href="/zlinsky/kromeriz/kampan/mf/">Kroměříž</a></li>
-            <li><a href="/zlinsky/uherske-hradiste/kampan/mf/">Uherské Hradiště</a></li>
-            <li><a href="/zlinsky/vsetin/kampan/mf/">Vsetín</a></li>
-            <li><a href="/zlinsky/zlin/kampan/mf/">Zlín</a></li>
-        </ul>
-        {% endcomment %}
-    </div>
+    <h3>Situace v okresech</h3>
+    <p>Zajímá vás spíše podrobnější situace na úrovni bývalých okresů?</p>
+    {% block sub_objects %}
+        {% mf_sub_objects region %}
+    {% endblock %}
 {% endblock %}
 
 {# vim: set et si ts=4 sw=4 syn=django: #}

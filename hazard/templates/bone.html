@@ -22,7 +22,8 @@
     {% compress js %}
         {% block js %}
             <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.4.2.js"></script>
-            <script type="text/javascript" src="{{ STATIC_URL }}js/underscore-min.js"></script>
+            {#<script type="text/javascript" src="{{ STATIC_URL }}js/underscore-min.js"></script>#}
+            <script type="text/javascript" src="{{ STATIC_URL }}js/underscore.js"></script>
         {% endblock %}
     {% endcompress %}
     {# Google Analytics #}

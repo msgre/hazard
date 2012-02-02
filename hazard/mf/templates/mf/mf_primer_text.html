@@ -4,27 +4,83 @@
 {% variable statistics.hell_counts|key:obj.id as hell_counts %}
 
 <h2>
-    {# uvod; kde #}
-    {{ obj.get_lokativ }} povolilo Ministerstvo financí k 23. srpnu 2011 provoz nejméně
+    {% if hell_counts %}
+        {% variable statistics.conflict_hell_counts|key:obj.id as conflict_hell_counts %}
+        {% if conflict_hell_counts %}
+            {# uvod; kde #}
+            {{ obj.get_lokativ }} povolilo Ministerstvo financí k 23. srpnu 2011 provoz nejméně
 
-    {# cisla heren #}
-    {% variable statistics.conflict_hell_counts|key:obj.id as conflict_hell_counts %}
-    <span class="hells snippet">
-        {{ conflict_hell_counts }}&nbsp;{{ conflict_hell_counts|grammar:"0=heren,1=herny,?=heren" }}
-        ({{ statistics.conflict_hell_perc|key:obj.id|floatformat:1 }}%
-        z&nbsp;{{ statistics.hell_counts|key:obj.id }})
-    </span>
+            {# cisla heren #}
+            <span class="hells snippet">
+                {{ conflict_hell_counts }}&nbsp;{{ conflict_hell_counts|grammar:"0=heren,1=herny,?=heren" }}
+                ({{ statistics.conflict_hell_perc|key:obj.id|floatformat:1 }}%&nbsp;z&nbsp;{{ hell_counts }})
+            </span>
 
-    <span class="snippet">a</span>
+            <span class="snippet">a</span>
 
-    {# cisla automatu #}
-    {% variable statistics.conflict_machine_counts|key:obj.id as conflict_machine_counts %}
-    <span class="machines snippet">
-        {{ conflict_machine_counts }}&nbsp;{{ conflict_machine_counts|grammar:"0=automatů,1=automat,?=automatů" }}
-        ({{ statistics.conflict_machine_perc|key:obj.id|floatformat:1 }}%
-        z&nbsp;{{ statistics.machine_counts|key:obj.id }})
-    </span>
+            {# cisla automatu #}
+            {% variable statistics.conflict_machine_counts|key:obj.id as conflict_machine_counts %}
+            <span class="machines snippet">
+                {{ conflict_machine_counts }}&nbsp;{{ conflict_machine_counts|grammar:"0=automatů,1=automat,?=automatů" }}
+                ({{ statistics.conflict_machine_perc|key:obj.id|floatformat:1 }}%&nbsp;z&nbsp;{{ statistics.machine_counts|key:obj.id }})
+            </span>
 
-    {# konec #}
-    v rozporu se zákonem.
+            {# konec #}
+            v rozporu se zákonem.
+        {% else %}
+            {{ obj.get_lokativ }} byl k 23. srpnu 2011 povolen Ministerstvem financí
+            provoz
+            <span class="hells snippet">
+                {{ hell_counts }}&nbsp;{{ hell_counts|grammar:"0=heren,1=herny,?=heren" }}
+            </span>
+            <span class="snippet">a</span>
+            <span class="machines snippet">
+                {% variable statistics.machine_counts|key:obj.id as machine_counts %}
+                {{ machine_counts }}&nbsp;{{ machine_counts|grammar:"0=automatů,1=automat,?=automatů" }}
+            </span> v souladu se zákonem.
+        {% endif %}
+    {% else %}
+        {{ obj.get_lokativ }} nebyl k 23. srpnu 2011 povolen Ministerstvem financí
+        provoz ani jedné <span class="hells snippet">herny</span>
+        <span class="snippet">či</span>
+        <span class="machines snippet">automatu</span>.
+    {% endif %}
 </h2>
+
+{# dovetek k uvodni vete -- co muzete delat #}
+{% if geo == "town" %}
+    {% if hell_counts > 0 %}
+        {% if conflict_hell_counts > 0 %}
+            <p>Co pro jejich regulaci můžete udělat?</p>
+            <div>
+                <ul>
+                    {% url mf-town-comments region=region.slug district=district.slug town=town.slug campaign="mf" as town_comments %}
+                    <li>Zjistit, zda má Vaše obec vyhlášku, která regulaci hazardních přístrojů
+                    omezuje (většina obcí má vyhlášky vystaveny na webu) a poslat nám na ni
+                    referenci v <a href="{{ town_comments }}">komentářích</a>.</li>
+                    <li>Pokud Vaše obec vyhlášku nemá, iniciujte její přijetí. Podrobněji v
+                    publikaci <a href="http://www.osbrneni.cz/regulace-hazardu/manual">Jak ve
+                    Vaší obci regulovat hazard</a>.</li>
+                    <li>Pokud obec vyhlášku již má, můžete se s námi
+                    <a href="{% url contact %}">zkontaktovat</a> a promyslet další postup. Více
+                    v návodu <a href="http://www.osbrneni.cz/regulace-hazardu/manual">Jak ve
+                    Vaší obci regulovat hazard</a>.</li>
+                </ul>
+            </div>
+        {% else %}
+            <p>Pokud se v této obci nějaký hazardní
+            přístroj nalézá, jedná se pravděpodobně o VHP povolený Vaší obcí.<br>
+            Obec má možnost zakázat provozování hazardu obecně závaznou
+            vyhláškou. Více v publikaci
+            <a href="http://www.osbrneni.cz/regulace-hazardu/manual">Jak ve Vaší
+            obci regulovat hazard</a>.</p>
+        {% endif %}
+    {% else %}
+        <p>Pokud se v této obci nějaký hazardní
+        přístroj nalézá, jedná se pravděpodobně o VHP povolený Vaší obcí.<br>
+        Obec má možnost zakázat provozování hazardu obecně závaznou
+        vyhláškou. Více v publikaci
+        <a href="http://www.osbrneni.cz/regulace-hazardu/manual">Jak ve Vaší
+        obci regulovat hazard</a>.</p>
+    {% endif %}
+{% endif %}

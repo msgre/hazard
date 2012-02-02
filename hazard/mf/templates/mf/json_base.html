@@ -3,4 +3,5 @@
     {% jsonitem "primer_content" %}{% block primer_content %}{% endblock %}{% endjsonitem %}
     {% jsonitem "breadcrumb" %}{% include "mf/breadcrumb.html" %}{% endjsonitem %}
     {% jsonitem "submenu" %}{% include "mf/submenu.html" %}{% endjsonitem %}
+    {% jsonitem "sub_objects" %}{% block sub_objects %}{% endblock %}{% endjsonitem %}
 {% endjsonblock %}

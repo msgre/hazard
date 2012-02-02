@@ -12,6 +12,7 @@ class ModifyHtml
         @injectControl()
         @injectLegend()
         @injectMap()
+        @modifySubobjects()
 
     # pryc s hlavickou tabulky
     modifyTable: () ->
@@ -78,6 +79,28 @@ class ModifyHtml
                 $link.closest('p').fadeOut(200, () -> $(@).remove())
                 return false
 
+    # nahrazeni <ul><li> seznamu za kompaktnejsi selektitko
+    modifySubobjects: () ->
+        $objs = $('#sub-objects')
+        options = []
+        $objs.find('a').each () ->
+            $item = $(@)
+            options.push """
+                <option value="#{ $item.attr('href') }">
+                    #{ $item.text() }
+                </option>"""
+        $objs.replaceWith """
+            <select id="sub-objects">
+                <option value="">Vyberte si...</option>
+                #{ options.join('') }
+            </select>
+        """
+
+        $('#sub-objects').change () ->
+            val = $(@).val()
+            if val
+                $('h1').addClass('loading')
+                window.location = val
 
 # inicializace mapy
 # obyc fce, protoze je volana jako callback asynchronniho natazeni Google map
@@ -102,9 +125,17 @@ window.init_map = () ->
 
 $(document).ready () ->
     # nejdriv si upravime HTML...
-    modify = new ModifyHtml
-    modify.modify()
+    window.modifier = new ModifyHtml
+    window.modifier.modify()
 
     # a teprve pak zasuneme pater...
     App = new AppView
         geo_objects: new GeoObjectList
+
+    # specialitky pro ruzne typy stranek
+    if PAGE_TYPE == 'district' or PAGE_TYPE == 'town'
+        if PAGE_TYPE == 'town'
+            # obce vykresli tvary okresu
+            App.loadDistricts()
+        # okresy/obce vykresli obrysy kraju
+        App.loadRegions()

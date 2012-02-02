@@ -39,8 +39,7 @@ class GeoObjectList extends Backbone.Collection
     ###
     fetchExtras: () ->
         log('GeoObjectList.fetchExtras:ready to launch request')
-        # konstrukce URL, na kterem najdeme extra data
-        url = if PAGE_TYPE == 'town' then "#{ @url }#{ parseUrl().town }/" else @url
+        url = if PAGE_TYPE == 'town' then "#{ @url }#{ parseUrl().district }/" else @url
 
         # odpaleni ajax dotazu
         options =
@@ -145,3 +144,85 @@ class GeoObjectList extends Backbone.Collection
     # vrati pouze aktivni polozky z kolekce (napr. aktualne vybrany kraj)
     active: () ->
         @filter (gobj) -> gobj.get('active')
+
+
+###
+Kolekce regionu. Pouziva se k vykresleni obrysu kraju na strankach okresu
+a obci. Takova tresnicka, nic zasadniho...
+###
+class RegionList extends Backbone.Collection
+    model: GeoObject
+    url: GEO_OBJECTS_URLS.region
+
+    fetch: () ->
+        log('RegionList.fetch:start')
+        current_region = parseUrl().region
+
+        # odpaleni ajax dotazu
+        options =
+            url: @url
+            success: (resp, status, xhr) =>
+                log('RegionList.fetch:data loaded')
+                _.each resp.details, (obj, slug) =>
+                    _.extend obj,
+                        slug: slug
+                        active: slug == current_region
+                    @add(obj)
+                log("RegionList.fetchExtras:collection data succesfully updated (#{ @length })")
+                HazardEvents.trigger('RegionList:regions_loaded', @)
+            error: (model, resp, options) ->
+                log('RegionList.fetch:data loading error')
+        Backbone.sync('read', @, options)
+        log('RegionList.fetch:done')
+
+
+###
+Kolekce okresu. Pouziva se k vykresleni tvaru (a barev) okresu na strankach
+s obcemi.
+###
+class DistrictList extends Backbone.Collection
+    model: GeoObject
+    url: "#{ GEO_OBJECTS_URLS.district }?detailni"
+    # NOTE: prilepenim parametru ?detailni ziskame podrobnejsi vypis o okresech,
+    # vcetne numerickych dat potrebnych k vykresleni barev
+
+    fetch: () ->
+        log('DistrictList.fetch:start')
+        @extrems = {}
+        current_district_slug = parseUrl().district
+
+        # odpaleni ajax dotazu
+        options =
+            url: @url
+            success: (resp, status, xhr) =>
+                log('DistrictList.fetch:data loaded')
+                _.each resp.details, (obj, slug) =>
+                    _.extend obj,
+                        slug: slug
+                        statistics_map: resp.statistics[slug]
+                        active: slug == current_district_slug
+                    @add(obj)
+                    # uchovani hodnot pro vypocet extremu
+                    for t in ['hells', 'machines']
+                        if t not of @extrems
+                            @extrems[t] = {}
+                        for p in ['conflict_perc', 'conflict_counts', 'counts']
+                            if p not of @extrems[t]
+                                @extrems[t][p] = []
+                            @extrems[t][p].push(resp.statistics[slug][t][p])
+
+                # nalezeni min/max
+                for t in ['hells', 'machines']
+                    for p in ['conflict_perc', 'conflict_counts', 'counts']
+                        @extrems[t][p] =
+                            min: _.min(@extrems[t][p])
+                            max: _.max(@extrems[t][p])
+
+                log("DistrictList.fetchExtras:collection data succesfully updated (#{ @length })")
+                HazardEvents.trigger('DistrictList:districts_loaded', @)
+
+            error: (model, resp, options) ->
+                log('DistrictList.fetch:data loading error')
+
+        Backbone.sync('read', @, options)
+        log('DistrictList.fetch:done')

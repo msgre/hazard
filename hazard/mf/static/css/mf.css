@@ -30,9 +30,20 @@ ul.local-menu li a {
 /* zvyraznovani radku v tabulce */
 #statistics tr.active * {
     font-weight:bold;
+    color:#000;
+    text-decoration:none;
+}
+#statistics tr.active td {
+    background-color: #F19CCC;
 }
 #statistics tr.hover td {
-    background-color:yellow;
+    background-image: none;
+    background-color: #333;
+    color: #eee;
+}
+#statistics tr.hover td * {
+    color: #eee;
+    text-decoration:none;
 }
 
 /* styly pro tabulky s "teplomerem" */
@@ -77,6 +88,7 @@ table.statistics tr.active td {
 div.wrapper {
     height:120px;
     overflow:auto;
+    margin: 0 0 1.5em;
 }
 
 /* uvodni text */

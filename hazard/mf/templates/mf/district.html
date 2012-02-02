@@ -18,7 +18,11 @@
     <h3>Situace v ostatních okresech</h3>
     {% mf_table "district" %}
 
-    {# TODO: linky na nizsi uzemni celky #}
+    <h3>Situace v obcích</h3>
+    <p>Zajímá vás spíše podrobnější situace na úrovni jednotlivých obcí okresu?</p>
+    {% block sub_objects %}
+        {% mf_sub_objects district %}
+    {% endblock %}
 {% endblock %}
 
 {# vim: set et si ts=4 sw=4 syn=django: #}

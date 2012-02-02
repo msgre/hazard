@@ -104,8 +104,18 @@ CONTROL_LEGEND = """
 # barvy a z-indexy polygonu v mape
 MAP_POLY_ZINDEX = 10
 MAP_ACTIVE_POLY_COLOR = '#333333'
-MAP_ACTIVE_POLY_ZINDEX = 20
+MAP_ACTIVE_POLY_ZINDEX = 30
 MAP_HOVER_POLY_COLOR = '#333333'
+MAP_HOVER_POLY_ZINDEX = 25
+MAP_BORDERS_ZINDEX = 20
+MAP_BORDERS_COLOR = '#FA9700'
+
+MAP_CIRCLE_ZINDEX = 40
+MAP_ACTIVE_CIRCLE_ZINDEX = 45
+MAP_HOVER_CIRCLE_ZINDEX = 50
+MAP_CIRCLE_COLOR = '#bbbbbb'
+MAP_ACTIVE_CIRCLE_COLOR = '#ED87C1'
+MAP_HOVER_CIRCLE_COLOR = '#ffffff'
 
 # obarveni mapy
 MAP_STYLE = [
@@ -122,7 +132,7 @@ MAP_STYLE = [
 ]
 
 # vylepseni Google Maps API -> getBounds nad polygonem
-setPolygonBoundsFn: () ->
+setPolygonBoundsFn = () ->
     if not google.maps.Polygon.prototype.getBounds
         google.maps.Polygon.prototype.getBounds = (latLng) ->
             bounds = new google.maps.LatLngBounds()
@@ -131,6 +141,11 @@ setPolygonBoundsFn: () ->
                 for item in path.getArray()
                     bounds.extend(item)
             bounds
+
+# min/max rozmer kolecka, ktere reprezentuje obci
+# (hodnota je v metrech)
+POINT_MIN_RADIUS = 1200
+POINT_MAX_RADIUS = 3600
 
 # globalni promenna s mapou
 MAP = undefined

@@ -1,4 +1,4 @@
 {% load shared %}{% jsonblock %}
-    "details":{% templatetag openbrace %}{% filter shorten_latlon %}{% for id, item in json_details.items %}"{{ item.slug }}":{% templatetag openbrace %}"shape":{{ item.shape.coords|json }}{% templatetag closebrace %}{% if not forloop.last %},{% endif %}{% endfor %}{% endfilter %}{% templatetag closebrace %}
+    "details":{% templatetag openbrace %}{% filter shorten_latlon %}{% for id, item in json_details.items %}"{{ item.slug }}":{% templatetag openbrace %}"shape":{{ item.shape.coords|json }}{% if detailed_output %},"url":"{{ item.get_absolute_url }}"{% endif %}{% templatetag closebrace %}{% if not forloop.last %},{% endif %}{% endfor %}{% endfilter %}{% templatetag closebrace %}
     {% if statistics %}"statistics":{{ statistics|json|shorten_float:1 }}{% endif %}
 {% endjsonblock %}

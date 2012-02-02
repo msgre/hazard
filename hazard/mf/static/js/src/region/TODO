@@ -1,34 +1,15 @@
-tak, okamzik pravdy
-    - je opravdu dobre tahat do stejne kolekce i jina data
-    - tj. michat napr. zaznamy obci a okresu dohromady?
-        - musim je fakeove vlozit do tabulky
-        - musim jim fakeove nastavit nektere parametry
-        - musim nejak jinak zaridit vypocet extremu
-        - musim hlidat duplicitni klice v kolekci
+jak nejak lepe odnimat loading tridu z h1?
 
-    - na druhou stranu, pokud to neudelam, musim nejaz vyriznout kod pro
-      praci s mapou
-        - kazdemu radku v tabulce odpovida polygon v mape
-        - kazda aktualizace radku je spojena s aktualizaci mapy
+hover v tabulce se musi udelat jinak nez lzutou, protoze kdyz tam zadny graf
+neni, nejde videt ze se neco hoveruje
 
-    - neni to spatne? nemel bych nekde do stranky generovat nejakou
-      fake strukturu, ktera by odpovidala objektum v mape?
-
-jo a pak je zde jeste problem s tim poradim kurva...
-    - u tabulek je to v poho -- poradi v kolekci odpovida poradi v tabulce,
-      protoze tabulka je zdroj a kolekce produkt
-    - v pripade dat ze serveru uz to ale nesedi...
-
-budu chtit do mapy nacist jeste doprovodne informace, jako napr. obrysy
-okresu
+podrobna mapa
+mapa na homepage
+hoverovani v obcich pri zapnutych matech vraci polygony do oranzove barvy
+    - aha, tam bude nejaky problem v tom, ze ukladam na modelu color
+      a pak uz nereaguju na zmenu type/parameter
 
 
-NAPAD HODNY ZREALIZOVANI
-- na urovni okresu by bylo dobre zobrazovat obrysy kraju v zindexu nad polygony
-- na urovni obci totez, plus okresy (ruzne intenzivnim obrysem)
-
-
-* jednou vypocitane barvy by se mohly zapamatovat
 * teplomer do mapy
 * seznam obci do html stranky
     - musi se vracet i v jsonu
@@ -36,11 +17,6 @@ NAPAD HODNY ZREALIZOVANI
     - mam takovy pocit, ze mf_primer_text zbytecne generuje nejake
       kontextove promenne, ze kterych se driv generoval ten seznam
       obci; musim to rozdelit asik...
-* pokud budu zobecnovat, tak musim prejmenovat tridy a promenne
-  (region)
-* prejmenovat udalosti, porad nevim z ktereho konce to vzit
-    - udalost by mela reprezentovat stav ktery se stal a ne
-      akci, ktera se teprve ma stat
 * doladit primer text
     - chybi tam google graf
     - nemam osetrenou variantu ze je vse ok

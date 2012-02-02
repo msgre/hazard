@@ -29,7 +29,8 @@ class MfAjax(MfCommonAjax):
             out['json_details'] = dict([(i.id, i) for i in Region.objects.select_related().all()])
         elif self.kwargs['type'] == 'okresy':
             out['json_details'] = dict([(i.id, i) for i in District.objects.select_related().all()])
-            if 'detailni' in self.request.GET:
+            out['detailed_output'] = 'detailni' in self.request.GET
+            if out['detailed_output']:
                 statistics = MfPlaceConflict.statistics(None, group_by='district')
 
                 # regroup

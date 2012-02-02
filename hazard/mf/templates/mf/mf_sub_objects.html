@@ -1,0 +1,8 @@
+{% load mf %}
+
+<ul id="sub-objects">
+{% for subobject in subobjects %}
+    {% mf_table_url subobject as subobject_url %}
+    <li><a href="{{ subobject_url }}">{{ subobject|remove_str:prefix }}</a></li>
+{% endfor %}
+</ul>

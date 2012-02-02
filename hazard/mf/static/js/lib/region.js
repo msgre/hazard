@@ -1,5 +1,5 @@
 (function() {
-  var AppView, CONTROL_LEGEND, DEBUG, EVENTS_CACHE, EXTREMS, GEO_OBJECTS_URLS, GeoObject, GeoObjectList, HazardEvents, LEGENDS, LegendView, MAP, MAP_ACTIVE_POLY_COLOR, MAP_ACTIVE_POLY_ZINDEX, MAP_HOVER_POLY_COLOR, MAP_POLY_ZINDEX, MAP_STYLE, ModifyHtml, PAGE_TYPE, PARAMETERS, PrimerView, TYPES, TableRowView, TableView, convert_to_hex, convert_to_rgb, get_color, hex, interpolate_color, log, parseUrl, path, trim;
+  var AppView, CONTROL_LEGEND, DEBUG, DistrictList, DistrictView, EVENTS_CACHE, EXTREMS, GEO_OBJECTS_URLS, GeoObject, GeoObjectList, HazardEvents, LEGENDS, LegendView, MAP, MAP_ACTIVE_CIRCLE_COLOR, MAP_ACTIVE_CIRCLE_ZINDEX, MAP_ACTIVE_POLY_COLOR, MAP_ACTIVE_POLY_ZINDEX, MAP_BORDERS_COLOR, MAP_BORDERS_ZINDEX, MAP_CIRCLE_COLOR, MAP_CIRCLE_ZINDEX, MAP_HOVER_CIRCLE_COLOR, MAP_HOVER_CIRCLE_ZINDEX, MAP_HOVER_POLY_COLOR, MAP_HOVER_POLY_ZINDEX, MAP_POLY_ZINDEX, MAP_STYLE, ModifyHtml, PAGE_TYPE, PARAMETERS, POINT_MAX_RADIUS, POINT_MIN_RADIUS, PrimerView, RegionList, RegionView, TYPES, TableRowView, TableView, convert_to_hex, convert_to_rgb, get_color, hex, interpolate_color, log, parseUrl, path, setPolygonBoundsFn, trim;
   var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
     for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
     function ctor() { this.constructor = child; }
@@ -13,7 +13,7 @@
     }
     return -1;
   };
-  DEBUG = true;
+  DEBUG = false;
   PARAMETERS = {
     counts: 'celkový počet',
     conflict_counts: 'počet nezákonně povolených',
@@ -64,8 +64,17 @@
   CONTROL_LEGEND = "Ovládání mapy: najeďte myší nad region či obec která vás zajímá a kliknutím\naktualizujete informace na stránce. Pokud v případě krajů a okresů nad oblastí\nprovedete dvojklik, aplikace vám zobrazí územně nižší celky (např. pokud si\nprohlížíte nějaký kraj, dvojklikem se dostanete na zobrazení okresů).";
   MAP_POLY_ZINDEX = 10;
   MAP_ACTIVE_POLY_COLOR = '#333333';
-  MAP_ACTIVE_POLY_ZINDEX = 20;
+  MAP_ACTIVE_POLY_ZINDEX = 30;
   MAP_HOVER_POLY_COLOR = '#333333';
+  MAP_HOVER_POLY_ZINDEX = 25;
+  MAP_BORDERS_ZINDEX = 20;
+  MAP_BORDERS_COLOR = '#FA9700';
+  MAP_CIRCLE_ZINDEX = 40;
+  MAP_ACTIVE_CIRCLE_ZINDEX = 45;
+  MAP_HOVER_CIRCLE_ZINDEX = 50;
+  MAP_CIRCLE_COLOR = '#bbbbbb';
+  MAP_ACTIVE_CIRCLE_COLOR = '#F19CCC';
+  MAP_HOVER_CIRCLE_COLOR = '#ffffff';
   MAP_STYLE = [
     {
       featureType: "water",
@@ -143,27 +152,27 @@
       ]
     }
   ];
-  ({
-    setPolygonBoundsFn: function() {
-      if (!google.maps.Polygon.prototype.getBounds) {
-        return google.maps.Polygon.prototype.getBounds = function(latLng) {
-          var bounds, item, path, paths, _i, _j, _len, _len2, _ref, _ref2;
-          bounds = new google.maps.LatLngBounds();
-          paths = this.getPaths();
-          _ref = paths.getArray();
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            path = _ref[_i];
-            _ref2 = path.getArray();
-            for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
-              item = _ref2[_j];
-              bounds.extend(item);
-            }
+  setPolygonBoundsFn = function() {
+    if (!google.maps.Polygon.prototype.getBounds) {
+      return google.maps.Polygon.prototype.getBounds = function(latLng) {
+        var bounds, item, path, paths, _i, _j, _len, _len2, _ref, _ref2;
+        bounds = new google.maps.LatLngBounds();
+        paths = this.getPaths();
+        _ref = paths.getArray();
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          path = _ref[_i];
+          _ref2 = path.getArray();
+          for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+            item = _ref2[_j];
+            bounds.extend(item);
           }
-          return bounds;
-        };
-      }
+        }
+        return bounds;
+      };
     }
-  });
+  };
+  POINT_MIN_RADIUS = 1200;
+  POINT_MAX_RADIUS = 3600;
   MAP = void 0;
   path = _.filter(window.location.pathname.split('/'), function(i) {
     return i.length > 0;
@@ -249,13 +258,13 @@
   Co se v EVENTS_CACHE muze objevit:
 
   * zaznamenani signalu Google:map_initialized a GeoObjectList:extras_loaded
-  * flag MapDrawingAllowed, ktery rika, ze uz se muze kreslit do mapy
+  * flag GObjectsDrawingAllowed, ktery rika, ze uz se muze kreslit do mapy
   */
   EVENTS_CACHE = {};
   HazardEvents = {};
   _.extend(HazardEvents, Backbone.Events);
   HazardEvents.bind('all', function(name, arg) {
-    var extras_loaded, map_init, parts;
+    var extras_loaded, map_init, parts, regions_prepared;
     if (arg == null) {
       arg = true;
     }
@@ -268,11 +277,24 @@
     map_init = 'Google' in EVENTS_CACHE && 'map_initialized' in EVENTS_CACHE.Google;
     if (map_init && extras_loaded) {
       log('HazardEvents:map initialized');
-      EVENTS_CACHE['MapDrawingAllowed'] = true;
+      EVENTS_CACHE['GObjectsDrawingAllowed'] = true;
       EVENTS_CACHE.GeoObjectList.extras_loaded.trigger('GeoObjectList:redraw_done');
-      delete EVENTS_CACHE.Google.map_initialized;
       delete EVENTS_CACHE.GeoObjectList.extras_loaded;
-      return $('h1').removeClass('loading');
+      $('h1').removeClass('loading');
+    }
+    regions_prepared = 'RegionList' in EVENTS_CACHE && 'regions_loaded' in EVENTS_CACHE.RegionList;
+    if (map_init && regions_prepared) {
+      log('HazardEvents:regions_prepared');
+      EVENTS_CACHE['RegionsDrawingAllowed'] = true;
+      EVENTS_CACHE.RegionList.regions_loaded.trigger('AppView:draw_regions');
+      delete EVENTS_CACHE.RegionList.regions_loaded;
+    }
+    regions_prepared = 'DistrictList' in EVENTS_CACHE && 'districts_loaded' in EVENTS_CACHE.DistrictList;
+    if (map_init && regions_prepared) {
+      log('HazardEvents:districts_prepared');
+      EVENTS_CACHE['DistrictsDrawingAllowed'] = true;
+      EVENTS_CACHE.DistrictList.districts_loaded.trigger('AppView:draw_districts');
+      return delete EVENTS_CACHE.DistrictList.districts_loaded;
     }
   });
   /*
@@ -289,11 +311,15 @@
     return GeoObject;
   })();
   /*
+  Popis atributu:
+
   * json_fragments
     Obsahuje fragmenty stranky. Pri kliknuti na jiny radek v tabulce se vyvola
     dotaz na server, stahnou JSON data a podle nich se zaktualizuje stranka.
     To co prijde ze serveru se ulozi do tohoto atributu, at se priste JSON
     dotaz nemusi znovu podavat.
+
+  TODO: neuplne...
   */
   EXTREMS = {};
   GEO_OBJECTS_URLS = {
@@ -335,7 +361,7 @@
     GeoObjectList.prototype.fetchExtras = function() {
       var options, url;
       log('GeoObjectList.fetchExtras:ready to launch request');
-      url = PAGE_TYPE === 'town' ? "" + this.url + (parseUrl().town) + "/" : this.url;
+      url = PAGE_TYPE === 'town' ? "" + this.url + (parseUrl().district) + "/" : this.url;
       options = {
         url: url,
         success: __bind(function(resp, status, xhr) {
@@ -450,6 +476,120 @@
     return GeoObjectList;
   })();
   /*
+  Kolekce regionu. Pouziva se k vykresleni obrysu kraju na strankach okresu
+  a obci. Takova tresnicka, nic zasadniho...
+  */
+  RegionList = (function() {
+    function RegionList() {
+      RegionList.__super__.constructor.apply(this, arguments);
+    }
+    __extends(RegionList, Backbone.Collection);
+    RegionList.prototype.model = GeoObject;
+    RegionList.prototype.url = GEO_OBJECTS_URLS.region;
+    RegionList.prototype.fetch = function() {
+      var current_region, options;
+      log('RegionList.fetch:start');
+      current_region = parseUrl().region;
+      options = {
+        url: this.url,
+        success: __bind(function(resp, status, xhr) {
+          log('RegionList.fetch:data loaded');
+          _.each(resp.details, __bind(function(obj, slug) {
+            _.extend(obj, {
+              slug: slug,
+              active: slug === current_region
+            });
+            return this.add(obj);
+          }, this));
+          log("RegionList.fetchExtras:collection data succesfully updated (" + this.length + ")");
+          return HazardEvents.trigger('RegionList:regions_loaded', this);
+        }, this),
+        error: function(model, resp, options) {
+          return log('RegionList.fetch:data loading error');
+        }
+      };
+      Backbone.sync('read', this, options);
+      return log('RegionList.fetch:done');
+    };
+    return RegionList;
+  })();
+  /*
+  Kolekce okresu. Pouziva se k vykresleni tvaru (a barev) okresu na strankach
+  s obcemi.
+  */
+  DistrictList = (function() {
+    function DistrictList() {
+      DistrictList.__super__.constructor.apply(this, arguments);
+    }
+    __extends(DistrictList, Backbone.Collection);
+    DistrictList.prototype.model = GeoObject;
+    DistrictList.prototype.url = "" + GEO_OBJECTS_URLS.district + "?detailni";
+    DistrictList.prototype.fetch = function() {
+      var current_district_slug, options;
+      log('DistrictList.fetch:start');
+      this.extrems = {};
+      current_district_slug = parseUrl().district;
+      options = {
+        url: this.url,
+        success: __bind(function(resp, status, xhr) {
+          var p, t, _i, _j, _len, _len2, _ref, _ref2;
+          log('DistrictList.fetch:data loaded');
+          _.each(resp.details, __bind(function(obj, slug) {
+            var p, t, _i, _len, _ref, _results;
+            _.extend(obj, {
+              slug: slug,
+              statistics_map: resp.statistics[slug],
+              active: slug === current_district_slug
+            });
+            this.add(obj);
+            _ref = ['hells', 'machines'];
+            _results = [];
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              t = _ref[_i];
+              if (!(t in this.extrems)) {
+                this.extrems[t] = {};
+              }
+              _results.push((function() {
+                var _i, _len, _ref, _results;
+                _ref = ['conflict_perc', 'conflict_counts', 'counts'];
+                _results = [];
+                for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                  p = _ref[_i];
+                  if (!(p in this.extrems[t])) {
+                    this.extrems[t][p] = [];
+                  }
+                  _results.push(this.extrems[t][p].push(resp.statistics[slug][t][p]));
+                }
+                return _results;
+              }).call(this));
+            }
+            return _results;
+          }, this));
+          _ref = ['hells', 'machines'];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            t = _ref[_i];
+            _ref2 = ['conflict_perc', 'conflict_counts', 'counts'];
+            for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+              p = _ref2[_j];
+              this.extrems[t][p] = {
+                min: _.min(this.extrems[t][p]),
+                max: _.max(this.extrems[t][p])
+              };
+            }
+          }
+          log("DistrictList.fetchExtras:collection data succesfully updated (" + this.length + ")");
+          return HazardEvents.trigger('DistrictList:districts_loaded', this);
+        }, this),
+        error: function(model, resp, options) {
+          return log('DistrictList.fetch:data loading error');
+        }
+      };
+      Backbone.sync('read', this, options);
+      return log('DistrictList.fetch:done');
+    };
+    return DistrictList;
+  })();
+  /*
   Uvodni text.
   */
   PrimerView = (function() {
@@ -466,7 +606,7 @@
       var type;
       log('PrimerView.render');
       type = this.type.val();
-      this.el.find('.snippet').each(function() {
+      this.$el.find('.snippet').each(function() {
         var snippet;
         snippet = $(this);
         if (snippet.hasClass(type)) {
@@ -498,15 +638,15 @@
     };
     TableRowView.prototype.initialize = function() {
       this.model.bind('change:hover', this.renderHover, this);
-      this.model.bind('change:active', this.renderActiveAndColor, this);
-      this.model.bind('change:color', this.renderActiveAndColor, this);
+      this.model.bind('change:active', this.renderActiveAndCalcValue, this);
+      this.model.bind('change:calc_value', this.renderActiveAndCalcValue, this);
       this.model.bind('change', this.render, this);
       return this.model.bind('TableRowView:page_fragments_prepared', this.renderFragments, this);
     };
     TableRowView.prototype.renderHover = function() {
       log('TableRowView.renderHover');
-      this.el.toggleClass('hover');
-      if (this.el.hasClass('hover')) {
+      this.$el.toggleClass('hover');
+      if (this.$el.hasClass('hover')) {
         return this.updateGObject('hover');
       } else {
         if (this.model.get('active')) {
@@ -516,15 +656,15 @@
         }
       }
     };
-    TableRowView.prototype.renderActiveAndColor = function() {
+    TableRowView.prototype.renderActiveAndCalcValue = function() {
       var changed;
-      log('TableRowView.renderActiveAndColor');
+      log('TableRowView.renderActiveAndCalcValue');
       changed = _.keys(this.model.changedAttributes() || {});
       if (__indexOf.call(changed, 'active') >= 0) {
-        this.el.toggleClass('active');
+        this.$el.toggleClass('active');
       }
-      if (this.el.hasClass('active')) {
-        if (this.el.hasClass('hover')) {
+      if (this.$el.hasClass('active')) {
+        if (this.$el.hasClass('hover')) {
           return this.updateGObject('hover');
         } else {
           return this.updateGObject('active');
@@ -539,12 +679,14 @@
       $('#breadcrumb').html(fragments.breadcrumb);
       $('#primer').html(fragments.primer_content);
       $('h1').text(this.model.get('title'));
+      $('#sub-objects').replaceWith(fragments.sub_objects);
+      window.modifier.modifySubobjects();
       return this.model.trigger('TableRowView:page_fragments_changed');
     };
     TableRowView.prototype.render = function() {
       var changed, content, context, ignore;
       log('TableRowView.render');
-      ignore = ['hover', 'active', 'shape', 'poly', 'color', 'json_fragments'];
+      ignore = ['hover', 'active', 'shape', 'gobj', 'calc_value', 'json_fragments'];
       changed = _.keys(this.model.changedAttributes() || []);
       if (changed.length && _.all(changed, function(i) {
         return __indexOf.call(ignore, i) >= 0;
@@ -558,96 +700,141 @@
         parameter: this.collection.parameter.val()
       });
       content = _.template($('#gobj-item-template').html(), context);
-      this.el.html(content);
+      this.$el.html(content);
       return this;
     };
     TableRowView.prototype.drawGObject = function() {
-      var i, item, poly, shape, update_timeout;
+      var gobj, i, item, point, shape, type, update_timeout;
       log('TableRowView.drawGObject');
-      shape = this.model.get('shape');
-      poly = new google.maps.Polygon({
-        paths: (function() {
-          var _i, _len, _results;
-          _results = [];
-          for (_i = 0, _len = shape.length; _i < _len; _i++) {
-            item = shape[_i];
-            _results.push((function() {
-              var _i, _len, _results;
-              _results = [];
-              for (_i = 0, _len = item.length; _i < _len; _i++) {
-                i = item[_i];
-                _results.push(new google.maps.LatLng(i[0], i[1]));
-              }
-              return _results;
-            })());
-          }
-          return _results;
-        })(),
-        strokeColor: MAP_ACTIVE_POLY_COLOR,
-        strokeOpacity: 1,
-        strokeWeight: 2,
-        fillColor: MAP_ACTIVE_POLY_COLOR,
-        fillOpacity: 1,
-        zIndex: MAP_POLY_ZINDEX,
-        map: MAP
-      });
-      google.maps.event.addListener(poly, 'mouseover', __bind(function() {
+      type = this.model.get('type');
+      if (type === 'town') {
+        point = this.model.get('point');
+        gobj = new google.maps.Circle({
+          center: new google.maps.LatLng(point[1], point[0]),
+          fillColor: MAP_CIRCLE_COLOR,
+          fillOpacity: 1,
+          strokeOpacity: 1,
+          strokeWeight: 1,
+          strokeColor: '#000000',
+          radius: POINT_MIN_RADIUS,
+          zIndex: MAP_CIRCLE_ZINDEX,
+          map: MAP
+        });
+      } else {
+        shape = this.model.get('shape');
+        gobj = new google.maps.Polygon({
+          paths: (function() {
+            var _i, _len, _results;
+            _results = [];
+            for (_i = 0, _len = shape.length; _i < _len; _i++) {
+              item = shape[_i];
+              _results.push((function() {
+                var _i, _len, _results;
+                _results = [];
+                for (_i = 0, _len = item.length; _i < _len; _i++) {
+                  i = item[_i];
+                  _results.push(new google.maps.LatLng(i[0], i[1]));
+                }
+                return _results;
+              })());
+            }
+            return _results;
+          })(),
+          strokeColor: MAP_ACTIVE_POLY_COLOR,
+          strokeOpacity: 1,
+          strokeWeight: 2,
+          fillColor: MAP_ACTIVE_POLY_COLOR,
+          fillOpacity: 1,
+          zIndex: MAP_POLY_ZINDEX,
+          map: MAP
+        });
+      }
+      google.maps.event.addListener(gobj, 'mouseover', __bind(function() {
         $('#statistics').parent().stop().scrollTo("#" + PAGE_TYPE + "_" + (this.model.get('slug')), 200, {
           stop: true
         });
-        return this.el.trigger('mouseover');
+        return this.$el.trigger('mouseover');
       }, this));
-      google.maps.event.addListener(poly, 'mouseout', __bind(function() {
-        return this.el.trigger('mouseout');
+      google.maps.event.addListener(gobj, 'mouseout', __bind(function() {
+        return this.$el.trigger('mouseout');
       }, this));
       update_timeout = null;
-      google.maps.event.addListener(poly, 'click', __bind(function() {
+      google.maps.event.addListener(gobj, 'click', __bind(function() {
         return update_timeout = setTimeout(__bind(function() {
-          return this.el.trigger('click');
+          if (PAGE_TYPE === 'district' && this.$el.hasClass('hide')) {
+            $('#show-all-districts').click();
+          }
+          return this.$el.trigger('click');
         }, this), 300);
       }, this));
-      google.maps.event.addListener(poly, 'dblclick', __bind(function() {
+      google.maps.event.addListener(gobj, 'dblclick', __bind(function() {
         clearTimeout(update_timeout);
-        return this.el.trigger('dblclick');
+        return this.$el.trigger('dblclick');
       }, this));
       this.model.set({
-        poly: poly
+        gobj: gobj
       });
-      return poly;
+      return gobj;
     };
     TableRowView.prototype.updateGObject = function(state) {
-      var color, options, poly;
-      color = this.model.get('color');
-      log("TableRowView.updateGObject:state=" + state + ", color=" + color);
-      if (!('MapDrawingAllowed' in EVENTS_CACHE)) {
+      var calc_value, gobj, options, type;
+      calc_value = this.model.get('calc_value');
+      log("TableRowView.updateGObject:state=" + state + ", calc_value=" + calc_value);
+      if (!('GObjectsDrawingAllowed' in EVENTS_CACHE)) {
         log("TableRowView.updateGObject:map drawing is disallowed now");
         return;
       }
-      poly = this.model.get('poly') || this.drawGObject();
-      if (!poly) {
+      gobj = this.model.get('gobj') || this.drawGObject();
+      if (!gobj) {
         log("TableRowView.updateGObject:no geo object to update");
         return;
       }
-      if (state === 'hover') {
-        options = {
-          fillColor: MAP_HOVER_POLY_COLOR,
-          strokeColor: MAP_HOVER_POLY_COLOR,
-          zIndex: MAP_POLY_ZINDEX
-        };
-      } else if (state === 'active') {
-        options = {
-          fillColor: color,
-          strokeColor: MAP_ACTIVE_POLY_COLOR,
-          zIndex: MAP_ACTIVE_POLY_ZINDEX
-        };
+      type = this.model.get('type');
+      if (type === 'town') {
+        if (state === 'hover') {
+          options = {
+            radius: calc_value,
+            fillColor: MAP_HOVER_CIRCLE_COLOR,
+            strokeColor: MAP_HOVER_CIRCLE_COLOR,
+            zIndex: MAP_HOVER_CIRCLE_ZINDEX
+          };
+        } else if (state === 'active') {
+          options = {
+            radius: calc_value,
+            fillColor: MAP_ACTIVE_CIRCLE_COLOR,
+            strokeColor: MAP_ACTIVE_CIRCLE_COLOR,
+            zIndex: MAP_ACTIVE_CIRCLE_ZINDEX
+          };
+        } else {
+          options = {
+            radius: calc_value,
+            fillColor: MAP_CIRCLE_COLOR,
+            strokeColor: '#000000',
+            zIndex: MAP_CIRCLE_ZINDEX
+          };
+        }
       } else {
-        options = {
-          fillColor: color,
-          strokeColor: color,
-          zIndex: MAP_POLY_ZINDEX
-        };
+        if (state === 'hover') {
+          options = {
+            fillColor: MAP_HOVER_POLY_COLOR,
+            strokeColor: MAP_HOVER_POLY_COLOR,
+            zIndex: MAP_HOVER_POLY_ZINDEX
+          };
+        } else if (state === 'active') {
+          options = {
+            fillColor: calc_value,
+            strokeColor: MAP_ACTIVE_POLY_COLOR,
+            zIndex: MAP_ACTIVE_POLY_ZINDEX
+          };
+        } else {
+          options = {
+            fillColor: calc_value,
+            strokeColor: calc_value,
+            zIndex: MAP_POLY_ZINDEX
+          };
+        }
       }
-      poly.setOptions(options);
+      gobj.setOptions(options);
       return log('TableRowView.updateGObject:done');
     };
     TableRowView.prototype.mouseover = function() {
@@ -671,13 +858,13 @@
           });
         }
         this.model.trigger('TableRowView:page_fragments_prepared');
-        Backbone.history.navigate(this.el.find('a').attr('href'));
+        Backbone.history.navigate(this.$el.find('a').attr('href'));
         return $h1.removeClass('loading');
       }, this);
       if (!json_fragments) {
         $h1.addClass('loading');
         options = {
-          url: this.el.find('a').attr('href'),
+          url: "" + (this.$el.find('a').attr('href')) + "?ajax",
           success: prepare_fragments
         };
         Backbone.sync('read', this, options);
@@ -697,7 +884,7 @@
     TableRowView.prototype.dblclick = function() {
       var url;
       $('h1').addClass('loading');
-      url = this.el.find('a').attr('href');
+      url = this.$el.find('a').attr('href');
       url = "" + (url.replace('/kampan/mf/', '')) + "/_/";
       window.location = url;
       return false;
@@ -715,7 +902,8 @@
     TableView.prototype.initialize = function() {
       this.type = $('#type');
       this.parameter = $('#parameter');
-      return this.collection.bind('GeoObjectList:redraw_done', this.render, this);
+      this.collection.bind('GeoObjectList:redraw_done', this.render, this);
+      return this.statistics = $('#statistics');
     };
     /*
     Projede tabulku s regiony a interpretuje hodnotu v druhem sloupci do podoby
@@ -732,8 +920,8 @@
     TableView.prototype.render = function() {
       var max, min, parameter, td1_w, td2_w, type, width;
       log('TableView.render');
-      width = this.el.width();
-      td1_w = this.el.find('tr:not(.hide) td:first').width();
+      width = this.$el.width();
+      td1_w = this.$el.find('tr:not(.hide) td:first').width();
       td2_w = width - td1_w;
       type = this.type.val();
       parameter = this.parameter.val();
@@ -741,7 +929,7 @@
       min = 0;
       log(this.collection.length);
       this.collection.each(__bind(function(gobj, idx) {
-        var $td1, $td2, $tr, color, statistics_map, w, x1, x2;
+        var $td1, $td2, $tr, calc_value, statistics_map, w, x1, x2;
         $tr = this.$("tr:eq(" + idx + ")");
         $td1 = $tr.find('td:first');
         $td2 = $tr.find(":not(:first):not(.hide)");
@@ -756,20 +944,31 @@
             x2 = 0;
           }
         } else {
+          w = 0;
           x1 = 0;
           x2 = 0;
         }
         $td1.css('background-position', "" + x1 + "px 0");
         $td2.css('background-position', "" + x2 + "px 0");
-        if (statistics_map[type][parameter] !== void 0) {
-          color = get_color(type, (statistics_map[type][parameter] - EXTREMS[type][parameter].min) / EXTREMS[type][parameter].max);
+        if (PAGE_TYPE === 'town') {
+          calc_value = w / width * POINT_MAX_RADIUS;
+          if (calc_value < POINT_MIN_RADIUS) {
+            calc_value = POINT_MIN_RADIUS;
+          }
         } else {
-          color = get_color(type, 0);
+          if (statistics_map[type][parameter] !== void 0) {
+            calc_value = get_color(type, (statistics_map[type][parameter] - EXTREMS[type][parameter].min) / EXTREMS[type][parameter].max);
+          } else {
+            calc_value = get_color(type, 0);
+          }
         }
         return gobj.set({
-          color: color
+          calc_value: calc_value
         });
       }, this));
+      this.statistics.parent().stop().scrollTo(this.$el.find('tr.active'), {
+        stop: true
+      });
       return this;
     };
     return TableView;
@@ -783,21 +982,241 @@
     }
     __extends(LegendView, Backbone.View);
     LegendView.prototype.initialize = function() {
+      this.collection.bind('GeoObjectList:redraw_done', this.render, this);
       this.type = $('#type');
-      this.parameter = $('#parameter');
-      return this.collection.bind('GeoObjectList:redraw_done', this.render, this);
+      return this.parameter = $('#parameter');
     };
     LegendView.prototype.render = function() {
       var content, parameter, type;
       log('LegendView.render');
       type = this.type.val();
       parameter = this.parameter.val();
-      this.el.empty();
+      this.$el.empty();
       content = "" + LEGENDS[PAGE_TYPE][type][parameter] + "<br>" + CONTROL_LEGEND;
-      this.el.append(content);
+      this.$el.append(content);
       return this;
     };
     return LegendView;
+  })();
+  /*
+  Obrysy kraju v mape.
+
+  Pouziva se v pohledu na okres/obec, pro lepsi orientaci v mape. Nema zadnou
+  dalsi funkcnost.
+  */
+  RegionView = (function() {
+    function RegionView() {
+      RegionView.__super__.constructor.apply(this, arguments);
+    }
+    __extends(RegionView, Backbone.View);
+    RegionView.prototype.strokeColorValue = 0.24;
+    RegionView.prototype.initialize = function() {
+      this.collection.bind('AppView:draw_regions', this.render, this);
+      this.options.geo_objects.bind('GeoObjectList:redraw_done', this.update, this);
+      return this.type = $('#type');
+    };
+    RegionView.prototype.render = function() {
+      var active, i, item, path, paths, poly, polygon, shapes, _i, _len;
+      log('RegionView.render');
+      shapes = this.model.get('shape');
+      active = this.model.get('active');
+      paths = (function() {
+        var _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = shapes.length; _i < _len; _i++) {
+          item = shapes[_i];
+          _results.push((function() {
+            var _i, _len, _results;
+            _results = [];
+            for (_i = 0, _len = item.length; _i < _len; _i++) {
+              i = item[_i];
+              _results.push(new google.maps.LatLng(i[0], i[1]));
+            }
+            return _results;
+          })());
+        }
+        return _results;
+      })();
+      for (_i = 0, _len = paths.length; _i < _len; _i++) {
+        path = paths[_i];
+        poly = new google.maps.Polyline({
+          path: path,
+          strokeColor: active ? '#777777' : get_color(this.type.val(), this.strokeColorValue),
+          strokeOpacity: 1,
+          strokeWeight: 2,
+          zIndex: active ? MAP_BORDERS_ZINDEX + 1 : MAP_BORDERS_ZINDEX,
+          map: MAP,
+          clickable: false
+        });
+        this.model.set({
+          poly: poly
+        });
+      }
+      if (active && PAGE_TYPE === 'district') {
+        setPolygonBoundsFn();
+        polygon = new google.maps.Polygon({
+          path: paths
+        });
+        google.maps.event.addListenerOnce(MAP, 'zoom_changed', function() {
+          var zoom;
+          zoom = MAP.getZoom();
+          if (zoom > 8) {
+            zoom = 8;
+          }
+          return MAP.setZoom(zoom);
+        });
+        MAP.fitBounds(polygon.getBounds());
+      }
+      return this;
+    };
+    RegionView.prototype.update = function() {
+      var active, poly;
+      log('RegionView.update');
+      if ('RegionsDrawingAllowed' in EVENTS_CACHE) {
+        poly = this.model.get('poly');
+        active = this.model.get('active');
+        poly.setOptions({
+          strokeColor: active ? '#777777' : get_color(this.type.val(), this.strokeColorValue)
+        });
+        return log('RegionView.update:polygon updated');
+      }
+    };
+    return RegionView;
+  })();
+  /*
+  Okresy v mape.
+
+  Pouziva se v pohledu na obce. Mapa se fokusne na dany okres (vykresleny neutralni
+  tmavou barvou) a mesta v nem. Okolni okresy se pak vykreslni s pomoci tohoto
+  view jako ruznobarevne polygony.
+  */
+  DistrictView = (function() {
+    function DistrictView() {
+      DistrictView.__super__.constructor.apply(this, arguments);
+    }
+    __extends(DistrictView, Backbone.View);
+    DistrictView.prototype.strokeColorValue = 0.24;
+    DistrictView.prototype.initialize = function() {
+      this.collection.bind('AppView:draw_districts', this.render, this);
+      this.options.geo_objects.bind('GeoObjectList:redraw_done', this.update, this);
+      this.type = $('#type');
+      return this.parameter = $('#parameter');
+    };
+    DistrictView.prototype.render = function() {
+      var active, color, gobj, i, item, shape;
+      log('DistrictView.render');
+      shape = this.model.get('shape');
+      active = this.model.get('active');
+      color = this.getColor();
+      gobj = new google.maps.Polygon({
+        paths: (function() {
+          var _i, _len, _results;
+          _results = [];
+          for (_i = 0, _len = shape.length; _i < _len; _i++) {
+            item = shape[_i];
+            _results.push((function() {
+              var _i, _len, _results;
+              _results = [];
+              for (_i = 0, _len = item.length; _i < _len; _i++) {
+                i = item[_i];
+                _results.push(new google.maps.LatLng(i[0], i[1]));
+              }
+              return _results;
+            })());
+          }
+          return _results;
+        })(),
+        strokeColor: color,
+        strokeOpacity: 1,
+        strokeWeight: 2,
+        fillColor: color,
+        fillOpacity: 1,
+        zIndex: active ? MAP_ACTIVE_POLY_ZINDEX : MAP_POLY_ZINDEX,
+        map: MAP,
+        clickable: !active
+      });
+      this.model.set({
+        gobj: gobj,
+        color: color
+      });
+      if (!active) {
+        google.maps.event.addListener(gobj, 'mouseover', __bind(function() {
+          return this.updateGObject('hover');
+        }, this));
+        google.maps.event.addListener(gobj, 'mouseout', __bind(function() {
+          return this.updateGObject('normal');
+        }, this));
+        google.maps.event.addListener(gobj, 'click', __bind(function() {
+          $('h1').addClass('loading');
+          return window.location = "" + (this.model.get('url')) + "_/";
+        }, this));
+      }
+      if (active) {
+        setPolygonBoundsFn();
+        google.maps.event.addListenerOnce(MAP, 'zoom_changed', function() {
+          var zoom;
+          zoom = MAP.getZoom();
+          if (zoom > 9) {
+            zoom = 9;
+          }
+          return MAP.setZoom(zoom);
+        });
+        MAP.fitBounds(gobj.getBounds());
+      }
+      return this;
+    };
+    DistrictView.prototype.update = function() {
+      var color, gobj;
+      log('DistrictView.update');
+      if ('DistrictsDrawingAllowed' in EVENTS_CACHE) {
+        gobj = this.model.get('gobj');
+        color = this.getColor();
+        gobj.setOptions({
+          strokeColor: color,
+          fillColor: color
+        });
+        this.model.set({
+          color: color
+        });
+        return log('DistrictView.update:polygon updated');
+      }
+    };
+    DistrictView.prototype.getColor = function() {
+      var active, color, max, min, parameter, statistics_map, type;
+      active = this.model.get('active');
+      statistics_map = this.model.get('statistics_map');
+      type = this.type.val();
+      parameter = this.parameter.val();
+      min = this.collection.extrems[type][parameter].min;
+      max = this.collection.extrems[type][parameter].max;
+      return color = active ? MAP_ACTIVE_POLY_COLOR : get_color(type, (statistics_map[type][parameter] - min) / max);
+    };
+    DistrictView.prototype.updateGObject = function(state) {
+      var color, gobj, options;
+      color = this.model.get('color');
+      gobj = this.model.get('gobj');
+      if (state === 'hover') {
+        options = {
+          fillColor: MAP_HOVER_POLY_COLOR,
+          strokeColor: MAP_HOVER_POLY_COLOR,
+          zIndex: MAP_HOVER_POLY_ZINDEX
+        };
+      } else if (state === 'active') {
+        options = {
+          fillColor: color,
+          strokeColor: MAP_ACTIVE_POLY_COLOR,
+          zIndex: MAP_ACTIVE_POLY_ZINDEX
+        };
+      } else {
+        options = {
+          fillColor: color,
+          strokeColor: color,
+          zIndex: MAP_POLY_ZINDEX
+        };
+      }
+      return gobj.setOptions(options);
+    };
+    return DistrictView;
   })();
   /*
   Aplikace. Hlavni view. Matka matek.
@@ -841,6 +1260,36 @@
         pushState: true
       });
     };
+    AppView.prototype.loadRegions = function() {
+      log('AppView.loadRegions');
+      this.options.region_list = new RegionList;
+      this.options.region_list.bind('add', this.createRegionView, this);
+      return this.options.region_list.fetch();
+    };
+    AppView.prototype.createRegionView = function(region) {
+      var view;
+      log('AppView.createRegionView');
+      return view = new RegionView({
+        model: region,
+        collection: this.options.region_list,
+        geo_objects: this.options.geo_objects
+      });
+    };
+    AppView.prototype.loadDistricts = function() {
+      log('AppView.loadDistricts');
+      this.options.district_list = new DistrictList;
+      this.options.district_list.bind('add', this.createDistrictView, this);
+      return this.options.district_list.fetch();
+    };
+    AppView.prototype.createDistrictView = function(district) {
+      var view;
+      log('AppView.createDistrictView');
+      return view = new DistrictView({
+        model: district,
+        collection: this.options.district_list,
+        geo_objects: this.options.geo_objects
+      });
+    };
     return AppView;
   })();
   /*
@@ -856,7 +1305,8 @@
       this.modifyDistrictTable();
       this.injectControl();
       this.injectLegend();
-      return this.injectMap();
+      this.injectMap();
+      return this.modifySubobjects();
     };
     ModifyHtml.prototype.modifyTable = function() {
       return $('#statistics thead').remove();
@@ -916,6 +1366,25 @@
         });
       }
     };
+    ModifyHtml.prototype.modifySubobjects = function() {
+      var $objs, options;
+      $objs = $('#sub-objects');
+      options = [];
+      $objs.find('a').each(function() {
+        var $item;
+        $item = $(this);
+        return options.push("<option value=\"" + ($item.attr('href')) + "\">\n    " + ($item.text()) + "\n</option>");
+      });
+      $objs.replaceWith("<select id=\"sub-objects\">\n    <option value=\"\">Vyberte si...</option>\n    " + (options.join('')) + "\n</select>");
+      return $('#sub-objects').change(function() {
+        var val;
+        val = $(this).val();
+        if (val) {
+          $('h1').addClass('loading');
+          return window.location = val;
+        }
+      });
+    };
     return ModifyHtml;
   })();
   window.init_map = function() {
@@ -939,11 +1408,17 @@
     return HazardEvents.trigger('Google:map_initialized');
   };
   $(document).ready(function() {
-    var App, modify;
-    modify = new ModifyHtml;
-    modify.modify();
-    return App = new AppView({
+    var App;
+    window.modifier = new ModifyHtml;
+    window.modifier.modify();
+    App = new AppView({
       geo_objects: new GeoObjectList
     });
+    if (PAGE_TYPE === 'district' || PAGE_TYPE === 'town') {
+      if (PAGE_TYPE === 'town') {
+        App.loadDistricts();
+      }
+      return App.loadRegions();
+    }
   });
 }).call(this);
