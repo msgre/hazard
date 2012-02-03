@@ -37,6 +37,7 @@ appFiles  = {
     'region/events'
     'region/models'
     'region/collections'
+    #'region/routes'
     'region/views'
     'region/app'
   ]

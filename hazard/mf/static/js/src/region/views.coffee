@@ -79,6 +79,7 @@ class TableRowView extends Backbone.View
         $('#primer').html(fragments.primer_content)
         $('h1').text(@model.get('title'))
         $('#sub-objects').replaceWith(fragments.sub_objects)
+        $('#submenu').replaceWith(fragments.submenu)
         window.modifier.modifySubobjects()
 
         @model.trigger('TableRowView:page_fragments_changed')
@@ -162,9 +163,10 @@ class TableRowView extends Backbone.View
                     $('#show-all-districts').click()
                 @$el.trigger('click')
             , 300)
-        google.maps.event.addListener gobj, 'dblclick', () =>
-            clearTimeout(update_timeout)
-            @$el.trigger('dblclick')
+        if PAGE_TYPE != 'town'
+            google.maps.event.addListener gobj, 'dblclick', () =>
+                clearTimeout(update_timeout)
+                @$el.trigger('dblclick')
 
         @model.set({gobj: gobj})
         gobj
@@ -245,7 +247,7 @@ class TableRowView extends Backbone.View
             @model.trigger('TableRowView:page_fragments_prepared')
 
             # aktualizujeme URL prohlizece
-            Backbone.history.navigate(@$el.find('a').attr('href'))
+            Backbone.history.navigate(@$el.find('a').attr('href'), {replace: true})
             $h1.removeClass('loading')
 
         # mame uz menene fragmenty nactene?
@@ -267,10 +269,11 @@ class TableRowView extends Backbone.View
 
     # dvojklik nas posle na uzemne nizsi celek (napr. kraj -> okres)
     dblclick: () ->
-        $('h1').addClass('loading')
-        url = @$el.find('a').attr('href')
-        url = "#{ url.replace('/kampan/mf/', '') }/_/"
-        window.location = url
+        if PAGE_TYPE != 'town'
+            $('h1').addClass('loading')
+            url = @$el.find('a').attr('href')
+            url = "#{ url.replace('/kampan/mf/', '') }/_/"
+            window.location = url
         false
 
 

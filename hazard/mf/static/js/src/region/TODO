@@ -1,26 +1,17 @@
-jak nejak lepe odnimat loading tridu z h1?
+Ostatni
+-------
+* podrobna mapa v backbone.js
+* mapa na homepage v backbone.js?
 
-hover v tabulce se musi udelat jinak nez lzutou, protoze kdyz tam zadny graf
-neni, nejde videt ze se neco hoveruje
-
-podrobna mapa
-mapa na homepage
-hoverovani v obcich pri zapnutych matech vraci polygony do oranzove barvy
-    - aha, tam bude nejaky problem v tom, ze ukladam na modelu color
-      a pak uz nereaguju na zmenu type/parameter
-
-
+Kraje/okresy/obce
+-----------------
+* jak nejak lepe odnimat loading tridu z h1?
+    - v pripade obci se provadi 3 ajax dotazy na server
+    - loading se odejme po nacteni obci, ale mel by se odejmout, az fakt vsechno
+      donde (obrysy, okresy)
+    - v pripade okresu se docitaji jen kraje
 * teplomer do mapy
-* seznam obci do html stranky
-    - musi se vracet i v jsonu
-    - aktualizace fragmentu stranky
-    - mam takovy pocit, ze mf_primer_text zbytecne generuje nejake
-      kontextove promenne, ze kterych se driv generoval ten seznam
-      obci; musim to rozdelit asik...
-* doladit primer text
-    - chybi tam google graf
-    - nemam osetrenou variantu ze je vse ok
-* k legende se musi prilepit jeste konstantni text s popisem ovladani
+* budem nekam davat kolacovy google graf?
 * musim nekam umistit tu vysvetlujici hlasku:
     <div class="box">
         <p>
@@ -32,48 +23,12 @@ hoverovani v obcich pri zapnutych matech vraci polygony do oranzove barvy
             <a href="{% url campaign-mf-about campaign=campaign %}">Podrobné vysvětlení</a>
         </p>
     </div>
-* budu muset nastavit http hlavicky pro json odpovedi, at je prohlizece
-  nekesuji kua...
-* sablony v javascriptu
-    - ony jsou mozna obecne pro vsechno, nemusi se jmenovat region...
-* mel bych zoomovat na danou oblast asik
-
-Mesta
--------------
-
-* potrebuji ty sama data, co posilaji /okresy/
-    + statisticka data pro okresy
-        - v jakem formatu?
-        - v pripade kraje/okresu jsem je mel v HTML
-        - data o hernach i matech, pro kazdy zaznam
-        - vcetne geograficke prislusnosti
-
-  - mozna prepisu scrape
-    - udelam z toho novy fetch
-        - na miste samem se rozhodnu pro strategii, jak data vyzobnu
-            - kraje/okresy
-                - vyscrapuju html tabulku
-                - co chybi, to natahnu z JSONu ze serveru
-                - done
-            - obce
-                - ve strance bude seznam obci pouze pro vybrany okres
-                - do mapy budu kreslit pouze obce z aktualniho okresu
-                - ostatni okresy vykreslim jako okresy
-                    - k nim ale nemam zadna data
-                    - ty mi bude muset dodat serve
-
-                - v pripade obci tedy budu po serveru pozadovat dvoje data
-                    - doplnit shapes/points k obcim
-                    - dodat "kompletni" data o okresech
-                        ? url
-                        - statistika
-
-                        extras
-                            slug
-                                shape
-                                title
-
-                    - ale!
-                        - je treba myslet na cache
-                        - data k obcim jsou na url ../obce/vsetin/
-                        - je nesmysl k nim rvat stale dokola nejaka extra data
+* nevyuziju nejak local/session storage?
+    - proc ne: je to hodne dat
+        - pred rokem 5mb/domenu
+        - ale je to user settable, takze muze byt i min
+        - jestli jsem se nespletl, tak chrome dovoli 2.5mb
+* nelibi se mi, ze mezi primer_text a tabulkou s obcemi skace ruzne velky obsah
+  (takze kdyz si v tabulce klikam, tak je pokazde na jinem miste...)
+  - trochu by se to dalo omezit skryvanim toho navodu co delat (ten ma na
+    poskakovani nejvetsi vliv), ale uplne se toho zbavit nepujde

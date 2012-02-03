@@ -73,7 +73,7 @@
   MAP_ACTIVE_CIRCLE_ZINDEX = 45;
   MAP_HOVER_CIRCLE_ZINDEX = 50;
   MAP_CIRCLE_COLOR = '#bbbbbb';
-  MAP_ACTIVE_CIRCLE_COLOR = '#F19CCC';
+  MAP_ACTIVE_CIRCLE_COLOR = '#ED87C1';
   MAP_HOVER_CIRCLE_COLOR = '#ffffff';
   MAP_STYLE = [
     {
@@ -680,6 +680,7 @@
       $('#primer').html(fragments.primer_content);
       $('h1').text(this.model.get('title'));
       $('#sub-objects').replaceWith(fragments.sub_objects);
+      $('#submenu').replaceWith(fragments.submenu);
       window.modifier.modifySubobjects();
       return this.model.trigger('TableRowView:page_fragments_changed');
     };
@@ -767,10 +768,12 @@
           return this.$el.trigger('click');
         }, this), 300);
       }, this));
-      google.maps.event.addListener(gobj, 'dblclick', __bind(function() {
-        clearTimeout(update_timeout);
-        return this.$el.trigger('dblclick');
-      }, this));
+      if (PAGE_TYPE !== 'town') {
+        google.maps.event.addListener(gobj, 'dblclick', __bind(function() {
+          clearTimeout(update_timeout);
+          return this.$el.trigger('dblclick');
+        }, this));
+      }
       this.model.set({
         gobj: gobj
       });
@@ -858,7 +861,9 @@
           });
         }
         this.model.trigger('TableRowView:page_fragments_prepared');
-        Backbone.history.navigate(this.$el.find('a').attr('href'));
+        Backbone.history.navigate(this.$el.find('a').attr('href'), {
+          replace: true
+        });
         return $h1.removeClass('loading');
       }, this);
       if (!json_fragments) {
@@ -883,10 +888,12 @@
     };
     TableRowView.prototype.dblclick = function() {
       var url;
-      $('h1').addClass('loading');
-      url = this.$el.find('a').attr('href');
-      url = "" + (url.replace('/kampan/mf/', '')) + "/_/";
-      window.location = url;
+      if (PAGE_TYPE !== 'town') {
+        $('h1').addClass('loading');
+        url = this.$el.find('a').attr('href');
+        url = "" + (url.replace('/kampan/mf/', '')) + "/_/";
+        window.location = url;
+      }
       return false;
     };
     return TableRowView;
