@@ -457,7 +457,7 @@
   */
   load_maps_api = function() {
     $('h1').addClass('loading');
-    return $.getJSON(window.location.pathname, function(data) {
+    return $.getJSON("" + window.location.pathname + "?ajax", function(data) {
       var script;
       window.hazardata = data;
       script = document.createElement('script');

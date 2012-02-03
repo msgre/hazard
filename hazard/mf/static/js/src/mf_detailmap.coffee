@@ -239,7 +239,7 @@ Ajaxove nacteni geografickych dat o polygonech a asynchronni load Google Maps AP
 ###
 load_maps_api = () ->
     $('h1').addClass('loading')
-    $.getJSON window.location.pathname, (data) ->
+    $.getJSON "#{ window.location.pathname }?ajax", (data) ->
         window.hazardata = data
         script = document.createElement('script')
         script.type = 'text/javascript'

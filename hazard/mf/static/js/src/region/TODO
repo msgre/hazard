@@ -5,6 +5,7 @@ Ostatni
 
 Kraje/okresy/obce
 -----------------
+* prejmenovat nejak tento adresar (region)
 * jak nejak lepe odnimat loading tridu z h1?
     - v pripade obci se provadi 3 ajax dotazy na server
     - loading se odejme po nacteni obci, ale mel by se odejmout, az fakt vsechno

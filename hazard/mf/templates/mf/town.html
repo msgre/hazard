@@ -19,4 +19,9 @@
     {% mf_table "town" %}
 {% endblock %}
 
+{% block js %}
+    {{ block.super }}
+    {% include "mf/territories_js.html" %}
+{% endblock %}
+
 {# vim: set et si ts=4 sw=4 syn=django: #}
