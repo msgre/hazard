@@ -24,4 +24,9 @@
     {% include "mf/territories_js.html" %}
 {% endblock %}
 
+{% block plain_js %}
+    {{ block.super }}
+    {% include "mf/js_templates.html" %}
+{% endblock %}
+
 {# vim: set et si ts=4 sw=4 syn=django: #}

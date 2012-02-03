@@ -1,0 +1,6 @@
+<script type="text/template" id="gobj-item-template">
+    <td>
+        <a href="<%= url %>"><%= title %></a>
+    </td>
+    <% _.each(statistics, function(item){ %> <td class="<%= item.type %> <%= item.parameter %><%= (item.type != type || item.parameter != parameter) ? ' hide' : '' %>"><%= item.value %></td> <% }); %>
+</script>

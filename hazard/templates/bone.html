@@ -23,9 +23,9 @@
         {% block js %}
             <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.4.2.js"></script>
             <script type="text/javascript" src="{{ STATIC_URL }}js/underscore-min.js"></script>
-            {#<script type="text/javascript" src="{{ STATIC_URL }}js/underscore.js"></script>#}
         {% endblock %}
     {% endcompress %}
+    {% block plain_js %}{% endblock %}
     {# Google Analytics #}
     {% if not debug %}
         <script type="text/javascript">
