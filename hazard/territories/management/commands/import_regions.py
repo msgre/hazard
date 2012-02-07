@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
 # vim: set et si ts=4 sw=4:
 
-"""
-Lesteni dat o krajich -- doplneni chybejicich a uprava stavajicich udaju.
-"""
-
 import re
 import sys
 
@@ -21,9 +17,9 @@ OUTER_BOUNDARY_RE = re.compile(r'<outerBoundaryIs>\s*<LinearRing>\s*<coordinates
 INNER_BOUNDARY_RE = re.compile(r'<innerBoundaryIs>\s*<LinearRing>\s*<coordinates>(.+)</coordinates>\s*</LinearRing>\s*</innerBoundaryIs>', re.DOTALL)
 
 
-class RegionUpdater1(ImporterBase):
+class RegionImporter(ImporterBase):
     """
-    Aktualizace udaju o krajich podle dat FreeGeodataCZ od Klokana Petra Pridala
+    Natazeni dat o krajich podle dat FreeGeodataCZ od Klokana Petra Pridala
     (http://www.google.com/fusiontables/DataSource?dsrcid=2121559).
 
     Zadany zdroj jsme prevedli do CSVcka, UTF-8 kodovani a vyzobavame z nej
@@ -64,17 +60,11 @@ class RegionUpdater1(ImporterBase):
         for idx, item in enumerate(self.data):
             self.log('%i / %i' % (idx + 1, total))
 
-            # vytahneme kraj
-            slug = slugify(item['nazkr_a'])
-            if 'praha' in slug:
-                region = Region.objects.get(slug__contains='praha')
-            else:
-                region = Region.objects.get(slug__contains=slug)
+            # priprava dat
             title = item['nazkr_a'] == u'Vysocina' and u'Kraj %s' % item['nazkr'] or \
                     item['nazkr_a'] == u'Hlavni mesto Praha' and item['nazkr'] or \
                     u'%s kraj' % item['nazkr']
-
-            # vyzobneme polygony
+            slug = slugify(item['nazkr_a'])
             polygons = OUTER_BOUNDARY_RE.findall(item['geometry'])
             polygons.extend(INNER_BOUNDARY_RE.findall(item['geometry']))
             final_coords = []
@@ -84,30 +74,27 @@ class RegionUpdater1(ImporterBase):
                 coords = [(i[1], i[0]) for i in coords]
                 final_coords.append(coords)
 
-            # aktualizujeme zaznam o kraji
-            region.title = title
-            region.slug = slug == 'hlavni-mesto-praha' and 'praha' or slug
-            region.lokativ = self.LOKATIV_LUT[slug]
-            region.surface = float(item['vymera'])
-            region.population = int(item['obakt'])
-            region.shape = Polygon(*final_coords)
-            region.save()
+            # ulozeni kraje
+            region = Region.objects.create(
+                title       = title,
+                slug        = slug,
+                lokativ     = self.LOKATIV_LUT[slug],
+                shape       = Polygon(*final_coords),
+                code        = item['nk'],
+                surface     = float(item['vymera']),
+                population  = int(item['obakt'])
+            )
 
 
 class Command(BaseCommand):
     """
-    Custom command pro aktualizaci udaju o krajich.
-
-    Prikaz je dobre volat az po ./manage.py import_places1, tj. az ve chvili,
-    kdy uz v databazi mame informace o krajich, okresech a obcich. Jeho vysledkem
-    jsou "vycistena" krajska data -- doplneni poctu obyvatel, rozlohy, tvaru
-    kraje, vysklonovani nazvu.
+    Custom command pro import udaju o krajich.
 
     Pouziti:
-        ./manage.py update_regions1 ../data/kraje.csv
+        ./manage.py import_regions ../data/kraje.csv
     """
     args = u'<cesta-k-csv-souboru>'
-    help = u'Aktualizace udaju o krajich Ceske republiky.'
+    help = u'Import udaju o krajich Ceske republiky.'
 
     def handle(self, *args, **options):
         if not args:
@@ -118,5 +105,5 @@ class Command(BaseCommand):
         filename = args[0]
 
         # spusteni importu
-        importer = RegionUpdater1(self.stdout, filename)
+        importer = RegionImporter(self.stdout, filename)
         importer.run()

@@ -216,8 +216,8 @@
   draw_shapes = function() {
     var delta, max, min, statistics_key, type;
     statistics_key = 'conflict_hell_counts';
-    min = _.min(_.values(window.statistics[statistics_key]));
-    max = _.max(_.values(window.statistics[statistics_key]));
+    min = _.min(_.values(window.statistics));
+    max = _.max(_.values(window.statistics));
     delta = max - min;
     type = 'hells';
     return _.each(window.shapes, function(shape, key) {
@@ -225,7 +225,7 @@
       if (!shape) {
         return true;
       }
-      value = window.regions[key]['statistics'][statistics_key];
+      value = window.statistics[key];
       value = (value - min) / delta;
       color = get_color(type, value);
       POLYS[key] = new google.maps.Polygon({
@@ -279,21 +279,18 @@
   */
   load_maps_api = function() {
     $('h1').addClass('loading');
-    return $.getJSON('/kampan/mf/ajax/kraje/', function(data) {
-      var id, k, key, script, _i, _len, _ref;
+    return $.getJSON('/kampan/mf/ajax/kraje/?detailni', function(data) {
+      var key, script, _i, _len, _ref;
       window.shapes = {};
       window.regions = {};
+      window.statistics = {};
       _ref = _.keys(data['details']);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         key = _ref[_i];
         window.shapes[key] = data['details'][key]['shape'];
         window.regions[key] = data['details'][key];
-        id = data['details'][key].id.toString();
-        window.regions[key].statistics = {};
-        for (k in data['statistics']) {
-          window.regions[key].statistics[k] = data['statistics'][k][id];
-        }
-        window.statistics = data['statistics'];
+        window.regions[key].statistics = data['statistics'][key];
+        window.statistics[key] = data['statistics'][key]['hells']['conflict_counts'];
       }
       script = document.createElement('script');
       script.type = 'text/javascript';

@@ -62,11 +62,11 @@ class MfTownMapView(MfTownDetailView):
                                    for i in addresses])
 
                 # adresy mist
-                places = MfPlace.objects.filter(town=self.object)
+                places = MfPlace.objects.visible().filter(town=self.object)
                 place_address_ids = list(set(places.values_list('address', flat=True)))
 
                 # adresy heren
-                hells = Hell.objects.filter(town=self.object)
+                hells = Hell.objects.visible().filter(town=self.object)
                 hell_address_ids = list(set(hells.values_list('address', flat=True)))
 
                 # okoli mist

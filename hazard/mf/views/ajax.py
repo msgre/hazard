@@ -27,6 +27,44 @@ class MfAjax(MfCommonAjax):
         out = super(MfAjax, self).get_context_data(**kwargs)
         if self.kwargs['type'] == 'kraje':
             out['json_details'] = dict([(i.id, i) for i in Region.objects.select_related().all()])
+            out['detailed_output'] = 'detailni' in self.request.GET
+            if out['detailed_output']:
+                statistics = MfPlaceConflict.statistics(None, group_by='region')
+
+                # regroup
+                # puvodni tvar
+                #   parameter1:
+                #       id: value
+                # novy tvar
+                #   slug:
+                #       type:
+                #           parameter2: value
+                region_lut = dict(Region.objects.all().values_list('id', 'slug'))
+                parameter_lut = {
+                    'hell_counts': 'counts',
+                    'machine_counts': 'counts',
+                    'conflict_hell_counts': 'conflict_counts',
+                    'conflict_machine_counts': 'conflict_counts',
+                    'conflict_hell_perc': 'conflict_perc',
+                    'conflict_machine_perc': 'conflict_perc',
+                }
+                regrouped = {}
+                for parameter in statistics:
+                    for id in statistics[parameter]:
+                        slug = region_lut[id]
+                        if slug not in regrouped:
+                            regrouped[slug] = {}
+                        type = 'hell_' in parameter and 'hells' or 'machines'
+                        if type not in regrouped[slug]:
+                            regrouped[slug][type] = {}
+                        if parameter not in parameter_lut:
+                            continue
+                        _parameter = parameter_lut[parameter]
+                        regrouped[slug][type][_parameter] = statistics[parameter][id]
+
+                out['statistics'] = regrouped
+
+
         elif self.kwargs['type'] == 'okresy':
             out['json_details'] = dict([(i.id, i) for i in District.objects.select_related().all()])
             out['detailed_output'] = 'detailni' in self.request.GET
@@ -92,7 +130,7 @@ class MfTownAjax(MfCommonAjax):
         for district_id in districts:
             data = {}
             for k in district_statistics:
-                data[k] = district_statistics[k][district_id]
+                data[k] = district_statistics[k].get(district_id, {})
             districts[district_id].update({'statistics': data})
 
         # zjistime extremy ve statistikach okresu
@@ -100,8 +138,8 @@ class MfTownAjax(MfCommonAjax):
         for k in district_statistics:
             values = district_statistics[k].values()
             extrems[k] = {
-                'min': min(values),
-                'max': max(values)
+                'min': values and min(values) or None,
+                'max': values and max(values) or None
             }
 
         # sup do kontextu

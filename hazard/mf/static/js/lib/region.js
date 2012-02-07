@@ -535,10 +535,11 @@
           var p, t, _i, _j, _len, _len2, _ref, _ref2;
           log('DistrictList.fetch:data loaded');
           _.each(resp.details, __bind(function(obj, slug) {
-            var p, t, _i, _len, _ref, _results;
+            var p, stat_flag, t, _i, _len, _ref, _results;
+            stat_flag = resp.statistics && slug in resp.statistics;
             _.extend(obj, {
               slug: slug,
-              statistics_map: resp.statistics[slug],
+              statistics_map: stat_flag ? resp.statistics[slug] : {},
               active: slug === current_district_slug
             });
             this.add(obj);
@@ -558,7 +559,7 @@
                   if (!(p in this.extrems[t])) {
                     this.extrems[t][p] = [];
                   }
-                  _results.push(this.extrems[t][p].push(resp.statistics[slug][t][p]));
+                  _results.push(stat_flag && t in resp.statistics[slug] && p in resp.statistics[slug][t] ? this.extrems[t][p].push(resp.statistics[slug][t][p]) : void 0);
                 }
                 return _results;
               }).call(this));
@@ -887,11 +888,17 @@
       return false;
     };
     TableRowView.prototype.dblclick = function() {
-      var url;
+      var pos, url, zoom;
       if (PAGE_TYPE !== 'town') {
         $('h1').addClass('loading');
         url = this.$el.find('a').attr('href');
         url = "" + (url.replace('/kampan/mf/', '')) + "/_/";
+        if ((window.sessionStorage != null) && window.sessionStorage) {
+          pos = MAP.getCenter();
+          zoom = MAP.getZoom();
+          console.log(pos);
+          console.log(zoom);
+        }
         window.location = url;
       }
       return false;
@@ -1189,14 +1196,16 @@
       }
     };
     DistrictView.prototype.getColor = function() {
-      var active, color, max, min, parameter, statistics_map, type;
+      var active, color, max, min, parameter, statistics_map, type, v, v2;
       active = this.model.get('active');
       statistics_map = this.model.get('statistics_map');
       type = this.type.val();
       parameter = this.parameter.val();
       min = this.collection.extrems[type][parameter].min;
       max = this.collection.extrems[type][parameter].max;
-      return color = active ? MAP_ACTIVE_POLY_COLOR : get_color(type, (statistics_map[type][parameter] - min) / max);
+      v = type in statistics_map && parameter in statistics_map[type] ? statistics_map[type][parameter] : min;
+      v2 = (v - min) / max;
+      return color = active ? MAP_ACTIVE_POLY_COLOR : get_color(type, !isNaN(v2) && v2 || 0);
     };
     DistrictView.prototype.updateGObject = function(state) {
       var color, gobj, options;

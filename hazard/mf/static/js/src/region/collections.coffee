@@ -197,9 +197,10 @@ class DistrictList extends Backbone.Collection
             success: (resp, status, xhr) =>
                 log('DistrictList.fetch:data loaded')
                 _.each resp.details, (obj, slug) =>
+                    stat_flag = resp.statistics and slug of resp.statistics
                     _.extend obj,
                         slug: slug
-                        statistics_map: resp.statistics[slug]
+                        statistics_map: if stat_flag then resp.statistics[slug] else {}
                         active: slug == current_district_slug
                     @add(obj)
                     # uchovani hodnot pro vypocet extremu
@@ -209,7 +210,8 @@ class DistrictList extends Backbone.Collection
                         for p in ['conflict_perc', 'conflict_counts', 'counts']
                             if p not of @extrems[t]
                                 @extrems[t][p] = []
-                            @extrems[t][p].push(resp.statistics[slug][t][p])
+                            if stat_flag and t of resp.statistics[slug] and p of resp.statistics[slug][t]
+                                @extrems[t][p].push(resp.statistics[slug][t][p])
 
                 # nalezeni min/max
                 for t in ['hells', 'machines']

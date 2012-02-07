@@ -14,3 +14,4 @@ django_compressor
 BeautifulSoup
 lxml
 slimit
+-e hg+https://bitbucket.org/carljm/django-model-utils#egg=django_model_utils

@@ -509,10 +509,10 @@ class DistrictView extends Backbone.View
         parameter = @parameter.val()
         min = @collection.extrems[type][parameter].min
         max = @collection.extrems[type][parameter].max
-        color = if active then MAP_ACTIVE_POLY_COLOR else get_color(type, (statistics_map[type][parameter] - min) / max)
+        v = if type of statistics_map and parameter of statistics_map[type] then statistics_map[type][parameter] else min
+        v2 = (v - min) / max
+        color = if active then MAP_ACTIVE_POLY_COLOR else get_color(type, not isNaN(v2) and v2 or 0)
 
-    # TODO:
-    # (hover, active, normal)
     updateGObject: (state) ->
         color = @model.get('color')
         gobj = @model.get('gobj')
@@ -532,7 +532,6 @@ class DistrictView extends Backbone.View
                 strokeColor: color
                 zIndex: MAP_POLY_ZINDEX
         gobj.setOptions(options)
-
 
 
 ###

@@ -22,8 +22,8 @@ Vykresleni barevnych polygonu kraju do mapy.
 draw_shapes = () ->
 
     statistics_key = 'conflict_hell_counts'
-    min = _.min(_.values(window.statistics[statistics_key]))
-    max = _.max(_.values(window.statistics[statistics_key]))
+    min = _.min(_.values(window.statistics))
+    max = _.max(_.values(window.statistics))
     delta = max - min
     type = 'hells'
 
@@ -33,7 +33,7 @@ draw_shapes = () ->
             return true
 
         # vypocet barvy
-        value = window.regions[key]['statistics'][statistics_key]
+        value = window.statistics[key]
         value = (value - min) / delta
         color = get_color(type, value)
 
@@ -70,7 +70,7 @@ Ajaxove nacteni geografickych dat o polygonech a asynchronni load Google Maps AP
 ###
 load_maps_api = () ->
     $('h1').addClass('loading')
-    $.getJSON '/kampan/mf/ajax/kraje/', (data) ->
+    $.getJSON '/kampan/mf/ajax/kraje/?detailni', (data) ->
         # NOTE: rychla prasarna
         # copy/paste kodu pro regiony a obce a jeho ohnuti pro potreby uvodni
         # stranky (kde nemame selektitka, ani zadne souvisejici data v HTML
@@ -78,14 +78,12 @@ load_maps_api = () ->
         # a po kliknuti soupnuti na patricne URL kraje a MF kampane
         window.shapes = {}
         window.regions = {}
+        window.statistics = {}
         for key in _.keys(data['details'])
             window.shapes[key] = data['details'][key]['shape']
             window.regions[key] = data['details'][key]
-            id = data['details'][key].id.toString()
-            window.regions[key].statistics = {}
-            for k of data['statistics']
-                window.regions[key].statistics[k] = data['statistics'][k][id]
-            window.statistics = data['statistics']
+            window.regions[key].statistics = data['statistics'][key]
+            window.statistics[key] = data['statistics'][key]['hells']['conflict_counts']
 
         script = document.createElement('script')
         script.type = 'text/javascript'

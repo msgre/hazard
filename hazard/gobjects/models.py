@@ -5,8 +5,11 @@ import hashlib
 from django.db import models
 from django.contrib.gis.db import models as geomodels
 
+from model_utils.managers import PassThroughManager
+
 from hazard.campaigns.models import Campaign
 from hazard.shared.fields import JSONField
+from hazard.gobjects.managers import HellQuerySet
 
 
 class AbstractPlace(geomodels.Model):
@@ -16,6 +19,7 @@ class AbstractPlace(geomodels.Model):
     title       = models.CharField(u"Název", blank=True, max_length=200)
     address     = models.ForeignKey('territories.Address', verbose_name=u"Adresa")
     description = models.TextField(u"Popis", blank=True)
+    visible     = models.BooleanField(u"Viditelné?", default=True)
     # system
     created     = models.DateTimeField(u"Datum vytvoření", auto_now_add=True, editable=False)
     updated     = models.DateTimeField(u"Datum poslední aktualizace", auto_now=True, editable=False)
@@ -56,14 +60,13 @@ class Hell(AbstractPlace):
     """
     Herna.
     """
-    visible     = models.BooleanField(u"Viditelné?", default=True)
-    counts      = models.ManyToManyField(MachineType, related_name='hells', verbose_name=u"Počty automatů", through='MachineCount')
-    note        = models.TextField(u"Poznámka", blank=True)
-    json        = JSONField(u"Extra JSON data", null=True, blank=True)
-    campaigns   = models.ManyToManyField(Campaign, verbose_name=u"Kampaň")
+    counts    = models.ManyToManyField(MachineType, related_name='hells', verbose_name=u"Počty automatů", through='MachineCount')
+    note      = models.TextField(u"Poznámka", blank=True)
+    json      = JSONField(u"Extra JSON data", null=True, blank=True)
+    campaigns = models.ManyToManyField(Campaign, verbose_name=u"Kampaň")
     # denormalizace
-    total       = models.IntegerField(default=0, editable=False)
-    objects     = geomodels.GeoManager()
+    total     = models.IntegerField(default=0, editable=False)
+    objects   = PassThroughManager(HellQuerySet)
 
     class Meta:
         verbose_name = u'Herna'
@@ -92,7 +95,7 @@ class MachineCount(models.Model):
     hell  = models.ForeignKey(Hell, verbose_name=u"Herna")
     type  = models.ForeignKey(MachineType, verbose_name=u"Typ automatu")
     count = models.IntegerField(u"Počet", default=0)
-    note  = models.TextField(u"Poznámka", blank=True)
+    json  = JSONField(u"Extra JSON data", null=True, blank=True)
 
     class Meta:
         verbose_name = u'Herna'

@@ -48,7 +48,7 @@ class AbstractConflict(models.Model):
         """
         out = {}
         hell_addresses = dict([(i.address_id, i.address.get_geometry()) \
-                               for i in town.hell_set.filter(campaigns__in=campaigns)])
+                               for i in town.hell_set.filter(visible=True, campaigns__in=campaigns)])
 
         for set_obj in getattr(town, set_name).all():
             for address, geo in hell_addresses.iteritems():

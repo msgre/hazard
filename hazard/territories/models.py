@@ -19,6 +19,7 @@ class Region(geomodels.Model):
     lokativ     = models.CharField(u"Lokativ", max_length=200, blank=True, null=True, help_text=u"6.pád, 'O kom, o čem', včetně vyskloňovaného slova 'kraj' a předložky. Např. 'Ve Zlínském kraji', nebo 'V Kraji Vysočina'.")
     description = models.TextField(u"Popis", blank=True)
     shape       = geomodels.PolygonField(u"Tvar", null=True, blank=True)
+    code        = models.CharField(u"Kód kraje", max_length=3, blank=True, null=True, help_text=u"Sloupec 'nk' z http://www.google.com/fusiontables/DataSource?dsrcid=2121559")
     # doplnujici informace o kraji
     surface     = models.FloatField(u"Katastrální výměra", null=True, blank=True, help_text="V m<sup>2</sup>")
     population  = models.IntegerField(u"Počet obyvatel", null=True, blank=True)
@@ -50,6 +51,7 @@ class District(geomodels.Model):
     description = models.TextField(u"Popis", blank=True)
     region      = models.ForeignKey(Region, verbose_name=u"Kraj")
     shape       = geomodels.PolygonField(u"Tvar", null=True, blank=True)
+    code        = models.CharField(u"Kód okresu", max_length=10, blank=True, null=True, help_text=u"Sloupec 'kodok' z http://www.google.com/fusiontables/DataSource?dsrcid=2121470")
     # doplnujici informace o kraji
     surface     = models.FloatField(u"Katastrální výměra", null=True, blank=True, help_text="V m<sup>2</sup>")
     population  = models.IntegerField(u"Počet obyvatel", null=True, blank=True)
@@ -82,7 +84,8 @@ class Town(geomodels.Model):
     description = models.TextField(u"Popis", blank=True)
     district    = models.ForeignKey(District, verbose_name=u"Okres")
     shape       = geomodels.PolygonField(u"Tvar", null=True, blank=True)
-    code        = models.CharField(u"Kód obce", max_length=10, blank=True, null=True, help_text=u"Viz http://www.czso.cz/csu/rso.nsf/i/obec_rso, sekce Kód obce")
+    code        = models.CharField(u"Kód obce", max_length=10, blank=True, null=True, help_text=u"Sloupec 'kodob' z http://www.google.com/fusiontables/DataSource?dsrcid=2121188")
+    lau         = models.CharField(u"LAU kód obce", max_length=10, blank=True, null=True, help_text=u"Viz http://www.czso.cz/csu/rso.nsf/i/obec_rso, sekce Kód obce; Debata na okfn-cz@lists.okfn.org pod předmětem 'Re: [okfn-cz] Jednotné odkazy/URL na obce?'")
     point       = geomodels.PointField(u"Bod", null=True, blank=True)
     # doplnujici informace o obci
     surface     = models.FloatField(u"Katastrální výměra", null=True, blank=True, help_text="V m<sup>2</sup>")
@@ -124,6 +127,7 @@ class Zip(models.Model):
     PSC.
     """
     title    = models.CharField(u"PSČ", max_length=10)
+    post     = models.CharField(u"Název pošty", max_length=200, blank=True, null=True)
     town     = models.ForeignKey(Town, verbose_name=u"Město")
     # denormalizace
     region   = models.ForeignKey(Region, verbose_name=u"Kraj", editable=False)

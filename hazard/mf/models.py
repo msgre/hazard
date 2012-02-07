@@ -7,11 +7,14 @@ from django.contrib.gis.db import models as geomodels
 from django.db.models.loading import get_model
 from django.contrib.gis.gdal import CoordTransform, SpatialReference
 
+from model_utils.managers import PassThroughManager
+
 from hazard.territories.models import Region, District, Town, Address
 from hazard.gobjects.models import Hell, AbstractPlace
 from hazard.conflicts.models import AbstractConflict
 from hazard.campaigns.models import Campaign
 from hazard.shared.fields import JSONField
+from hazard.mf.managers import MfPlaceQuerySet
 
 
 class MfPlaceType(models.Model):
@@ -50,7 +53,7 @@ class MfPlace(AbstractPlace):
     bid     = models.CharField(u"ID místa", max_length=30, null=True, blank=True, help_text=u"Interní ID místa, které se používalo během procesu získávání GPS pozice z XLS dat")
     note    = models.TextField(u"Poznámka", blank=True)
     json    = JSONField(u"Extra JSON data", null=True, blank=True)
-    objects = geomodels.GeoManager()
+    objects = PassThroughManager(MfPlaceQuerySet)
 
     class Meta:
         verbose_name = u'Místo'
@@ -135,7 +138,7 @@ class MfAddressSurround(geomodels.Model):
         Napr. MfAddressSurround.create_surround(100) vytvori 100 m okoli.
         """
         if rebuild:
-            address.surrounds.delete()
+            address.surrounds.all().delete()
 
         qs = address.surrounds.filter(distance=distance)
         if not qs.exists():
@@ -177,8 +180,8 @@ class MfPlaceConflict(AbstractConflict):
         # vytahneme si konfliktni adresy...
         conflicts = MfPlaceConflict.conflict_addresses(town, campaigns, 'mfaddresssurround_set')
         # ...a pretavime je do konkretnich heren a mist (klic je id adresy, hodnota seznam heren/mist)
-        hells = dict([(i.id, i.hell_set.all()) for i in Address.objects.filter(id__in=conflicts.keys())])
-        places = dict([(i.id, i.mfplace_set.all()) for i in Address.objects.filter(id__in=set(list(itertools.chain(*conflicts.values()))))])
+        hells = dict([(i.id, i.hell_set.filter(visible=True)) for i in Address.objects.filter(id__in=conflicts.keys())])
+        places = dict([(i.id, i.mfplace_set.filter(visible=True)) for i in Address.objects.filter(id__in=set(list(itertools.chain(*conflicts.values()))))])
 
         # a na zaver, tadaaaa -> konfliktni vazba
         for hell_id, places_id in conflicts.iteritems():
@@ -210,7 +213,7 @@ class MfPlaceConflict(AbstractConflict):
         }
         if obj:
             hells_kwargs[obj.__class__.__name__.lower()] = obj
-        flat_hells_qs = Hell.objects.filter(**hells_kwargs)
+        flat_hells_qs = Hell.objects.visible().filter(**hells_kwargs)
 
         # celkove mnozstvi heren, seskupenych dle group_by
         # => hell_counts = {ID: pocet}

@@ -1,6 +1,6 @@
 Ostatni
 -------
-* podrobna mapa v backbone.js
+* podrobna mapa v backbone.js?
 * mapa na homepage v backbone.js?
 
 Kraje/okresy/obce
@@ -33,3 +33,8 @@ Kraje/okresy/obce
   (takze kdyz si v tabulce klikam, tak je pokazde na jinem miste...)
   - trochu by se to dalo omezit skryvanim toho navodu co delat (ten ma na
     poskakovani nejvetsi vliv), ale uplne se toho zbavit nepujde
+* double click na obci by mohl vest na podrobnou mapu ne?
+    - ale pouze v pripade, ze nejaka podrobna mapa vubec existuje
+    - mozna by stacilo dat nejake id na odkaz v submenu
+    - a podle nej presmerovavat nebo ne
+
