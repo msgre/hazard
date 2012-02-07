@@ -1,11 +1,12 @@
 {% extends "mf/campaign_subbase.html" %}
 
+{% load chunks %}
+
 {% block content %}
     <h2>Pomozte</h2>
 
     <div class="span-12 todo">
-        <p class="todo">TODO: tady by melo byt sepsano jak konkretne mohou pomoci s kampani vlt. dalo by se tady zopakovat to co je v detailu kraje/okresu/obce (takovy ten postup co delat).</p>
-        <p class="todo">TODO: pokud se nam povede dodelat nejakou interaktivitu, tak by zde byl jeji popis; pokud ne, tak asi zopakovani toho co bude na homepage</p>
+        {% chunk "kampan-mf-pomozte" %}
     </div>
 
     <div class="span-12 todo last">

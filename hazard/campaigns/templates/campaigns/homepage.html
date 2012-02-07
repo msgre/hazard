@@ -1,6 +1,6 @@
 {% extends "territories/base.html" %}
 
-{% load webdesign %}
+{% load chunks %}
 
 {% block campaign_menu %}{% endblock %}
 
@@ -15,8 +15,7 @@
 {% block content %}
     <div class="span-12">
         <h2 class="todo">
-            Jde o hazard. Pohledu na nej je hodne. Pokusime se postupne
-            odhalovat nejruznejsi souvislosti v tzv. kampanich. Bla, bla...
+            {% chunk "kampan-uvod" %}
         </h2>
     </div>
     <div class="clear"> </div>
@@ -29,12 +28,7 @@
     </div>
 
     <div class="span-12 todo last">
-        <h3>Chystáme</h3>
-        <ul>
-            <li>mapovani obecnich vyhlasek</li>
-            <li>utraty loterijnich spolecnosti do neziskovek</li>
-        </ul>
-        <p>Mate pro nas tip na dalsi kampan? <a href="#">Sem s nim</a></p>
+        {% chunk "kampan-uvod" %}
     </div>
     <div class="clear"> </div>
 {% endblock %}

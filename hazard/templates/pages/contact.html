@@ -1,47 +1,17 @@
 {% extends "bone.html" %}
 
+{% load chunks %}
+
 {% block main %}
     <h1>Kdo jsme a proč to děláme</h1>
 
     {# uvodni lajna #}
     <div class="span-12">
-        <p><a href="http://www.mapyhazardu.cz/">MapyHazardu.cz</a> provozuje občanské
-        sdružení <a href="http://www.osbrneni.cz/">Brnění</a>. Cílem Brnění je
-        zrušit hazardní přístroje v současné podobě a nastolit stav, kdy bude
-        respektován zákon o loteriích. Ten totiž dlouhodobě porušuje
-        Ministerstvo financí, proti kterému míří naše aktuální snahy.</p>
-
-        <p><a href="http://www.mapyhazardu.cz/">MapyHazardu.cz</a> jsou jednou
-        z našich protihazardních aktivit. Máme i další:</p>
-
-        <ul>
-            <li>Vydali jsme manuál <a
-            href="http://www.osbrneni.cz/regulace-hazardu/manual">Jak ve Vaší
-            obci regulovat hazard</a>, kde podrobně popisujeme, co musí obec
-            udělat pro to, aby se zbavila hazardu. Tento manuál jsme rozeslali
-            na všechny obce v ČR.</li>
-
-            <li>Poskytujeme poradenství, jak se zbavit hazardu, komunikujeme s
-            mnoha radnicemi i aktivními občany napříč republikou.</li>
-
-            <li>Věnujeme se <a href="http://www.osbrneni.cz/category/media-o-nas">medializaci 
-            problému</a>, pořádáme o legislativě a dopadech hazardu diskuze,
-            spolupracujeme s dalšími organizacemi, obcemi, institucemi i
-            jednotlivci, kteří se regulací hazardu zabývají.</li>
-
-            <li>Speciálně se zaměřujeme na regulaci hazardu v Brně, našem
-            domovském městě, které je heren plné.</li>
-        </ul>
+        {% chunk "kontakt-text" %}
     </div>
 
     <div class="span-11 prepend-1 last">
-        <h3>Kontaktní informace</h3>
-        <p><b>Brnění, o.s.</b><br>
-        IČO: 22861688<br>
-        Číslo transparentního účtu: 2200084041/2010<br>
-        FIO Banka</p>
-        <p>Email: <a href="mailto:brneni@gmail.com">brneni@gmail.com</a><br>
-        Web: <a href="http://www.osbrneni.cz/">www.osbrneni.cz</a></p>
+        {% chunk "kontakt-adresa" %}
     </div>
 
     <div class="clear"></div>

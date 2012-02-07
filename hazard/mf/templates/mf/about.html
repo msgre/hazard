@@ -1,111 +1,16 @@
 {% extends "mf/campaign_subbase.html" %}
 
+{% load chunks %}
+
 {% block content %}
     <h2>Co se z mapy dozvíte</h2>
 
     <div class="span-8">
-        <p><b>Cílem této mapy je ukázat, že Ministerstvo financí v minulosti
-        povolovalo hazardní přístroje v rozporu se zákonem o loteriích, s
-        ustanovením zakazujícím povolit hazardní přístroj v sousedství škol,
-        školských zařízení, zařízení sociální a zdravotní péče, budov
-        státních orgánů a církví.</b></p>
-
+        {% chunk "kampan-mf-o-mape-uvod" %}
     </div>
 
     <div class="span-15 prepend-1 last">
-        <h3>O co nám jde</h3>
-
-        <p>Na základě zjištěného porušení sousedství, ale i na základě
-        <a href="/kampan/porusovani-zakona/">dalších porušení zákona</a>,
-        budeme po Ministerstvu financí požadovat zrušení povolení pro tyto
-        přístroje.</p>
-
-
-        <h3>Co to bylo sousedství</h3>
-
-        <p>Až do konce roku 2011 nesměl úřad povolit hazardní přístroj do
-        stometrového sousedství <a href="http://www.osbrneni.cz/regulace-hazardu/budovy">zákonem
-        vyjmenovaných budov</a> – škol, nemocnic, úřadů, kostelů ap. Přesto se
-        tak dělo v tisícovkách případů. To jsme důkladně demonstrovali
-        projektem <a href="http://www.mapyhazardu.cz/">Mapy Hazardu</a>,
-        spuštěným na konci června 2011. V rozporu s tímto ustanovením zákona
-        úovolovaly hazardní přístroje po celém republice jak obce, tak
-        Ministerstvo financí. Dělalo se, že tato část paragrafu, která omezuje
-        plošně hazard, neexistuje.</p>
-
-        <p>Ustanovení o sousedství byla přitom jediná paušální ochrana před
-        jinak všudypřítomným hazardem. Bývalo by stačilo, aby stát dodržoval
-        svůj vlastní zákon, a hazardních přístrojů by u nás bylo
-        několikanásobně méně.</p>
-
-        <p>Místo toho, aby se podmínky pro povolení hazardu zpřísňovaly,
-        řekli si zákonodárci, že ustavení o sousedství bez náhrady zruší.
-        Podle známého českého hesla „beztak to nikdo nedodržoval“. Namísto
-        regulace hazardu naopak jeho široká podpora. V září 2011 schválili
-        zákonodárci novelu zákona o loteriích a od 1. ledna je proto legální
-        povolit hazardní přístroj naprosto kdekoliv, neomezí -li umisťování
-        hazardních automatů obec přímo vyhláškou. </p>
-
-        <p>To však neznamená, že se zpětně smažou všechna porušení zákona,
-        co obce, či zejména Ministerstvo financí, napáchaly. Zejména
-        ministerstvo proto, že to krom tohoto ustanovení porušovalo i
-        všechna další, která jeho přístrojům dávala nějaké limity (doby
-        povolení, maximální hodinové prohry). Jelikož mají povolení
-        Ministerstva financí platnost mnoho let dopředu, je přečin proti
-        sousedství jedním z důležitých důvodů, proč povolení i před
-        uplynutím jeho platnost odebrat.</p>
-
-
-        <h3>Jak vznikla tato mapa</h3>
-
-        <p>Mapa konfliktu sousedství s povoleními Ministerstva financí pro
-        hazardní přístroje, byla vytvořena „strojově“, na rozdíl od původní
-        verze <a href="http://www.mapyhazardu.cz/">MapyHazardu.cz</a>. Původní
-        mapy, které jsou stále v provozu, jste si vytvářeli sami, po
-        jednotlivých městech.Zadávali jste pečlivě pozice heren a budov, v
-        blízkosti nichž nesmí být hazard povolen, a za půl rok jste tak
-        částečně či úplně zmapovali přes 60 obcí z celé republiky. Obcí je ale
-        přes 6 tisíc. </p>
-
-        <p>Chtěli jsme proto proces plnění mapy zrychlit. Vyžádali jsme si
-        od Ministerstva financí <a href="http://www.osbrneni.cz/wp-content/uploads/2011/09/10_72843_2011_1900IK.zip">soupis
-        všech hazardních přístrojů</a>, které v republice povolilo. Bylo jich
-        přes <span class="todo">X0.000</span>. Nebylo v našich silách vkládat
-        pozice heren do mapy ručně jednu po druhé. Přechroustali jsme adresy
-        heren převaděčem adres na GPS souřadnice a tyto jsme zobrazili v mapě.
-        Podobně jsme postupovali i u budov – získali jsme registry škol.......,
-        kde jsme adresu opět strojově převedli na GPS, jako bod.</p>
-
-        <p>Zjištěné výsledky jsou proto jen přibližné! Nemáme v mapě všechny
-        budovy, vedle nichž, nesmí být povolen hazard. Budovy nejsou
-        vykresleny polygonem, ale jen bodem. Umístění bodu pro hernu také
-        hraje roli při vzdálenostech blízkých 100 m. Údaje o počtu
-        protiprávně povolených hazardních přístrojů jsou proto podhodnocené,
-        pokud porovnáme data vytvořená strojově počítačem, s daty zadávanými
-        a kontrolovanými ručně s původní verze <a href="http://www.mapyhazardu.cz/">Map
-        Hazardu</a>, zjistíme, že skutečný stav je cca 2x horší, než zjistil
-        strojovým hledání Google.  Což je strašidelné množství případů, kdy
-        Ministerstvo ignorovalo zákon.</p>
-
-        <p>V původních Mapách Hazardu s nerozeznávalo, zda se jedná o
-        hazardní přístroje povolované obcí (VHP), či povolované
-        Ministerstvem financí (VLT). I proto jsme vytvořili zcela novou
-        vrstvu, kde zobrazujeme výhradně hazardní přístroje povolené
-        ministerstvem. Totiž Ministerstvo financí
-        <a href="/porusovani-zakona/">dlouhodobě zákon obchází</a>,
-        obcím upírá právo regulovat na svém území hazard a je tak plně
-        zodpovědno za to, že je Česká republika nazývána Las Vegas Evropy.
-        </p>
-
-
-        <h3>Jak vytvořit přesnou mapu</h3>
-
-        <p>Do podoby mapy, kde je znázorněno porušování sousedství
-        Ministerstvem financí, nejde zasahovat. Vzhledem k tomu, že
-        zobrazená čísla jsou asi dvakrát podhodnocena, tak chcete-li získat
-        úplnou představu o svém městě, využijte původní verze map, kde je
-        také podrobně popsán postup, jak mapu vytvořit –
-        <span class="todo">www.mapyhazardu.cz/puvodni</a>.</p>
+        {% chunk "kampan-mf-o-mape-text" %}
     </div>
 {% endblock %}
 

@@ -1,5 +1,7 @@
 {% extends "mf/campaign_base.html" %}
 
+{% load chunks %}
+
 {% block css %}
     {{ block.super }}
     <link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui.css" type="text/css" media="screen">
@@ -20,84 +22,33 @@
     </div>
     <div class="span-12 last">
         <div id="map" style="height:290px"></div>
-        <p><i><b>Interaktivní mapa</b> &mdash; čím červenější region, tím více
-        nezákonně povolených heren. Pro další podrobnosti klikněte na
-        konkrétní kraj v mapě.</i></p>
+        {% chunk "kampan-mf-popis-mapy" %}
     </div>
     <div class="clear"></div>
     <br><br>
 
     {# druha lajna #}
     <div class="span-12">
-        <h3>Proč je u nás nejvíc hazardních přístrojů na světě?</h3>
-
-        <p>V České republice panuje při povolování hazardních přístrojů
-        dvojkolejnost.</p>
-        <p>Část hazardních přístrojů (VHP)
-        povoluje obec a větší část (VLT, EMR, …) povoluje Ministerstvo financí.
-        Ministerstvo u svého povolování ale porušovalo všechny paragrafy, které
-        porušit šly:
-
-        <ul>
-            <li>Nerespektovalo vyhlášky obcí.</li>
-            <li>Ignorovalo zákonnou podmínku nastavit přístrojům limity, které
-            zaručí, že za hodinu nelze prohrát více než <span class="todo">X000 Kč</span>.</li>
-            <li>Obcházelo ustanovení, které omezuje dobu povolení pro hazardní
-            přístroj na jeden rok.</li>
-            <li>Dalším z porušených částí zákona bylo ignorování míst, kam bylo
-            ze zákona zakázáno hazard povolit.</li>
-        </ul>
-
-        <h4><a href="/kampan/mf/pomozte/">Pomozte nám toto porušování zmapovat</a></h4>
+        {% chunk "kampan-mf-text" %}
     </div>
     <div class="span-12 last">
         <h3>Související informace</h3>
         <div class="span-5 box" style="height:120px">
-            <h4><a href="/porusovani-zakona/">Porušování zákona</a></h4>
-            <p class="todo">uvodni text doda Matej</p>
+            {% chunk "kampan-mf-box1" %}
         </div>
         <div class="span-5 box last" style="height:120px">
-            <h4><a href="/casovy-vyvoj/">Časový vývoj</a></h4>
-            <p>Podívejte se, jak se v čase vyvíjela situace kolem povolování hazardu na území České republiky.</p>
+            {% chunk "kampan-mf-box2" %}
         </div>
         <div class="span-5 box">
-            <h4><a href="/kampan/mf/o-mape/" style="height:135px">O mapě</a></h4>
-            <p class="todo">Jak interpretovat údaje z mapy? Z jakých dat jsme vycházeli? Jak jsme je zpracovali? Jaké technologie jsme využili?</p>
+            {% chunk "kampan-mf-box3" %}
         </div>
         <div class="span-5 box last" style="height:135px">
-            <h4><a href="{% url dictionary %}">Slovníček pojmů</a></h4>
-            <p>Co je to sousedství? Co znamenají zkratky VLT, VHP, EMR?</p>
+            {% chunk "kampan-mf-box4" %}
         </div>
 
     </div>
     <div class="clear"></div>
     <br><hr>
-
-    {# treti lajna s rozcestnikem #}
-    {% comment %}
-    <div class="span-5 colborder">
-        <h4>Porušování zákona</h4>
-        <p class="todo">uvodni text doda Mate</p>
-        <p><a href="/porusovani-zakona/">Podrobnosti</a> &rarr;</p>
-    </div>
-    <div class="span-5 colborder">
-        <h4>Časový vývoj</h4>
-        <p>Podívejte se, jak se v čase vyvíjela situace kolem povolování hazardu na území České republiky.</p>
-        <p><a href="/casovy-vyvoj/">Podrobnosti</a> &rarr;</p>
-    </div>
-    <div class="span-5 colborder">
-        <h4>O mapě</h4>
-        <p>Jak interpretovat údaje z mapy? Z jakých dat jsme vycházeli? Jak jsme je zpracovali? Jaké technologie jsme využili?</p>
-        <p><a href="/kampan/mf/o-mape/">Podrobnosti</a> &rarr;</p>
-    </div>
-    <div class="span-5 last">
-        <h4>Slovníček pojmů</h4>
-        <p>Co je to sousedství?<br>
-        Co znamenají zkratky VLT, VHP, EMR?</p>
-        <p><a href="{% url dictionary %}">Podrobnosti</a> &rarr;</p>
-    </div>
-    <div class="clear"></div>
-    {% endcomment %}
 {% endblock %}
 
 {# vim: set et si ts=4 sw=4 syn=django: #}
