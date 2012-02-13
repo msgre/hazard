@@ -8,7 +8,8 @@
         {% variable statistics.conflict_hell_counts|key:obj.id as conflict_hell_counts %}
         {% if conflict_hell_counts %}
             {# uvod; kde #}
-            {{ obj.get_lokativ }} povolilo Ministerstvo financí k 23.&nbsp;srpnu&nbsp;2011 provoz nejméně
+            {{ obj.get_lokativ }} povolilo Ministerstvo financí k 23.&nbsp;srpnu&nbsp;2011 provoz
+            <a href="{% url campaign-mf-about campaign="mf" %}">nejméně</a>
 
             {# cisla heren #}
             <span class="hells snippet">
@@ -46,6 +47,8 @@
         <span class="machines snippet">automatu</span>.
     {% endif %}
 </h2>
+
+<p><a href="{% url campaign-mf-about campaign="mf" %}">Přečtěte si o přesnosti údajů v naší mapě</a></p>
 
 {# dovetek k uvodni vete -- co muzete delat #}
 {% if geo == "town" %}
