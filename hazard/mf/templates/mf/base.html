@@ -1,27 +1,36 @@
-{% extends "territories/base.html" %}
+{% extends "pages/base.html" %}
 
-{% block css %}
-    {{ block.super }}
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/mf.css" type="text/css" media="screen">
-{% endblock %}
+{% block container_id %}jak{% endblock %}
 
-{% block breadcrumb %}
-    {% include "mf/breadcrumb.html" %}
-{% endblock %}
+{% block main %}
+    {# hlavni nadpis #}
+    {% block territory-title %}<h1>{% firstof town.title district.title region.title %}</h1>{% endblock %}
 
-{% block submenu %}
-    {% include "mf/submenu.html" %}
-{% endblock %}
+    {# menicka #}
+    <div class="span-24" id="podmenu-horni">
+        {% block campaign-menu %}
+            {% if campaigns.count > 1 %}
+                <ul>
+                    {% for c in campaigns %}
+                        <li><a href="{% firstof town.get_absolute_url district.get_absolute_url region.get_absolute_url %}kampan/{{ c.slug }}/"{% if c.slug == campaign_slug %} class="active"{% endif %}>{{ c.get_title }}</a></li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endblock %}
+    </div>
+    <div class="span-24" id="podmenu">
+        {% block campaign-submenu %}{% endblock %}
+    </div>
 
-{% block content %}
+    {# vlastni obsah stranky #}
     {% block main_content %}
         {# levy sloupec s textem #}
-        <div class="span-10" id="left-col">
+        <div class="span-11 append-1" id="left-col">
             {% block left_col %}{% endblock %}
         </div>
 
         {# pravy sloupec s mapou #}
-        <div class="span-14 last" id="right-col"></div>
+        <div class="span-12 last" id="right-col"></div>
         <div class="clear"></div>
     {% endblock %}
 {% endblock %}

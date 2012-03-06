@@ -11,6 +11,7 @@ from hazard.territories.models import Region, District
 from hazard.territories.views import TownDetailView
 from hazard.mf.models import MfPlaceConflict, MfPlace, MfAddressSurround
 from hazard.shared.ajax import JSONView
+from hazard.campaigns.models import Campaign
 
 
 CACHE_TIMEOUT = 10 * 60 # 10 minut
@@ -31,7 +32,8 @@ class MfTownDetailView(JSONView, TownDetailView):
             'regions': dict([(i.id, i) for i in Region.objects.select_related().all()]),
             'districts': dict([(i.id, i) for i in District.objects.select_related().all()]),
             'statistics': statistics,
-            'campaign': self.kwargs['campaign']
+            'campaign_slug': self.kwargs['campaign'],
+            'campaign': Campaign.objects.get(slug=self.kwargs['campaign'])
         })
         return out
 

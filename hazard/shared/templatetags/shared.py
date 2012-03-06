@@ -9,6 +9,7 @@ from django.utils import simplejson
 from django.utils.safestring import mark_safe
 from django.conf import settings
 from django.template.base import Node
+from django.template.defaulttags import TemplateIfParser
 from django.utils.html import strip_spaces_between_tags
 
 import ttag
@@ -253,3 +254,82 @@ def do_jsonblock(parser, token):
     parser.delete_first_token()
     return JSONBlockNode(nodecontent)
 do_jsonblock = register.tag("jsonblock", do_jsonblock)
+
+
+class WrapNode(Node):
+    child_nodelists = ('nodecontent', 'nodecontent_true', 'nodecontent_false')
+
+    def __init__(self, var, nodecontent, nodecontent_true, nodecontent_false): # pylint: disable-msg=W0231
+        self.nodecontent, self.nodecontent_true, self.nodecontent_false = \
+            nodecontent, nodecontent_true, nodecontent_false
+        self.var = var
+
+    def __repr__(self):
+        return "<Wrap node>"
+
+    def __iter__(self):
+        for node in self.nodecontent:
+            yield node
+        for node in self.nodecontent_true:
+            yield node
+        for node in self.nodecontent_false:
+            yield node
+
+    def render(self, context):
+        try:
+            var = self.var.eval(context)
+        except VariableDoesNotExist:
+            var = None
+
+        content = self.nodecontent.render(context)
+        context.update({'CONTENT': mark_safe(content.strip())})
+        if var:
+            return self.nodecontent_true.render(context)
+        else:
+            return self.nodecontent_false.render(context)
+
+def do_wrap(parser, token):
+    """
+    Vykresli OBSAH. Pokud PODMINKA == True, bude OBSAH vygenerovan podle obsahu
+    bloku {% true %}, pokud je PODMINKA == False, pak podle {% false %}.
+
+    Syntaxe:
+
+        {% wrap PODMINKA %}
+            OBSAH
+        {% true %}
+            {{ CONTENT }}
+        {% false %}
+            <OBAL1>{{ CONTENT }}</OBAL2>
+        {% endwrap %}
+
+    kde:
+
+        PODMINKA je ve stejnem formatu jako se zadava do {% if %}
+        OBSAH je to, co se vygeneruje vzdy
+        OBAL je jakykoliv balast, ktery se ma vygenerovat okolo OBSAHu, pokud je
+             PODMINKA rovna False
+        {{ CONTENT }} je promenna vygenerovana tagem, do ktere se nalije OBSAH
+
+    Upozorneni: tag musi mit presne takovou posloupnost bloku, jako je uvedeno
+    v prikladu (wrap-true-false-endwrap).
+
+    Poznamka: kod tohoto tagu je z 90% totozny s built-in tagem {% if %}.
+    """
+    bits = token.split_contents()[1:]
+    var = TemplateIfParser(parser, bits).parse()
+    nodecontent = parser.parse(('true', ))
+    token = parser.next_token()
+    nodecontent_true = parser.parse(('false', ))
+    token = parser.next_token()
+    nodecontent_false = parser.parse(('endwrap', ))
+    parser.delete_first_token()
+    return WrapNode(var, nodecontent, nodecontent_true, nodecontent_false)
+do_wrap = register.tag("wrap", do_wrap)
+
+
+@register.filter
+def startswith(text, substr):
+    return text.startswith(substr)
+
+

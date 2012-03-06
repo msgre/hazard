@@ -1,5 +1,5 @@
 (function() {
-  var AppView, CONTROL_LEGEND, DEBUG, DistrictList, DistrictView, EVENTS_CACHE, EXTREMS, GEO_OBJECTS_URLS, GeoObject, GeoObjectList, HazardEvents, LEGENDS, LegendView, MAP, MAP_ACTIVE_CIRCLE_COLOR, MAP_ACTIVE_CIRCLE_ZINDEX, MAP_ACTIVE_POLY_COLOR, MAP_ACTIVE_POLY_ZINDEX, MAP_BORDERS_COLOR, MAP_BORDERS_ZINDEX, MAP_CIRCLE_COLOR, MAP_CIRCLE_ZINDEX, MAP_HOVER_CIRCLE_COLOR, MAP_HOVER_CIRCLE_ZINDEX, MAP_HOVER_POLY_COLOR, MAP_HOVER_POLY_ZINDEX, MAP_POLY_ZINDEX, MAP_STYLE, ModifyHtml, PAGE_TYPE, PARAMETERS, POINT_MAX_RADIUS, POINT_MIN_RADIUS, PrimerView, RegionList, RegionView, TYPES, TableRowView, TableView, convert_to_hex, convert_to_rgb, get_color, hex, interpolate_color, log, parseUrl, path, setPolygonBoundsFn, trim;
+  var AppView, CONTROL_LEGEND, DEBUG, DistrictList, DistrictView, EVENTS_CACHE, EXTREMS, GEO_OBJECTS_URLS, GeoObject, GeoObjectList, HazardEvents, LEGENDS, LegendView, MAP, MAP_ACTIVE_CIRCLE_BORDER_COLOR, MAP_ACTIVE_CIRCLE_COLOR, MAP_ACTIVE_CIRCLE_ZINDEX, MAP_ACTIVE_POLY_COLOR, MAP_ACTIVE_POLY_ZINDEX, MAP_BORDERS_COLOR, MAP_BORDERS_ZINDEX, MAP_CIRCLE_COLOR, MAP_CIRCLE_ZINDEX, MAP_HOVER_CIRCLE_COLOR, MAP_HOVER_CIRCLE_ZINDEX, MAP_HOVER_POLY_COLOR, MAP_HOVER_POLY_ZINDEX, MAP_POLY_ZINDEX, MAP_STYLE, ModifyHtml, PAGE_TYPE, PARAMETERS, POINT_MAX_RADIUS, POINT_MIN_RADIUS, PrimerView, RegionList, RegionView, TYPES, TableRowView, TableView, convert_to_hex, convert_to_rgb, get_color, hex, interpolate_color, log, parseUrl, path, setPolygonBoundsFn, trim;
   var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
     for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
     function ctor() { this.constructor = child; }
@@ -63,7 +63,7 @@
   };
   CONTROL_LEGEND = "Ovládání mapy: najeďte myší nad region či obec která vás zajímá a kliknutím\naktualizujete informace na stránce. Pokud v případě krajů a okresů nad oblastí\nprovedete dvojklik, aplikace vám zobrazí územně nižší celky (např. pokud si\nprohlížíte nějaký kraj, dvojklikem se dostanete na zobrazení okresů).";
   MAP_POLY_ZINDEX = 10;
-  MAP_ACTIVE_POLY_COLOR = '#333333';
+  MAP_ACTIVE_POLY_COLOR = '#f4f3f0';
   MAP_ACTIVE_POLY_ZINDEX = 30;
   MAP_HOVER_POLY_COLOR = '#333333';
   MAP_HOVER_POLY_ZINDEX = 25;
@@ -73,8 +73,9 @@
   MAP_ACTIVE_CIRCLE_ZINDEX = 45;
   MAP_HOVER_CIRCLE_ZINDEX = 50;
   MAP_CIRCLE_COLOR = '#bbbbbb';
-  MAP_ACTIVE_CIRCLE_COLOR = '#ED87C1';
-  MAP_HOVER_CIRCLE_COLOR = '#ffffff';
+  MAP_ACTIVE_CIRCLE_COLOR = '#fac90d';
+  MAP_ACTIVE_CIRCLE_BORDER_COLOR = '#333333';
+  MAP_HOVER_CIRCLE_COLOR = '#333333';
   MAP_STYLE = [
     {
       featureType: "water",
@@ -244,14 +245,9 @@
   };
   get_color = function(type, value) {
     var color;
-    if (type === 'hells') {
-      color = interpolate_color('#FFD700', '#EE0000', value);
-    } else {
-      color = interpolate_color('#00FFFF', '#0028FF', value);
-    }
+    color = interpolate_color('#fac90d', '#7e000b', value);
     return color;
   };
-  window.hovno = get_color;
   /*
   Synchronizatko.
 
@@ -806,14 +802,14 @@
           options = {
             radius: calc_value,
             fillColor: MAP_ACTIVE_CIRCLE_COLOR,
-            strokeColor: MAP_ACTIVE_CIRCLE_COLOR,
+            strokeColor: MAP_ACTIVE_CIRCLE_BORDER_COLOR,
             zIndex: MAP_ACTIVE_CIRCLE_ZINDEX
           };
         } else {
           options = {
             radius: calc_value,
             fillColor: MAP_CIRCLE_COLOR,
-            strokeColor: '#000000',
+            strokeColor: MAP_CIRCLE_COLOR,
             zIndex: MAP_CIRCLE_ZINDEX
           };
         }
@@ -888,17 +884,11 @@
       return false;
     };
     TableRowView.prototype.dblclick = function() {
-      var pos, url, zoom;
+      var url;
       if (PAGE_TYPE !== 'town') {
         $('h1').addClass('loading');
         url = this.$el.find('a').attr('href');
         url = "" + (url.replace('/kampan/mf/', '')) + "/_/";
-        if ((window.sessionStorage != null) && window.sessionStorage) {
-          pos = MAP.getCenter();
-          zoom = MAP.getZoom();
-          console.log(pos);
-          console.log(zoom);
-        }
         window.location = url;
       }
       return false;
@@ -1055,7 +1045,7 @@
         path = paths[_i];
         poly = new google.maps.Polyline({
           path: path,
-          strokeColor: active ? '#777777' : get_color(this.type.val(), this.strokeColorValue),
+          strokeColor: active ? '#f4f3f0' : get_color(this.type.val(), this.strokeColorValue),
           strokeOpacity: 1,
           strokeWeight: 2,
           zIndex: active ? MAP_BORDERS_ZINDEX + 1 : MAP_BORDERS_ZINDEX,

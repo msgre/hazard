@@ -2,8 +2,10 @@
 
 {% load shared mf %}
 
-{% block main_header %}
-    <h1>{{ town.title }}</h1>
+{% block title %}{{ town.title }} (kampaň {{ campaign.get_title }}){% endblock %}
+
+{% block campaign-submenu %}
+    {% include "mf/submenu.html" %}
 {% endblock %}
 
 {% block left_col %}

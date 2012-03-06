@@ -1,36 +1,28 @@
-{% extends "territories/base.html" %}
+{% extends "pages/base.html" %}
 
 {% load chunks %}
 
-{% block campaign_menu %}{% endblock %}
-
-{% block main_header %}
-    <h1>Kampaň</h1>
-{% endblock %}
+{% block title %}Kampaň | {{ block.super }}{% endblock %}
 
 {% block breadcrumb %}
-    <a href="/">Úvodní stránka</a>
+    <a href="/">Úvodní stránka</a> » <span>Kampaň</span>
 {% endblock %}
 
-{% block content %}
-    <div class="span-12">
-        <h2 class="todo">
-            {% chunk "kampan-uvod" %}
-        </h2>
-    </div>
-    <div class="clear"> </div>
+{% block main %}
+    <h1>Kampaň</h1>
 
-    <div class="span-12">
+    <div class="span-8 sidebar">
+        <div class="box">
+            {% chunk "kampan-uvod" %}
+        </div>
+    </div>
+    <div class="span-16 last text">
         {% for campaign in campaigns %}
-            <h4><a href="{{ campaign.get_absolute_url }}">{{ campaign.title }}</a></h4>
+            <h2><a href="{{ campaign.get_absolute_url }}">{{ campaign.title }}</a></h4>
             <p>{{ campaign.description|striptags }} &mdash; <a href="{{ campaign.get_absolute_url }}">Další podrobnosti</a>…</p>
         {% endfor %}
     </div>
-
-    <div class="span-12 todo last">
-        {% chunk "kampan-uvod" %}
-    </div>
-    <div class="clear"> </div>
+    <div class="clear"></div>
 {% endblock %}
 
 {# vim: set et si ts=4 sw=4 syn=django: #}

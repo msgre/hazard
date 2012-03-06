@@ -114,9 +114,9 @@ class AutocompleteView(TemplateView):
             qs_kwargs = {'slug__contains': slugify(term)}
             regions = [{'label': i.title, 'url': i.get_absolute_url(), 'category': u'Kraj'} \
                        for i in Region.objects.select_related().filter(**qs_kwargs)]
-            districts = [{'label': i.title.replace(u'Okres ', u''), 'url': i.get_absolute_url(), 'category': u'Okres'} \
+            districts = [{'label': u"%s (%s)" % (i.title.replace(u'Okres ', u''), i.region.title), 'url': i.get_absolute_url(), 'category': u'Okres'} \
                          for i in District.objects.select_related().filter(**qs_kwargs)]
-            towns = [{'label': i.title.replace(u'Obec ', u''), 'url': i.get_absolute_url(), 'category': u'Obec'} \
+            towns = [{'label': u"%s (%s)" % (i.title.replace(u'Obec ', u''), i.district.title), 'url': i.get_absolute_url(), 'category': u'Obec'} \
                      for i in Town.objects.select_related().filter(**qs_kwargs)]
             out.update({'data': regions + districts + towns})
         else:

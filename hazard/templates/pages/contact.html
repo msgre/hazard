@@ -1,19 +1,20 @@
-{% extends "bone.html" %}
+{% extends "pages/base.html" %}
 
 {% load chunks %}
+
+{% block title %}Kontakt | {{ campaign.title }} | {{ block.super }}{% endblock %}
 
 {% block main %}
     <h1>Kdo jsme a proč to děláme</h1>
 
-    {# uvodni lajna #}
-    <div class="span-12">
+    <div class="span-8 sidebar">
+        <div class="box">
+            {% chunk "kontakt-adresa" %}
+        </div>
+    </div>
+    <div class="span-16 last text">
         {% chunk "kontakt-text" %}
     </div>
-
-    <div class="span-11 prepend-1 last">
-        {% chunk "kontakt-adresa" %}
-    </div>
-
     <div class="clear"></div>
 {% endblock %}
 {# vim: set et si ts=4 sw=4 syn=django: #}

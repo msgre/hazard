@@ -2,6 +2,8 @@
 
 {% load shared mf %}
 
+{% block title %}{{ district.title }} (kampaň {{ campaign.get_title }}){% endblock %}
+
 {% block main_header %}
     <h1>{{ district.title }}</h1>
 {% endblock %}

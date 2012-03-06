@@ -2,16 +2,25 @@
 
 {% load chunks %}
 
-{% block content %}
+{% block title %}Co se z mapy dozvíte | {{ campaign.title }} |{{ block.super }}{% endblock %}
+
+{% block breadcrumb %}
+    <a href="/">Úvodní stránka</a> » <a href="{% url campaign-homepage %}">Kampaň</a> » <a href="{{ campaign.get_absolute_url }}">{{ campaign.short_title }}</a> » <span>Co se z mapy dozvíte</span>
+{% endblock %}
+
+{% block inner_main %}
     <h2>Co se z mapy dozvíte</h2>
 
-    <div class="span-8">
-        {% chunk "kampan-mf-o-mape-uvod" %}
+    <div class="span-8 sidebar">
+        <div class="box">
+            {% chunk "kampan-mf-o-mape-uvod" %}
+        </div>
     </div>
 
-    <div class="span-15 prepend-1 last">
+    <div class="span-16 last text">
         {% chunk "kampan-mf-o-mape-text" %}
     </div>
+    <div class="clear"></div>
 {% endblock %}
 
 {# vim: set et si ts=4 sw=4 syn=django: #}

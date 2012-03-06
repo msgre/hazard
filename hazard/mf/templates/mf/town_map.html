@@ -2,12 +2,15 @@
 
 {% load shared %}
 
-{% block main_header %}
-    <h1>{{ town.title }}</h1>
+{% block title %}{{ town.title }}, podrobná mapa (kampaň {{ campaign_obj.get_title }}){% endblock %}
+
+{% block campaign-submenu %}
+    {% include "mf/submenu.html" %}
 {% endblock %}
 
-{% block content %}
-    <div id="map" class="detail-map" style="height:500px"></div>
+{% block main_content %}
+    <h2>Podrobná mapa</h2>
+    <div id="map"></div>
 {% endblock %}
 
 {% block js %}

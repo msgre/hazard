@@ -1,4 +1,4 @@
-{% extends "bone.html" %}
+{% extends "bone2.html" %}
 
 {% load news chunks campaigns %}
 
@@ -13,60 +13,51 @@
     <script type="text/javascript" src="{{ STATIC_URL }}js/lib/homepage.js"></script>
 {% endblock %}
 
-{% block main %}
-    <h1>MapyHazardu.cz</h1>
+{% block page_header %}
+    {% include "header_big.html" %}
+{% endblock %}
 
+{% block main %}
     {# uvodni lajna #}
     <div class="span-12">
-        <h2 style="line-height:120%;">
+        <p class="perex">
             {% chunk "homepage-uvod" %}
         </h2>
-        <p class="right"><a href="/kontakt/">Zajímá vás kdo jsme a proč to děláme?</a> &rarr;</p>
+        <p id="kdo-jsme"><a href="/kontakt/">Zajímá vás kdo jsme a proč to děláme? &rarr;</a></p>
         <div class="clear"></div>
-        <p style="margin-bottom:0"><b>Znáte situaci ve vašem regionu?</b></p>
+        <p id="znate-situaci"><strong>Znáte situaci ve vašem regionu?</strong></p>
         <p style="margin-bottom:0"><input placeholder="Zadejte název obce, okresu nebo kraje" style="width:95%; height:32px; font-size:18px;" type="text" name="search" id="search"></p>
     </div>
-    <div class="span-12 last">
-        <div class="box span-5" style="height:135px">
-            {% chunk "homepage-box1" %}
-        </div>
-        <div class="box span-5 last" style="height:135px">
-            {% chunk "homepage-box2" %}
-        </div>
-        <div class="box span-5" style="height:135px">
-            {% chunk "homepage-box3" %}
-        </div>
-        <div class="box span-5 last" style="height:135px">
-            {% chunk "homepage-box4" %}
-        </div>
+    <div class="span-12 last" id="ctverce">
+        {% chunk "homepage-box1" %}
+        {% chunk "homepage-box2" %}
+        {% chunk "homepage-box3" %}
+        {% chunk "homepage-box4" %}
     </div>
-
     <div class="clear"> </div>
     <br>
 
     {# treti lajna #}
-    <div class="box" style="padding-bottom:0">
-        <div class="span-5">
-            {% chunk "homepage-timeline" %}
-        </div>
-        <div class="span-18 last">
-            <p class="todo"><br> &nbsp; TODO: timeline (nejaka vizualizace, interaktivni, nebo formou obrazku s prolinkem)<br><br></p>
-        </div>
-        <div class="clear"> </div>
-    </div>
+    <a id="osa-banner" href="{% url timeline %}">
+        <h3>Časový vývoj</h3>
+    </a>
 
-    {# treti lajna #}
-    <div class="span-7 colborder">
-        <h3>Zprávy</h3>
-        {% display_news %}
-        <p class="right"><a href="{% url new-list %}">Starší zprávy</a> &rarr;</p>
+    {# ctvrta lajna #}
+    <div id="dolni-boxy">
+        <div class="span-7 append-1">
+            <h3>Zprávy</h3>
+            {% display_news %}
+            <p>
+                <a href="{% url new-list %}">Starší zprávy  »</a>
+            </p>
+        </div>
+        <div class="span-7 append-1">
+            {% chunk "homepage-aktualne" %}
+        </div>
+        <div class="span-8 last dolni-box">
+            {% chunk "homepage-pomozte-nam" %}
+        </div>
+        <div class="clear"></div>
     </div>
-    <div class="span-7 colborder">
-        {% chunk "homepage-aktualne" %}
-    </div>
-    <div class="span-8 last">
-        {% chunk "homepage-pomozte-nam" %}
-    </div>
-    <div class="clear"> </div>
 {% endblock %}
 {# vim: set et si ts=4 sw=4 syn=django: #}

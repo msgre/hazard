@@ -199,13 +199,14 @@ class TableRowView extends Backbone.View
                 options =
                     radius: calc_value
                     fillColor: MAP_ACTIVE_CIRCLE_COLOR
-                    strokeColor: MAP_ACTIVE_CIRCLE_COLOR
+                    strokeColor: MAP_ACTIVE_CIRCLE_BORDER_COLOR
                     zIndex: MAP_ACTIVE_CIRCLE_ZINDEX
             else
                 options =
                     radius: calc_value
                     fillColor: MAP_CIRCLE_COLOR
-                    strokeColor: '#000000'
+                    strokeColor: MAP_CIRCLE_COLOR
+                    #strokeColor: '#000000'
                     zIndex: MAP_CIRCLE_ZINDEX
         else
             if state == 'hover'
@@ -400,7 +401,7 @@ class RegionView extends Backbone.View
         for path in paths
             poly = new google.maps.Polyline
                 path: path
-                strokeColor: if active then '#777777' else get_color(@type.val(), @strokeColorValue)
+                strokeColor: if active then '#f4f3f0' else get_color(@type.val(), @strokeColorValue)
                 strokeOpacity: 1
                 strokeWeight: 2
                 zIndex: if active then MAP_BORDERS_ZINDEX + 1 else MAP_BORDERS_ZINDEX

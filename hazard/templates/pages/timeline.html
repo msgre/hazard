@@ -1,11 +1,21 @@
-{% extends "bone.html" %}
+{% extends "pages/base.html" %}
 
 {% load chunks %}
+
+{% block title %}Časový vývoj | {{ block.super }}{% endblock %}
 
 {% block main %}
     <h1>Časový vývoj</h1>
 
-    {% chunk "timeline-text" %}
+    <div class="span-8 sidebar">
+        <div class="box">
+            {% chunk "timeline-perex" %}
+        </div>
+    </div>
+    <div class="span-16 last text">
+        {% chunk "timeline-text" %}
+    </div>
+    <div class="clear"></div>
 {% endblock %}
 
 {# vim: set et si ts=4 sw=4 syn=django: #}

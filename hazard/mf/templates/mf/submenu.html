@@ -1,15 +1,13 @@
 {% load shared %}
 
-{% if town %}
-    <div id="submenu" class="box" style="margin-bottom:0;position:relative;top:-13px;padding:10px;text-decoration:none;color:#E5ECF9;background:#06c;" id="submenu">
-        {% url mf-town region=region.slug district=district.slug town=town.slug campaign="mf" as town_url %}
-        {% url mf-town-map region=region.slug district=district.slug town=town.slug campaign="mf" as town_map_url %}
-        {% url mf-town-comments region=region.slug district=district.slug town=town.slug campaign="mf" as town_comments %}
-        <a style="color:#E5ECF9;text-decoration:none;padding-right:1em;" href="{{ town_url }}">Základní přehled</a>
-        {% variable statistics.conflict_hell_counts|key:town.id as conflict_hell_counts %}
-        {% if conflict_hell_counts %}
-            <a style="color:#E5ECF9;text-decoration:none;padding-right:1em;" href="{{ town_map_url }}">Podrobná mapa</a>
-        {% endif %}
-        <a style="color:#E5ECF9;text-decoration:none;padding-right:1em;" href="{{ town_comments }}">Komentáře</a>
-    </div>
-{% endif %}
+{% url mf-town region=region.slug district=district.slug town=town.slug campaign="mf" as town_url %}
+{% url mf-town-map region=region.slug district=district.slug town=town.slug campaign="mf" as town_map_url %}
+{% url mf-town-comments region=region.slug district=district.slug town=town.slug campaign="mf" as town_comments %}
+<ul>
+    <li><a href="{{ town_url }}"{% if request.path == town_url %} class="active"{% endif %}>Základní přehled</a></li>
+    {% variable statistics.conflict_hell_counts|key:town.id as conflict_hell_counts %}
+    {% if conflict_hell_counts %}
+        <li><a href="{{ town_map_url }}"{% if request.path == town_map_url %} class="active"{% endif %}>Podrobná mapa</a></li>
+    {% endif %}
+    <li class="l"><a href="{{ town_comments }}"{% if request.path == town_comments %} class="active"{% endif %}>Komentáře</a></li>
+</ul>

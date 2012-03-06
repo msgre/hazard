@@ -1,4 +1,4 @@
-{% extends "bone.html" %}
+{% extends "bone2.html" %}
 
 {% load territories %}
 
@@ -6,9 +6,11 @@
     {{ block.super }}
 {% endblock %}
 
+{% comment %}
 {% block css %}
     <link rel="stylesheet" href="{{ STATIC_URL }}css/territories.css" type="text/css" media="screen">
 {% endblock %}
+{% endcomment %}
 
 {% block main %}
     {# drobeckova navigace #}

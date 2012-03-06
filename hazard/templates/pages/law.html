@@ -1,15 +1,19 @@
-{% extends "bone.html" %}
+{% extends "pages/base.html" %}
 
 {% load chunks %}
+
+{% block title %}Podrobně o porušování zákona | {{ campaign.title }} | {{ block.super }}{% endblock %}
 
 {% block main %}
     <h1>Podrobně o porušování zákona</h1>
 
-    <div class="span-12">
-        {% chunk "zakon-text" %}
+    <div class="span-8 sidebar">
+        <div class="box">
+            {% chunk "zakon-perex" %}
+        </div>
     </div>
-    <div class="span-12 last">
-        {% chunk "zakon-prezi" %}
+    <div class="span-16 text last">
+        {% chunk "zakon-text" %}
     </div>
     <div class="clear"></div>
 {% endblock %}

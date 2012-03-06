@@ -1,0 +1,10 @@
+div.wrapper {
+    height: 140px;
+    overflow: auto;
+    margin: 0 0 1.5em;
+}
+#map {
+    height: 400px;
+    background-color: #EEE;
+    z-index: 10;
+}

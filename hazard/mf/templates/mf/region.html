@@ -2,6 +2,8 @@
 
 {% load shared mf %}
 
+{% block title %}{{ region.title }} (kampaň {{ campaign.get_title }}){% endblock %}
+
 {% block main_header %}
     <h1>{{ region.title }}</h1>
 {% endblock %}
@@ -15,10 +17,10 @@
         {% endblock %}
     </div>
 
-    <h3>Situace v ostatních krajích</h3>
+    <h3 class="sedySikmy">Situace v ostatních krajích</h3>
     {% mf_table "region" %}
 
-    <h3>Situace v okresech</h3>
+    <h3 class="sedySikmy">Situace v okresech</h3>
     <p>Zajímá vás spíše podrobnější situace na úrovni bývalých okresů?</p>
     {% block sub_objects %}
         {% mf_sub_objects region %}

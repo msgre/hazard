@@ -2,6 +2,8 @@
 
 {% load chunks %}
 
+{% block title %}{{ campaign.title }} | {{ block.super }}{% endblock %}
+
 {% block css %}
     {{ block.super }}
     <link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui.css" type="text/css" media="screen">
@@ -13,14 +15,20 @@
     <script type="text/javascript" src="{{ STATIC_URL }}js/lib/mf_homepage.js"></script>
 {% endblock %}
 
-{% block content %}
+{% block main %}
+    <h1>{{ campaign.title }}</h1>
+
+    {% include "mf/mf_submenu.html" %}
+
     {# uvodni lajna #}
     <div class="span-11 append-1">
-        <h2 style="line-height:120%;">{{ campaign.description|safe }}</h2>
-        <p style="margin-bottom:0"><b>Znáte situaci ve vašem regionu?</b></p>
-        <p style="margin-bottom:0"><input placeholder="Zadejte název obce, okresu nebo kraje" style="width:95%; height:32px; font-size:18px;" type="text" name="search" id="search"></p>
+        <p class="perex">{{ campaign.description|safe }}</p>
+        <div id="znate-situaci">
+            <p><strong>Znáte situaci ve vašem regionu?</strong></p>
+            <input placeholder="Zadejte název obce, okresu nebo kraje" style="width:95%; height:32px; font-size:18px;" type="text" name="search" id="search">
+        </div>
     </div>
-    <div class="span-12 last">
+    <div class="span-12 last text">
         <div id="map" style="height:290px"></div>
         {% chunk "kampan-mf-popis-mapy" %}
     </div>

@@ -2,15 +2,25 @@
 
 {% load chunks %}
 
-{% block content %}
+{% block title %}Pomozte | {{ campaign.title }} | {{ block.super }}{% endblock %}
+
+{% block breadcrumb %}
+    <a href="/">Úvodní stránka</a> » <a href="{% url campaign-homepage %}">Kampaň</a> » <a href="{{ campaign.get_absolute_url }}">{{ campaign.short_title }}</a> » <span>Pomozte</span>
+{% endblock %}
+
+{% block inner_main %}
     <h2>Pomozte</h2>
 
-    <div class="span-12 todo">
-        {% chunk "kampan-mf-pomozte" %}
+    <div class="span-8 sidebar">
+        <div class="box">
+            {% chunk "kampan-mf-pomozte-perex" %}
+        </div>
     </div>
 
-    <div class="span-12 todo last">
+    <div class="span-16 last text">
+        {% chunk "kampan-mf-pomozte" %}
     </div>
+    <div class="clear"></div>
 {% endblock %}
 
 {# vim: set et si ts=4 sw=4 syn=django: #}

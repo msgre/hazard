@@ -1,0 +1,53 @@
+{% load shared %}
+
+<ul>
+    {# - home --------------------------------------------------------------- #}
+    {% wrap request.path == "/" %}
+        Úvod
+    {% true %}
+        <li><a class="active" href="/">{{ CONTENT }}</a></li>
+    {% false %}
+        <li><a href="/">{{ CONTENT }}</a></li>
+    {% endwrap %}
+
+    {# - kampan ------------------------------------------------------------- #}
+    {% url campaign-homepage as campaign_url %}
+    {% wrap request.path|startswith:campaign_url %}
+        Kampaň
+    {% true %}
+        <li><a class="active" href="{{ campaign_url }}">{{ CONTENT }}</a></li>
+    {% false %}
+        <li><a href="{{ campaign_url }}">{{ CONTENT }}</a></li>
+    {% endwrap %}
+
+    {# - zpravy ------------------------------------------------------------- #}
+    {% url new-list as news_url %}
+    {% wrap request.path|startswith:news_url %}
+        Zprávy
+    {% true %}
+        <li><a class="active" href="{{ news_url }}">{{ CONTENT }}</a></li>
+    {% false %}
+        <li><a href="{{ news_url }}">{{ CONTENT }}</a></li>
+    {% endwrap %}
+
+    {# - slovnicek ---------------------------------------------------------- #}
+    {% url dictionary as dictionary_url %}
+    {% wrap request.path|startswith:dictionary_url %}
+        Slovník pojmů
+    {% true %}
+        <li><a class="active" href="{{ dictionary_url }}">{{ CONTENT }}</a></li>
+    {% false %}
+        <li><a href="{{ dictionary_url }}">{{ CONTENT }}</a></li>
+    {% endwrap %}
+
+    {# - kontakt ------------------------------------------------------------ #}
+    {% url contact as contact_url %}
+    {% wrap request.path|startswith:contact_url %}
+        Kontakt
+    {% true %}
+        <li class="l"><a class="active" href="{{ contact_url }}">{{ CONTENT }}</a></li>
+    {% false %}
+        <li class="l"><a href="{{ contact_url }}">{{ CONTENT }}</a></li>
+    {% endwrap %}
+</ul>
+{# vim: set et si ts=4 sw=4 syn=django: #}

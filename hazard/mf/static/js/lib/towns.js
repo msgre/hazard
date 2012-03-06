@@ -218,9 +218,9 @@
   get_color = function(type, value) {
     var color;
     if (type === 'hells') {
-      color = interpolate_color('#FFD700', '#EE0000', value);
+      color = interpolate_color('#fac90d', '#7e000b', value);
     } else {
-      color = interpolate_color('#00FFFF', '#0028FF', value);
+      color = interpolate_color('#fac90d', '#7e000b', value);
     }
     return color;
   };

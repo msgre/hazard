@@ -5,6 +5,7 @@ from hazard.territories.views import DistrictListView
 from hazard.mf.models import MfPlaceConflict
 from hazard.territories.models import Region
 from hazard.shared.ajax import JSONView
+from hazard.campaigns.models import Campaign
 
 
 class MfRegionView(JSONView, DistrictListView):
@@ -21,6 +22,7 @@ class MfRegionView(JSONView, DistrictListView):
             'base_template': self.base_template,
             'statistics': statistics,
             'regions': dict([(i.id, i) for i in Region.objects.select_related().all()]),
-            'campaign': self.kwargs['campaign']
+            'campaign_slug': self.kwargs['campaign'],
+            'campaign': Campaign.objects.get(slug=self.kwargs['campaign'])
         })
         return out
