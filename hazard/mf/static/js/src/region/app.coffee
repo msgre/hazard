@@ -114,7 +114,7 @@ window.init_map = () ->
         scrollwheel: false
         zoom: 6
         center: new google.maps.LatLng(49.38512, 14.61765) # stred CR
-        mapTypeControl: false,
+        mapTypeControl: false
         mapTypeId: 'CB'
         streetViewControl: false
         panControl: false

@@ -8,7 +8,7 @@
     <a href="/">Úvodní stránka</a> » <a href="{{ region.get_absolute_url }}">{{ region.title }}</a> » <a href="{{ district.get_absolute_url }}">{{ district.title }}</a> » <span>{{ town.title }}</span>
 {% endblock %}
 
-{% block campaign-submenu %}
+{% block campaign_submenu %}
     {% include "mf/submenu.html" %}
 {% endblock %}
 
@@ -21,7 +21,7 @@
         {% endblock %}
     </div>
 
-    <h3>Situace v ostatních obcích okresu</h3>
+    <h3 class="sedySikmy">Situace v ostatních obcích okresu</h3>
     {% mf_table "town" %}
 {% endblock %}
 

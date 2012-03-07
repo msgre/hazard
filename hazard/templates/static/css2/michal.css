@@ -8,3 +8,9 @@ div.wrapper {
     background-color: #EEE;
     z-index: 10;
 }
+#footer img {
+    opacity:0.5;
+}
+#footer img:hover {
+    opacity:1;
+}

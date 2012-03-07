@@ -28,6 +28,13 @@ MAP_STYLE = [
   {featureType:"administrative", elementType:"labels", stylers:[{visibility:"off"}]},
   {featureType:"administrative.country", elementType:"geometry", stylers:[{visibility:"on"}, {lightness:58}]}
 ]
+MAP_STYLE2 = [
+    {featureType:"landscape", elementType:"all", stylers:[{saturation:-80}]}
+    {featureType:"road", elementType:"all", stylers:[{saturation:-100}]}
+    {featureType:"water", elementType:"all", stylers:[{saturation:-80}]}
+    {featureType:"transit", elementType:"all", stylers:[{saturation:-100}]}
+    {featureType:"poi", elementType:"all", stylers:[{saturation:-100}]}
+]
 
 # globalni objekt se vsemi polygony vykreslenymi do mapy
 POLYS = {}

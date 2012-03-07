@@ -30,6 +30,7 @@
         <li><a href="{{ news_url }}">{{ CONTENT }}</a></li>
     {% endwrap %}
 
+    {% comment %}
     {# - slovnicek ---------------------------------------------------------- #}
     {% url dictionary as dictionary_url %}
     {% wrap request.path|startswith:dictionary_url %}
@@ -39,6 +40,7 @@
     {% false %}
         <li><a href="{{ dictionary_url }}">{{ CONTENT }}</a></li>
     {% endwrap %}
+    {% endcomment %}
 
     {# - kontakt ------------------------------------------------------------ #}
     {% url contact as contact_url %}

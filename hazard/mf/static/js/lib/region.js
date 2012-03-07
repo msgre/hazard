@@ -696,11 +696,11 @@
     TableRowView.prototype.renderFragments = function() {
       var fragments;
       fragments = this.model.get('json_fragments');
-      $('#breadcrumb').html(fragments.breadcrumb);
+      $('#bread').html(fragments.breadcrumb);
       $('#primer').html(fragments.primer_content);
       $('h1').text(this.model.get('title'));
       $('#sub-objects').replaceWith(fragments.sub_objects);
-      $('#submenu').replaceWith(fragments.submenu);
+      $('#podmenu').html(fragments.submenu);
       window.modifier.modifySubobjects();
       return this.model.trigger('TableRowView:page_fragments_changed');
     };

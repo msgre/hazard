@@ -1,5 +1,5 @@
 (function() {
-  var MAP, MAP_STYLE, POLYS, POLYS_COLORS, SCHOVAVACZ_OPTS, VIEW, convert_to_hex, convert_to_rgb, draw_shapes, get_color, hex, interpolate_color, load_maps_api, map_legend, number_to_graph, renderMenu, select_legend_handler, select_legend_handler2, trim, update_map_legend;
+  var MAP, MAP_STYLE, MAP_STYLE2, POLYS, POLYS_COLORS, SCHOVAVACZ_OPTS, VIEW, convert_to_hex, convert_to_rgb, draw_shapes, get_color, hex, interpolate_color, load_maps_api, map_legend, number_to_graph, renderMenu, select_legend_handler, select_legend_handler2, trim, update_map_legend;
   SCHOVAVACZ_OPTS = {
     limit: 4,
     epsilon: 1,
@@ -82,6 +82,49 @@
           visibility: "on"
         }, {
           lightness: 58
+        }
+      ]
+    }
+  ];
+  MAP_STYLE2 = [
+    {
+      featureType: "landscape",
+      elementType: "all",
+      stylers: [
+        {
+          saturation: -80
+        }
+      ]
+    }, {
+      featureType: "road",
+      elementType: "all",
+      stylers: [
+        {
+          saturation: -100
+        }
+      ]
+    }, {
+      featureType: "water",
+      elementType: "all",
+      stylers: [
+        {
+          saturation: -80
+        }
+      ]
+    }, {
+      featureType: "transit",
+      elementType: "all",
+      stylers: [
+        {
+          saturation: -100
+        }
+      ]
+    }, {
+      featureType: "poi",
+      elementType: "all",
+      stylers: [
+        {
+          saturation: -100
         }
       ]
     }

@@ -17,6 +17,7 @@ SINGLE_ZONE = null # okoli konkretni budovy (hover nad mistem v otevrenem InfoWi
 
 # ostatni numericke konstanty
 PIN_Z_INDEX = 10 # z-index ikony s hernou
+DISALLOWED_PIN_Z_INDEX = 12 # z-index ikony s hernou
 HOVERED_PIN_Z_INDEX = PIN_Z_INDEX + 10 # z-index hover ikony
 FILL_Z_INDEX = 14 # zakladni z-index polygonu (a ostatnich objektu) kreslenych do mapy
 MAX_ZOOM_LEVEL = 17 # pokud se provede fokus na mapu po vlozeni vsech znacek do ni, nepriblizuj se vic nez na tuto hodnotu
@@ -25,6 +26,7 @@ POINT_AS_CIRCLE_RADIUS = 8 # pokud je misto reprezentovano bodem, vykreslime jej
 # nastaveni
 FILL_OPTIONS = {} # definice stylu pro objekty kreslene do mapy
 ICONS = {} # definice ikon pouzitych v mape
+ZINDEX = {}
 ICONS_URL = 'http://media.mapyhazardu.cz/img/' # bazove URL, kde se nachazi sprity s ikonama
 
 
@@ -39,7 +41,7 @@ mouse_on_hell = (key, icon_type, force=false) ->
 
     # dynamicka zmena ikony herny
     HELLS[key].setIcon(ICONS["#{ icon_type }_hovered"])
-    HELLS[key].setZIndex(HOVERED_PIN_Z_INDEX)
+    HELLS[key].setZIndex(ZINDEX["#{ icon_type }_hovered"])
 
     # pokud je herna v konfliktu s nejakymi misty, vykreslime je
     if key of window.hazardata.conflicts
@@ -92,7 +94,7 @@ mouse_out_of_hell = (key, icon_type, force=false) ->
 
     # dynamicka zmena ikony herny
     HELLS[key].setIcon(ICONS["#{ icon_type }"])
-    HELLS[key].setZIndex(PIN_Z_INDEX)
+    HELLS[key].setZIndex(ZINDEX["#{ icon_type }"])
 
     # smazani okoli
     if key of ZONES
@@ -209,7 +211,7 @@ draw_hells = () ->
             position: new google.maps.LatLng(geo[1], geo[0])
             title: 'herna' # TODO: window.hells[key], je to ale pole!
             shadow: ICONS['shadow']
-            zIndex: PIN_Z_INDEX
+            zIndex: ZINDEX[icon_type]
             icon: ICONS[icon_type]
 
         # udalosti nad ikonou
@@ -276,41 +278,52 @@ window.late_map = () ->
         zIndex: FILL_Z_INDEX + 2
 
     # definice custom spendlosu
-    size = new google.maps.Size(28, 28)
+    size = new google.maps.Size(15, 32)
     point0 = new google.maps.Point(0, 0)
-    point14 = new google.maps.Point(14, 14)
+    anchor = new google.maps.Point(8, 31)
     ICONS['allowed'] = new google.maps.MarkerImage(
-        "#{ ICONS_URL }yes.png", size, point0, point14
-    )
-    ICONS['allowed_dimmed'] = new google.maps.MarkerImage(
-        "#{ ICONS_URL }yes_dimmed.png", size, point0, point14
+        "#{ ICONS_URL }spendlosy.png"
+        size
+        new google.maps.Point(30, 0)
+        anchor
     )
     ICONS['allowed_hovered'] = new google.maps.MarkerImage(
-        "#{ ICONS_URL }yes_hovered.png", size, point0, point14
+        "#{ ICONS_URL }spendlosy.png"
+        size
+        new google.maps.Point(0, 0)
+        anchor
     )
+    ZINDEX['allowed'] = PIN_Z_INDEX
+    ZINDEX['allowed_hovered'] = HOVERED_PIN_Z_INDEX
     ICONS['disallowed'] = new google.maps.MarkerImage(
-        "#{ ICONS_URL }no.png", size, point0, point14
-    )
-    ICONS['disallowed_dimmed'] = new google.maps.MarkerImage(
-        "#{ ICONS_URL }no_dimmed.png", size, point0, point14
+        "#{ ICONS_URL }spendlosy.png"
+        size
+        new google.maps.Point(15, 0)
+        anchor
     )
     ICONS['disallowed_hovered'] = new google.maps.MarkerImage(
-        "#{ ICONS_URL }no_hovered.png", size, point0, point14
+        "#{ ICONS_URL }spendlosy.png"
+        size
+        new google.maps.Point(0, 0)
+        anchor
     )
+    ZINDEX['disallowed'] = DISALLOWED_PIN_Z_INDEX
+    ZINDEX['disallowed_hovered'] = HOVERED_PIN_Z_INDEX
     ICONS['shadow'] = new google.maps.MarkerImage(
-        "#{ ICONS_URL }shadow.png"
-        new google.maps.Size(27, 14)
-        new google.maps.Point(0,0)
-        new google.maps.Point(8, 0)
+        "#{ ICONS_URL }spendlosy.png"
+        new google.maps.Size(18, 10)
+        new google.maps.Point(45,0)
+        new google.maps.Point(17, 9)
     )
 
     # inicializace mapy
     map_options =
         zoom: 6
         center: new google.maps.LatLng(49.38512, 14.61765) # stred CR
-        mapTypeId: google.maps.MapTypeId.ROADMAP
+        mapTypeId: 'CB'
 
     MAP = new google.maps.Map(document.getElementById("map"), map_options)
+    MAP.mapTypes.set('CB', new google.maps.StyledMapType(MAP_STYLE2, {name:'Černobílá'}))
 
     # vykresleni heren
     draw_hells()

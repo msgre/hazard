@@ -1,5 +1,5 @@
 (function() {
-  var FILL_OPTIONS, FILL_Z_INDEX, HELLS, HOVERED_PIN_Z_INDEX, ICONS, ICONS_URL, INFO_WINDOW, INFO_WINDOW_MARKER, MAP, MAP_STYLE, MAX_ZOOM_LEVEL, PIN_Z_INDEX, PLACES, POINT_AS_CIRCLE_RADIUS, POLYS, POLYS_COLORS, SCHOVAVACZ_OPTS, SINGLE_ZONE, VIEW, ZONES, click_on_hell, convert_to_hex, convert_to_rgb, draw_hells, get_color, hex, interpolate_color, load_maps_api, map_legend, mouse_on_hell, mouse_out_of_hell, number_to_graph, select_legend_handler, select_legend_handler2, trim, update_map_legend;
+  var DISALLOWED_PIN_Z_INDEX, FILL_OPTIONS, FILL_Z_INDEX, HELLS, HOVERED_PIN_Z_INDEX, ICONS, ICONS_URL, INFO_WINDOW, INFO_WINDOW_MARKER, MAP, MAP_STYLE, MAP_STYLE2, MAX_ZOOM_LEVEL, PIN_Z_INDEX, PLACES, POINT_AS_CIRCLE_RADIUS, POLYS, POLYS_COLORS, SCHOVAVACZ_OPTS, SINGLE_ZONE, VIEW, ZINDEX, ZONES, click_on_hell, convert_to_hex, convert_to_rgb, draw_hells, get_color, hex, interpolate_color, load_maps_api, map_legend, mouse_on_hell, mouse_out_of_hell, number_to_graph, select_legend_handler, select_legend_handler2, trim, update_map_legend;
   SCHOVAVACZ_OPTS = {
     limit: 4,
     epsilon: 1,
@@ -82,6 +82,49 @@
           visibility: "on"
         }, {
           lightness: 58
+        }
+      ]
+    }
+  ];
+  MAP_STYLE2 = [
+    {
+      featureType: "landscape",
+      elementType: "all",
+      stylers: [
+        {
+          saturation: -80
+        }
+      ]
+    }, {
+      featureType: "road",
+      elementType: "all",
+      stylers: [
+        {
+          saturation: -100
+        }
+      ]
+    }, {
+      featureType: "water",
+      elementType: "all",
+      stylers: [
+        {
+          saturation: -80
+        }
+      ]
+    }, {
+      featureType: "transit",
+      elementType: "all",
+      stylers: [
+        {
+          saturation: -100
+        }
+      ]
+    }, {
+      featureType: "poi",
+      elementType: "all",
+      stylers: [
+        {
+          saturation: -100
         }
       ]
     }
@@ -200,12 +243,14 @@
   INFO_WINDOW_MARKER = null;
   SINGLE_ZONE = null;
   PIN_Z_INDEX = 10;
+  DISALLOWED_PIN_Z_INDEX = 12;
   HOVERED_PIN_Z_INDEX = PIN_Z_INDEX + 10;
   FILL_Z_INDEX = 14;
   MAX_ZOOM_LEVEL = 17;
   POINT_AS_CIRCLE_RADIUS = 8;
   FILL_OPTIONS = {};
   ICONS = {};
+  ZINDEX = {};
   ICONS_URL = 'http://media.mapyhazardu.cz/img/';
   /*
   Obsluha situace, kdy je kurzor mysi nad hernou.
@@ -219,7 +264,7 @@
       return;
     }
     HELLS[key].setIcon(ICONS["" + icon_type + "_hovered"]);
-    HELLS[key].setZIndex(HOVERED_PIN_Z_INDEX);
+    HELLS[key].setZIndex(ZINDEX["" + icon_type + "_hovered"]);
     if (key in window.hazardata.conflicts) {
       shapes = [];
       if (key in window.hazardata.hell_surrounds) {
@@ -315,7 +360,7 @@
       return;
     }
     HELLS[key].setIcon(ICONS["" + icon_type]);
-    HELLS[key].setZIndex(PIN_Z_INDEX);
+    HELLS[key].setZIndex(ZINDEX["" + icon_type]);
     if (key in ZONES) {
       _ref = ZONES[key];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -429,7 +474,7 @@
         position: new google.maps.LatLng(geo[1], geo[0]),
         title: 'herna',
         shadow: ICONS['shadow'],
-        zIndex: PIN_Z_INDEX,
+        zIndex: ZINDEX[icon_type],
         icon: ICONS[icon_type]
       });
       google.maps.event.addListener(HELLS[key], 'mouseover', function() {
@@ -470,7 +515,7 @@
   Inicializace map, volana jako callback po asynchronnim nacteni Google Maps API.
   */
   window.late_map = function() {
-    var map_options, point0, point14, size;
+    var anchor, map_options, point0, size;
     FILL_OPTIONS['building'] = {
       strokeOpacity: 0,
       fillColor: '#ffffff',
@@ -496,22 +541,27 @@
       fillOpacity: 1,
       zIndex: FILL_Z_INDEX + 2
     };
-    size = new google.maps.Size(28, 28);
+    size = new google.maps.Size(15, 32);
     point0 = new google.maps.Point(0, 0);
-    point14 = new google.maps.Point(14, 14);
-    ICONS['allowed'] = new google.maps.MarkerImage("" + ICONS_URL + "yes.png", size, point0, point14);
-    ICONS['allowed_dimmed'] = new google.maps.MarkerImage("" + ICONS_URL + "yes_dimmed.png", size, point0, point14);
-    ICONS['allowed_hovered'] = new google.maps.MarkerImage("" + ICONS_URL + "yes_hovered.png", size, point0, point14);
-    ICONS['disallowed'] = new google.maps.MarkerImage("" + ICONS_URL + "no.png", size, point0, point14);
-    ICONS['disallowed_dimmed'] = new google.maps.MarkerImage("" + ICONS_URL + "no_dimmed.png", size, point0, point14);
-    ICONS['disallowed_hovered'] = new google.maps.MarkerImage("" + ICONS_URL + "no_hovered.png", size, point0, point14);
-    ICONS['shadow'] = new google.maps.MarkerImage("" + ICONS_URL + "shadow.png", new google.maps.Size(27, 14), new google.maps.Point(0, 0), new google.maps.Point(8, 0));
+    anchor = new google.maps.Point(8, 31);
+    ICONS['allowed'] = new google.maps.MarkerImage("" + ICONS_URL + "spendlosy.png", size, new google.maps.Point(30, 0), anchor);
+    ICONS['allowed_hovered'] = new google.maps.MarkerImage("" + ICONS_URL + "spendlosy.png", size, new google.maps.Point(0, 0), anchor);
+    ZINDEX['allowed'] = PIN_Z_INDEX;
+    ZINDEX['allowed_hovered'] = HOVERED_PIN_Z_INDEX;
+    ICONS['disallowed'] = new google.maps.MarkerImage("" + ICONS_URL + "spendlosy.png", size, new google.maps.Point(15, 0), anchor);
+    ICONS['disallowed_hovered'] = new google.maps.MarkerImage("" + ICONS_URL + "spendlosy.png", size, new google.maps.Point(0, 0), anchor);
+    ZINDEX['disallowed'] = DISALLOWED_PIN_Z_INDEX;
+    ZINDEX['disallowed_hovered'] = HOVERED_PIN_Z_INDEX;
+    ICONS['shadow'] = new google.maps.MarkerImage("" + ICONS_URL + "spendlosy.png", new google.maps.Size(18, 10), new google.maps.Point(45, 0), new google.maps.Point(17, 9));
     map_options = {
       zoom: 6,
       center: new google.maps.LatLng(49.38512, 14.61765),
-      mapTypeId: google.maps.MapTypeId.ROADMAP
+      mapTypeId: 'CB'
     };
     MAP = new google.maps.Map(document.getElementById("map"), map_options);
+    MAP.mapTypes.set('CB', new google.maps.StyledMapType(MAP_STYLE2, {
+      name: 'Černobílá'
+    }));
     draw_hells();
     return $('h1').removeClass('loading');
   };

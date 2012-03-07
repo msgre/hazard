@@ -4,11 +4,11 @@
 
 {% block main %}
     {# hlavni nadpis #}
-    {% block territory-title %}<h1>{% firstof town.title district.title region.title %}</h1>{% endblock %}
+    {% block territory_title %}<h1>{% firstof town.title district.title region.title %}</h1>{% endblock %}
 
     {# menicka #}
     <div class="span-24" id="podmenu-horni">
-        {% block campaign-menu %}
+        {% block campaign_menu %}
             {% if campaigns.count > 1 %}
                 <ul>
                     {% for c in campaigns %}
@@ -19,7 +19,7 @@
         {% endblock %}
     </div>
     <div class="span-24" id="podmenu">
-        {% block campaign-submenu %}{% endblock %}
+        {% block campaign_submenu %}{% endblock %}
     </div>
 
     {# vlastni obsah stranky #}

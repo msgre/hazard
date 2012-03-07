@@ -1,5 +1,5 @@
 (function() {
-  var $, MAP, MAP_STYLE, POINTS, POINT_MAX_RADIUS, POINT_MIN_RADIUS, POLYS, POLYS_COLORS, SCHOVAVACZ_OPTS, VIEW, ajax_key, convert_to_hex, convert_to_rgb, draw_points, draw_shapes, get_color, handle_switcher, handle_table, handle_what_to_do, hex, interpolate_color, load_maps_api, map_legend, number_to_graph, select_legend_handler, select_legend_handler2, trim, update_map_legend, update_points, update_shapes;
+  var $, MAP, MAP_STYLE, MAP_STYLE2, POINTS, POINT_MAX_RADIUS, POINT_MIN_RADIUS, POLYS, POLYS_COLORS, SCHOVAVACZ_OPTS, VIEW, ajax_key, convert_to_hex, convert_to_rgb, draw_points, draw_shapes, get_color, handle_switcher, handle_table, handle_what_to_do, hex, interpolate_color, load_maps_api, map_legend, number_to_graph, select_legend_handler, select_legend_handler2, trim, update_map_legend, update_points, update_shapes;
   var __indexOf = Array.prototype.indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (this[i] === item) return i;
@@ -147,6 +147,49 @@
           visibility: "on"
         }, {
           lightness: 58
+        }
+      ]
+    }
+  ];
+  MAP_STYLE2 = [
+    {
+      featureType: "landscape",
+      elementType: "all",
+      stylers: [
+        {
+          saturation: -80
+        }
+      ]
+    }, {
+      featureType: "road",
+      elementType: "all",
+      stylers: [
+        {
+          saturation: -100
+        }
+      ]
+    }, {
+      featureType: "water",
+      elementType: "all",
+      stylers: [
+        {
+          saturation: -80
+        }
+      ]
+    }, {
+      featureType: "transit",
+      elementType: "all",
+      stylers: [
+        {
+          saturation: -100
+        }
+      ]
+    }, {
+      featureType: "poi",
+      elementType: "all",
+      stylers: [
+        {
+          saturation: -100
         }
       ]
     }

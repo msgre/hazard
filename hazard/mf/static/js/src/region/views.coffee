@@ -93,11 +93,11 @@ class TableRowView extends Backbone.View
     # novy obsah do fragmentu stranky
     renderFragments: () ->
         fragments = @model.get('json_fragments')
-        $('#breadcrumb').html(fragments.breadcrumb)
+        $('#bread').html(fragments.breadcrumb)
         $('#primer').html(fragments.primer_content)
         $('h1').text(@model.get('title'))
         $('#sub-objects').replaceWith(fragments.sub_objects)
-        $('#submenu').replaceWith(fragments.submenu)
+        $('#podmenu').html(fragments.submenu)
         window.modifier.modifySubobjects()
 
         @model.trigger('TableRowView:page_fragments_changed')
