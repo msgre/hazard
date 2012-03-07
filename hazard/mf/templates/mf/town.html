@@ -4,6 +4,10 @@
 
 {% block title %}{{ town.title }} (kampaň {{ campaign.get_title }}){% endblock %}
 
+{% block breadcrumb %}
+    <a href="/">Úvodní stránka</a> » <a href="{{ region.get_absolute_url }}">{{ region.title }}</a> » <a href="{{ district.get_absolute_url }}">{{ district.title }}</a> » <span>{{ town.title }}</span>
+{% endblock %}
+
 {% block campaign-submenu %}
     {% include "mf/submenu.html" %}
 {% endblock %}

@@ -3,6 +3,7 @@
 
 from django import template
 from django.core.urlresolvers import reverse
+from django.utils.datastructures import SortedDict
 
 from hazard.territories.models import Region, District, Town
 
@@ -94,7 +95,7 @@ def mf_table(context, area):
         region_lut = dict(Region.objects.all().values_list('id', 'slug'))
         context['parent_class'] = dict([(i.id, 'region_%s' % region_lut[i.region_id]) for i in context['districts'].values()])
     else:
-        context['objects'] = dict([(i.id, i) for i in context['district'].town_set.select_related().all()])
+        context['objects'] = SortedDict([(i.id, i) for i in context['district'].town_set.select_related().all()])
         context['object_title'] = u'Obec'
 
     # premapovani statistickych informaci pod jine klice

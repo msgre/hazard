@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # vim: set et si ts=4 sw=4:
 
+from django.utils.datastructures import SortedDict
+
 from hazard.territories.views import DistrictListView
 from hazard.mf.models import MfPlaceConflict
 from hazard.territories.models import Region
@@ -21,7 +23,7 @@ class MfRegionView(JSONView, DistrictListView):
         out.update({
             'base_template': self.base_template,
             'statistics': statistics,
-            'regions': dict([(i.id, i) for i in Region.objects.select_related().all()]),
+            'regions': SortedDict([(i.id, i) for i in Region.objects.select_related().all()]),
             'campaign_slug': self.kwargs['campaign'],
             'campaign': Campaign.objects.get(slug=self.kwargs['campaign'])
         })

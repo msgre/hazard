@@ -5,6 +5,7 @@ import itertools
 
 from django.contrib.gis.geos import Polygon
 from django.core.cache import cache
+from django.utils.datastructures import SortedDict
 
 from hazard.gobjects.models import Hell
 from hazard.territories.models import Region, District
@@ -29,8 +30,8 @@ class MfTownDetailView(JSONView, TownDetailView):
         statistics = MfPlaceConflict.statistics(out['district'], group_by='town')
         out.update({
             'base_template': self.base_template,
-            'regions': dict([(i.id, i) for i in Region.objects.select_related().all()]),
-            'districts': dict([(i.id, i) for i in District.objects.select_related().all()]),
+            'regions': SortedDict([(i.id, i) for i in Region.objects.select_related().all()]),
+            'districts': SortedDict([(i.id, i) for i in District.objects.select_related().all()]),
             'statistics': statistics,
             'campaign_slug': self.kwargs['campaign'],
             'campaign': Campaign.objects.get(slug=self.kwargs['campaign'])

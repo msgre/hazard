@@ -13,10 +13,14 @@ class ModifyHtml
         @injectLegend()
         @injectMap()
         @modifySubobjects()
+        @injectDescription()
 
     # pryc s hlavickou tabulky
     modifyTable: () ->
         $('#statistics thead').remove()
+
+    injectDescription: () ->
+        $('.wrapper:first').before('<p id="table-description">V tabulce je zobrazen <span></span>.</p>')
 
     # sup do stranky se selektitky, ktere budou prepinat pohled na data
     injectControl: () ->

@@ -1,5 +1,5 @@
 (function() {
-  var AppView, CONTROL_LEGEND, DEBUG, DistrictList, DistrictView, EVENTS_CACHE, EXTREMS, GEO_OBJECTS_URLS, GeoObject, GeoObjectList, HazardEvents, LEGENDS, LegendView, MAP, MAP_ACTIVE_CIRCLE_BORDER_COLOR, MAP_ACTIVE_CIRCLE_COLOR, MAP_ACTIVE_CIRCLE_ZINDEX, MAP_ACTIVE_POLY_COLOR, MAP_ACTIVE_POLY_ZINDEX, MAP_BORDERS_COLOR, MAP_BORDERS_ZINDEX, MAP_CIRCLE_COLOR, MAP_CIRCLE_ZINDEX, MAP_HOVER_CIRCLE_COLOR, MAP_HOVER_CIRCLE_ZINDEX, MAP_HOVER_POLY_COLOR, MAP_HOVER_POLY_ZINDEX, MAP_POLY_ZINDEX, MAP_STYLE, ModifyHtml, PAGE_TYPE, PARAMETERS, POINT_MAX_RADIUS, POINT_MIN_RADIUS, PrimerView, RegionList, RegionView, TYPES, TableRowView, TableView, convert_to_hex, convert_to_rgb, get_color, hex, interpolate_color, log, parseUrl, path, setPolygonBoundsFn, trim;
+  var AppView, CONTROL_LEGEND, DEBUG, DescriptionView, DistrictList, DistrictView, EVENTS_CACHE, EXTREMS, GEO_OBJECTS_URLS, GeoObject, GeoObjectList, HazardEvents, LEGENDS, LegendView, MAP, MAP_ACTIVE_CIRCLE_BORDER_COLOR, MAP_ACTIVE_CIRCLE_COLOR, MAP_ACTIVE_CIRCLE_ZINDEX, MAP_ACTIVE_POLY_COLOR, MAP_ACTIVE_POLY_ZINDEX, MAP_BORDERS_COLOR, MAP_BORDERS_ZINDEX, MAP_CIRCLE_COLOR, MAP_CIRCLE_ZINDEX, MAP_HOVER_CIRCLE_COLOR, MAP_HOVER_CIRCLE_ZINDEX, MAP_HOVER_POLY_COLOR, MAP_HOVER_POLY_ZINDEX, MAP_POLY_ZINDEX, MAP_STYLE, ModifyHtml, PAGE_TYPE, PARAMETERS, POINT_MAX_RADIUS, POINT_MIN_RADIUS, PrimerView, RegionList, RegionView, TYPES, TableRowView, TableView, convert_to_hex, convert_to_rgb, get_color, hex, interpolate_color, log, parseUrl, path, setPolygonBoundsFn, trim;
   var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
     for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
     function ctor() { this.constructor = child; }
@@ -615,6 +615,29 @@
       return this;
     };
     return PrimerView;
+  })();
+  /*
+  Popis toho co se zobrazuje v tabulce.
+  */
+  DescriptionView = (function() {
+    function DescriptionView() {
+      DescriptionView.__super__.constructor.apply(this, arguments);
+    }
+    __extends(DescriptionView, Backbone.View);
+    DescriptionView.prototype.initialize = function() {
+      this.collection.bind('GeoObjectList:redraw_done', this.render, this);
+      this.types = $('#type option');
+      return this.parameters = $('#parameter option');
+    };
+    DescriptionView.prototype.render = function() {
+      var parameter, type;
+      log('DescriptionView.render');
+      type = this.types.filter(':selected').text();
+      parameter = this.parameters.filter(':selected').text();
+      this.$el.text("" + parameter + " " + type);
+      return this;
+    };
+    return DescriptionView;
   })();
   /*
   Jeden radek tabulky == jeden kraj/okres/obec.
@@ -1261,6 +1284,11 @@
         el: $("#legend"),
         collection: this.options.geo_objects
       });
+      log('AppView.initialize:DescriptionView');
+      new DescriptionView({
+        el: $("#table-description span"),
+        collection: this.options.geo_objects
+      });
       Backbone.history = new Backbone.History;
       return Backbone.history.start({
         pushState: true
@@ -1312,10 +1340,14 @@
       this.injectControl();
       this.injectLegend();
       this.injectMap();
-      return this.modifySubobjects();
+      this.modifySubobjects();
+      return this.injectDescription();
     };
     ModifyHtml.prototype.modifyTable = function() {
       return $('#statistics thead').remove();
+    };
+    ModifyHtml.prototype.injectDescription = function() {
+      return $('.wrapper:first').before('<p id="table-description">V tabulce je zobrazen <span></span>.</p>');
     };
     ModifyHtml.prototype.injectControl = function() {
       var html, makeOption;

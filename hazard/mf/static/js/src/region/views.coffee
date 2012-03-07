@@ -24,6 +24,24 @@ class PrimerView extends Backbone.View
 
 
 ###
+Popis toho co se zobrazuje v tabulce.
+###
+class DescriptionView extends Backbone.View
+    initialize: () ->
+        @collection.bind('GeoObjectList:redraw_done', @render, @)
+        # pomocne promenne
+        @types = $('#type option')
+        @parameters = $('#parameter option')
+
+    render: () ->
+        log('DescriptionView.render')
+        type = @types.filter(':selected').text()
+        parameter = @parameters.filter(':selected').text()
+        @$el.text("#{ parameter } #{ type }")
+        return @
+
+
+###
 Jeden radek tabulky == jeden kraj/okres/obec.
 
 Kazdemu radku odpovida nejaky graficky objekt v mape, se kterym pak spolecne
@@ -573,6 +591,12 @@ class AppView extends Backbone.View
         log('AppView.initialize:LegendView')
         new LegendView
             el: $("#legend")
+            collection: @options.geo_objects
+
+        # view pro popis tabulky
+        log('AppView.initialize:DescriptionView')
+        new DescriptionView
+            el: $("#table-description span")
             collection: @options.geo_objects
 
         # tak ja si myslim, ze troska historie taky jeste nikoho nezabila...

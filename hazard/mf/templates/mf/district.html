@@ -4,6 +4,10 @@
 
 {% block title %}{{ district.title }} (kampaň {{ campaign.get_title }}){% endblock %}
 
+{% block breadcrumb %}
+    <a href="/">Úvodní stránka</a> » <a href="{{ region.get_absolute_url }}">{{ region.title }}</a> » <span>{{ district.title }}</span>
+{% endblock %}
+
 {% block main_header %}
     <h1>{{ district.title }}</h1>
 {% endblock %}
