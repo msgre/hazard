@@ -62,7 +62,7 @@ draw_shapes = () ->
                 zIndex: 10
 
         google.maps.event.addListener POLYS[key], 'click', () ->
-            window.location = "/#{ key }/kampan/mf/"
+            window.location = "/#{ key }/kampane/mf/"
 
 
 ###
@@ -70,7 +70,7 @@ Ajaxove nacteni geografickych dat o polygonech a asynchronni load Google Maps AP
 ###
 load_maps_api = () ->
     $('h1').addClass('loading')
-    $.getJSON '/kampan/mf/ajax/kraje/?detailni', (data) ->
+    $.getJSON '/kampane/mf/ajax/kraje/?detailni', (data) ->
         # NOTE: rychla prasarna
         # copy/paste kodu pro regiony a obce a jeho ohnuti pro potreby uvodni
         # stranky (kde nemame selektitka, ani zadne souvisejici data v HTML
@@ -129,4 +129,4 @@ $(document).ready () ->
         delay: 0
         source: '/autocomplete/'
         select: (event, ui) ->
-            window.location = "#{ ui.item.url }kampan/mf/"
+            window.location = "#{ ui.item.url }kampane/mf/"

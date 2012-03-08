@@ -153,11 +153,11 @@ MAP = undefined
 
 # detekce typu stranky
 path = _.filter(window.location.pathname.split('/'), (i) -> i.length > 0)
-if path.length == 3             # /zlinsky/kampan/mf/
+if path.length == 3             # /zlinsky/kampane/mf/
     PAGE_TYPE = 'region'
-else if path.length == 4        # /zlinsky/vsetin/kampan/mf/
+else if path.length == 4        # /zlinsky/vsetin/kampane/mf/
     PAGE_TYPE = 'district'
-else if path.length == 5        # /zlinsky/vsetin/valasske-mezirici/kampan/mf/
+else if path.length == 5        # /zlinsky/vsetin/valasske-mezirici/kampane/mf/
     PAGE_TYPE = 'town'
 
 # vyzobne z aktualniho URL slug kraje/okresu/mesta

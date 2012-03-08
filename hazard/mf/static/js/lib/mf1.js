@@ -529,7 +529,7 @@
         $('h1').addClass('loading');
         clearTimeout(update_timeout);
         url = $table.find("tr." + key + " a").attr('href');
-        url = "" + (url.replace('/kampan/mf/', '')) + "/_/";
+        url = "" + (url.replace('/kampane/mf/', '')) + "/_/";
         return window.location = url;
       });
       return POLYS[key].setMap(MAP);

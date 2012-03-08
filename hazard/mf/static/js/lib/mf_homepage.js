@@ -313,7 +313,7 @@
         });
       });
       return google.maps.event.addListener(POLYS[key], 'click', function() {
-        return window.location = "/" + key + "/kampan/mf/";
+        return window.location = "/" + key + "/kampane/mf/";
       });
     });
   };
@@ -322,7 +322,7 @@
   */
   load_maps_api = function() {
     $('h1').addClass('loading');
-    return $.getJSON('/kampan/mf/ajax/kraje/?detailni', function(data) {
+    return $.getJSON('/kampane/mf/ajax/kraje/?detailni', function(data) {
       var key, script, _i, _len, _ref;
       window.shapes = {};
       window.regions = {};
@@ -375,7 +375,7 @@
       delay: 0,
       source: '/autocomplete/',
       select: function(event, ui) {
-        return window.location = "" + ui.item.url + "kampan/mf/";
+        return window.location = "" + ui.item.url + "kampane/mf/";
       }
     });
   });

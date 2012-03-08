@@ -14,3 +14,12 @@ div.wrapper {
 #footer img:hover {
     opacity:1;
 }
+#home #content .perex {
+  margin-bottom: .3em;
+}
+#menu ul li a {
+    padding: 10px 10px 10px 30px;
+}
+#content table.vysvetlivky td {
+    text-align:left;
+}

@@ -3,9 +3,9 @@ EXTREMS = {}
 
 # URL adresy, na kterych je mozne ziskat dodatecne informace k datum vyzobnutym ze stranky
 GEO_OBJECTS_URLS =
-    region: '/kampan/mf/ajax/kraje/'
-    district: '/kampan/mf/ajax/okresy/'
-    town: '/kampan/mf/ajax/obce/'
+    region: '/kampane/mf/ajax/kraje/'
+    district: '/kampane/mf/ajax/okresy/'
+    town: '/kampane/mf/ajax/obce/'
 
 
 ###

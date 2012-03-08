@@ -319,9 +319,9 @@
   */
   EXTREMS = {};
   GEO_OBJECTS_URLS = {
-    region: '/kampan/mf/ajax/kraje/',
-    district: '/kampan/mf/ajax/okresy/',
-    town: '/kampan/mf/ajax/obce/'
+    region: '/kampane/mf/ajax/kraje/',
+    district: '/kampane/mf/ajax/okresy/',
+    town: '/kampane/mf/ajax/obce/'
   };
   /*
   Kolekce geografickych objektu, ktere se vyzobly z HTML stranky.
@@ -911,7 +911,7 @@
       if (PAGE_TYPE !== 'town') {
         $('h1').addClass('loading');
         url = this.$el.find('a').attr('href');
-        url = "" + (url.replace('/kampan/mf/', '')) + "/_/";
+        url = "" + (url.replace('/kampane/mf/', '')) + "/_/";
         window.location = url;
       }
       return false;

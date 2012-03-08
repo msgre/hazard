@@ -1,21 +1,23 @@
-{% extends "pages/base.html" %}
+{% extends "pages/context.html" %}
 
 {% load chunks %}
 
-{% block title %}Podrobně o porušování zákona | {{ campaign.title }} | {{ block.super }}{% endblock %}
+{% block title %}Podrobně o porušování zákona | {{ block.super }}{% endblock %}
 
-{% block main %}
+{% block breadcrumb %}
+    <a href="/">Úvodní stránka</a> » <a href="{% url context %}">Souvislosti</a> » <span>Podrobně o porušování zákona</span>
+{% endblock %}
+
+{% block main_header %}
     <h1>Podrobně o porušování zákona</h1>
+{% endblock %}
 
-    <div class="span-8 sidebar">
-        <div class="box">
-            {% chunk "zakon-perex" %}
-        </div>
-    </div>
-    <div class="span-16 text last">
-        {% chunk "zakon-text" %}
-    </div>
-    <div class="clear"></div>
+{% block main_perex %}
+    {% chunk "zakon-perex" %}
+{% endblock %}
+
+{% block main_content %}
+    {% chunk "zakon-text" %}
 {% endblock %}
 
 {# vim: set et si ts=4 sw=4 syn=django: #}

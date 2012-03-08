@@ -1,12 +1,12 @@
 class Workspace extends Backbone.Router
 
     routes:
-        "/:region/:district/:town/kampan/mf/": "town1"
-        ":region/:district/:town/kampan/mf/":  "town2"
-        "/:region/:district/kampan/mf/":       "district1"
-        "/:region/:district/kampan/mf/":       "district2"
-        "/:region/kampan/mf/":                 "region1"
-        "/:region/kampan/mf/":                 "region2"
+        "/:region/:district/:town/kampane/mf/": "town1"
+        ":region/:district/:town/kampane/mf/":  "town2"
+        "/:region/:district/kampane/mf/":       "district1"
+        "/:region/:district/kampane/mf/":       "district2"
+        "/:region/kampane/mf/":                 "region1"
+        "/:region/kampane/mf/":                 "region2"
 
     town1: (region, district, town) ->
         console.log "town1: #{region} / #{district} / #{town}"

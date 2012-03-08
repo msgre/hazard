@@ -10,14 +10,44 @@
         <li><a href="/">{{ CONTENT }}</a></li>
     {% endwrap %}
 
-    {# - kampan ------------------------------------------------------------- #}
+    {# - kampane ------------------------------------------------------------ #}
     {% url campaign-homepage as campaign_url %}
     {% wrap request.path|startswith:campaign_url %}
-        Kampaň
+        Kampaně
     {% true %}
         <li><a class="active" href="{{ campaign_url }}">{{ CONTENT }}</a></li>
     {% false %}
         <li><a href="{{ campaign_url }}">{{ CONTENT }}</a></li>
+    {% endwrap %}
+
+    {# - mapy --------------------------------------------------------------- #}
+    {% url maps as maps_url %}
+    {% wrap request.path|startswith:maps_url %}
+        Mapy
+    {% true %}
+        <li><a class="active" href="{{ maps_url }}">{{ CONTENT }}</a></li>
+    {% false %}
+        <li><a href="{{ maps_url }}">{{ CONTENT }}</a></li>
+    {% endwrap %}
+
+    {# - navody ------------------------------------------------------------- #}
+    {% url manual as manual_url %}
+    {% wrap request.path|startswith:manual_url %}
+        Návody
+    {% true %}
+        <li><a class="active" href="{{ manual_url }}">{{ CONTENT }}</a></li>
+    {% false %}
+        <li><a href="{{ manual_url }}">{{ CONTENT }}</a></li>
+    {% endwrap %}
+
+    {# - souvislosti -------------------------------------------------------- #}
+    {% url context as context_url %}
+    {% wrap request.path|startswith:context_url %}
+        Souvislosti
+    {% true %}
+        <li><a class="active" href="{{ context_url }}">{{ CONTENT }}</a></li>
+    {% false %}
+        <li><a href="{{ context_url }}">{{ CONTENT }}</a></li>
     {% endwrap %}
 
     {# - zpravy ------------------------------------------------------------- #}
@@ -29,18 +59,6 @@
     {% false %}
         <li><a href="{{ news_url }}">{{ CONTENT }}</a></li>
     {% endwrap %}
-
-    {% comment %}
-    {# - slovnicek ---------------------------------------------------------- #}
-    {% url dictionary as dictionary_url %}
-    {% wrap request.path|startswith:dictionary_url %}
-        Slovník pojmů
-    {% true %}
-        <li><a class="active" href="{{ dictionary_url }}">{{ CONTENT }}</a></li>
-    {% false %}
-        <li><a href="{{ dictionary_url }}">{{ CONTENT }}</a></li>
-    {% endwrap %}
-    {% endcomment %}
 
     {# - kontakt ------------------------------------------------------------ #}
     {% url contact as contact_url %}

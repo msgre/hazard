@@ -1,21 +1,23 @@
-{% extends "pages/base.html" %}
+{% extends "pages/context.html" %}
 
 {% load chunks %}
 
 {% block title %}Časový vývoj | {{ block.super }}{% endblock %}
 
-{% block main %}
-    <h1>Časový vývoj</h1>
+{% block breadcrumb %}
+    <a href="/">Úvodní stránka</a> » <a href="{% url context %}">Souvislosti</a> » <span>Časový vývoj</span>
+{% endblock %}
 
-    <div class="span-8 sidebar">
-        <div class="box">
-            {% chunk "timeline-perex" %}
-        </div>
-    </div>
-    <div class="span-16 last text">
-        {% chunk "timeline-text" %}
-    </div>
-    <div class="clear"></div>
+{% block main_header %}
+    <h1>Časový vývoj</h1>
+{% endblock %}
+
+{% block main_perex %}
+    {% chunk "timeline-perex" %}
+{% endblock %}
+
+{% block main_content %}
+    {% chunk "timeline-text" %}
 {% endblock %}
 
 {# vim: set et si ts=4 sw=4 syn=django: #}

@@ -5,11 +5,11 @@
 {% block title %}Kampaň | {{ block.super }}{% endblock %}
 
 {% block breadcrumb %}
-    <a href="/">Úvodní stránka</a> » <span>Kampaň</span>
+    <a href="/">Úvodní stránka</a> » <span>Kampaně</span>
 {% endblock %}
 
 {% block main %}
-    <h1>Kampaň</h1>
+    <h1>Kampaně</h1>
 
     <div class="span-8 sidebar">
         <div class="box">
@@ -17,10 +17,25 @@
         </div>
     </div>
     <div class="span-16 last text">
+        <p>TODO: vysvetlit zakladni princip noveho webu -- ziskame nejaka data,
+        a ty promitame na CR (kraje/okresy/mesta). Kazdy kdo se o hazard v CR
+        zajima tak muze jednoduse zjistit jak je to s hazardem v jeho obci.
+        Momentalne mame zpracovana data z MF, chystame ale dalsi. Prolink na
+        kontakt s napady.<p>
+        <p>Kazde kampani venujeme samostatny prostor v sekci "Kampane". Kazda
+        z kampani je pritomna v mape</p>
+
+
+        <h3>Zpracovane kampane</h3>
         {% for campaign in campaigns %}
-            <h2><a href="{{ campaign.get_absolute_url }}">{{ campaign.title }}</a></h4>
-            <p>{{ campaign.description|striptags }} &mdash; <a href="{{ campaign.get_absolute_url }}">Další podrobnosti</a>…</p>
+            <li><strong><a href="{{ campaign.get_absolute_url }}">{{ campaign.title }}</a></strong><br>
+            {{ campaign.description|striptags }} &mdash; <a href="{{ campaign.get_absolute_url }}">Další podrobnosti</a>…</p></li>
         {% endfor %}
+
+        <h3>Dalsi mapy</h3>
+        <p>TODO: krome aktivit kolem kampani stale provozujeme puvodni MH,
+        spolupracujeme s OSF na mapovani obecnich vyhlasek, apod. Prehled
+        dalsiho mapovani naleznete na strance <a href="/mapy/">Mapy</a>.</p>
     </div>
     <div class="clear"></div>
 {% endblock %}

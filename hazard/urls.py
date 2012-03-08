@@ -10,13 +10,16 @@ admin.autodiscover()
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', TemplateView.as_view(template_name='pages/homepage.html')),
-    url(r'^slovnik-pojmu/', include('hazard.dictionary.urls')),
-    url(r'^kampane/$', RedirectView.as_view(url='/kampan/')),
-    url(r'^kampan/', include('hazard.campaigns.urls')),
+    url(r'^kampan/$', RedirectView.as_view(url='/kampane/')),
+    url(r'^kampane/', include('hazard.campaigns.urls')),
+    url(r'^mapy/', TemplateView.as_view(template_name='pages/maps.html'), name="maps"),
+    url(r'^navody/', TemplateView.as_view(template_name='pages/manual.html'), name="manual"),
     url(r'^zpravy/', include('hazard.news.urls')),
     url(r'^kontakt/$', TemplateView.as_view(template_name='pages/contact.html'), name="contact"),
-    url(r'^porusovani-zakona/$', TemplateView.as_view(template_name='pages/law.html'), name='law'),
-    url(r'^casovy-vyvoj/$', TemplateView.as_view(template_name='pages/timeline.html'), name='timeline'),
+    url(r'^souvislosti/$', TemplateView.as_view(template_name='pages/context.html'), name="context"),
+    url(r'^souvislosti/porusovani-zakona/$', TemplateView.as_view(template_name='pages/law.html'), name='law'),
+    url(r'^souvislosti/casovy-vyvoj/$', TemplateView.as_view(template_name='pages/timeline.html'), name='timeline'),
+    url(r'^souvislosti/slovnik-pojmu/', include('hazard.dictionary.urls')),
 )
 
 # debug static media server

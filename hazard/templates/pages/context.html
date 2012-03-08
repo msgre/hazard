@@ -1,0 +1,39 @@
+{% extends "pages/base.html" %}
+
+{% load chunks %}
+
+{% block title %}Souvislosti | {{ block.super }}{% endblock %}
+
+{% block breadcrumb %}
+    <a href="/">Úvodní stránka</a> » <span>Souvislosti</span>
+{% endblock %}
+
+{% block main %}
+    {% block main_header%}
+        <h1>Souvislosti</h1>
+    {% endblock %}
+
+    <div class="span-8 sidebar">
+        <div class="box">
+            {% block main_perex %}
+                <p>TODO: 1</p>
+            {% endblock %}
+        </div>
+        <ul>
+            <li><a href="{% url context %}">Souvislosti</a></li>
+            <li><a href="{% url law %}">Podrobně o porušování zákona</a></li>
+            <li><a href="{% url timeline %}">Časový vývoj</a></li>
+            <li><a href="{% url dictionary %}">Slovník pojmů</a></li>
+        </ul>
+    </div>
+    <div class="span-16 last text">
+        {% block main_content %}
+            <p>TODO: na strankach a podstrankach sekce souvislosti by mely
+            byt soustredeny obecne informace, ktere se tykaji hazardu. Tj.
+            nic specifickeho (to patri do kampani), ale dlouhodobe platne
+            fakta, apod.</p>
+        {% endblock %}
+    </div>
+    <div class="clear"></div>
+{% endblock %}
+{# vim: set et si ts=4 sw=4 syn=django: #}

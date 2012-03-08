@@ -2,7 +2,11 @@
 
 {% load chunks %}
 
-{% block title %}Kontakt | {{ campaign.title }} | {{ block.super }}{% endblock %}
+{% block title %}Kontakt | {{ block.super }}{% endblock %}
+
+{% block breadcrumb %}
+    <a href="/">Úvodní stránka</a> » <span>Kontakt</span>
+{% endblock %}
 
 {% block main %}
     <h1>Kdo jsme a proč to děláme</h1>

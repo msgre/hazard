@@ -1,35 +1,26 @@
-{% extends "pages/base.html" %}
+{% extends "pages/context.html" %}
 
 {% load chunks %}
 
 {% block title %}Slovník pojmů | {{ block.super }}{% endblock %}
 
-{% block main %}
-    <h1>Slovník pojmů</h1>
-
-    {# seznam terminu #}
-    <div class="span-24" id="podmenu">
-        <ul>
-            {% for term in terms %}
-                <li{% if forloop.last %} class="l"{% endif %}><a href="#termin-{{ term.slug }}">{{ term.title }}</a></li>
-            {% endfor %}
-        </ul>
-    </div>
-
-    <div class="span-8 sidebar">
-        <div class="box">
-            {% chunk "dictionary-perex" %}
-        </div>
-    </div>
-
-    <div class="span-16 last text">
-        {# vypis terminu #}
-        {% for term in terms %}
-            <h2 id="termin-{{ term.slug }}">{{ term.title }}</h2>
-            {{ term.description|safe }}
-        {% endfor %}
-    </div>
-    <div class="clear"></div>
+{% block breadcrumb %}
+    <a href="/">Úvodní stránka</a> » <a href="{% url context %}">Souvislosti</a> » <span>Slovník pojmů</span>
 {% endblock %}
 
+{% block main_header %}
+    <h1>Slovník pojmů</h1>
+{% endblock %}
+
+{% block main_perex %}
+    {% chunk "dictionary-perex" %}
+{% endblock %}
+
+{% block main_content %}
+    {# vypis terminu #}
+    {% for term in terms %}
+        <h2 id="termin-{{ term.slug }}">{{ term.title }}</h2>
+        {{ term.description|safe }}
+    {% endfor %}
+{% endblock %}
 {# vim: set et si ts=4 sw=4 syn=django: #}

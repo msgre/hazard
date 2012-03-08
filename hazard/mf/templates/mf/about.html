@@ -5,7 +5,7 @@
 {% block title %}Co se z mapy dozvíte | {{ campaign.title }} |{{ block.super }}{% endblock %}
 
 {% block breadcrumb %}
-    <a href="/">Úvodní stránka</a> » <a href="{% url campaign-homepage %}">Kampaň</a> » <a href="{{ campaign.get_absolute_url }}">{{ campaign.short_title }}</a> » <span>Co se z mapy dozvíte</span>
+    <a href="/">Úvodní stránka</a> » <a href="{% url campaign-homepage %}">Kampaně</a> » <a href="{{ campaign.get_absolute_url }}">{{ campaign.title }}</a> » <span>Co se z mapy dozvíte</span>
 {% endblock %}
 
 {% block inner_main %}

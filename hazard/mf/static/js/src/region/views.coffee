@@ -291,7 +291,7 @@ class TableRowView extends Backbone.View
         if PAGE_TYPE != 'town'
             $('h1').addClass('loading')
             url = @$el.find('a').attr('href')
-            url = "#{ url.replace('/kampan/mf/', '') }/_/"
+            url = "#{ url.replace('/kampane/mf/', '') }/_/"
             window.location = url
         false
 

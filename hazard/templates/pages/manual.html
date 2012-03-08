@@ -1,0 +1,27 @@
+{% extends "pages/base.html" %}
+
+{% load chunks %}
+
+{% block title %}Návody | {{ block.super }}{% endblock %}
+
+{% block breadcrumb %}
+    <a href="/">Úvodní stránka</a> » <span>Návody</span>
+{% endblock %}
+
+{% block main %}
+    <h1>Návody</h1>
+
+    <div class="span-8 sidebar">
+        <div class="box">
+            TODO: 1
+        </div>
+    </div>
+    <div class="span-16 last text">
+        <p>TODO: Mateji, cleneni teto stranky si musis vymyslet sam. Nemam
+        predstavu kolik toho bude, muzem to ve finale dat vsechno na jedinou
+        stranku, anebo to muzeme nejdrive nejak uvest a pak se na samostatnych
+        podstrankach venovat zvlast lidem, obcim, apod.</p>
+    </div>
+    <div class="clear"></div>
+{% endblock %}
+{# vim: set et si ts=4 sw=4 syn=django: #}

@@ -22,10 +22,10 @@
     <div class="span-12">
         <p class="perex">
             {% chunk "homepage-uvod" %}
-        </h2>
-        <p id="kdo-jsme"><a href="/kontakt/">Zajímá vás kdo jsme a proč to děláme? &rarr;</a></p>
+        </p>
+        <p id="kdo-jsme"><a href="/kontakt/">Zajímá vás kdo jsme a proč to děláme?</a></p>
         <div class="clear"></div>
-        <p id="znate-situaci"><strong>Znáte situaci ve vašem regionu?</strong></p>
+        <h3>Znáte situaci ve vašem regionu?</h3>
         <p style="margin-bottom:0"><input placeholder="Zadejte název obce, okresu nebo kraje" style="width:95%; height:32px; font-size:18px;" type="text" name="search" id="search"></p>
     </div>
     <div class="span-12 last" id="ctverce">
@@ -37,10 +37,12 @@
     <div class="clear"> </div>
     <br>
 
+    {% comment %}
     {# treti lajna #}
     <a id="osa-banner" href="{% url timeline %}">
         <h3>Časový vývoj</h3>
     </a>
+    {% endcomment %}
 
     {# ctvrta lajna #}
     <div id="dolni-boxy">
