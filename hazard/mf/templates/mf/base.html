@@ -2,6 +2,11 @@
 
 {% block container_id %}jak{% endblock %}
 
+{% block js %}
+    {{ block.super }}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.ajaxLoader.js"></script>
+{% endblock %}
+
 {% block main %}
     {# hlavni nadpis #}
     {% block territory_title %}<h1>{% firstof town.title district.title region.title %}</h1>{% endblock %}

@@ -23,3 +23,8 @@ div.wrapper {
 #content table.vysvetlivky td {
     text-align:left;
 }
+div.jquery-ajax-loader {
+	background: #333 url(/static/img/ajax-loader.gif) no-repeat 50% 50%;
+	opacity: .6;
+    z-index:1000;
+}

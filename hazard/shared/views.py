@@ -82,7 +82,6 @@ class NearestHellsView(View):
             return HttpResponseBadRequest()
 
         key = 'api/hells/nearest/%s' % '-'.join([str(i) for i in position])
-        print key
         if key in cache:
             return HttpResponse(cache.get(key), content_type='application/json')
 

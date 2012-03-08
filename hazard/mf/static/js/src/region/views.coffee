@@ -1,3 +1,9 @@
+loading = () ->
+    $('body').ajaxLoader()
+
+unloading = () ->
+    $('body').ajaxLoaderRemove()
+
 ###
 Uvodni text.
 ###
@@ -98,6 +104,7 @@ class TableRowView extends Backbone.View
         $('h1').text(@model.get('title'))
         $('#sub-objects').replaceWith(fragments.sub_objects)
         $('#podmenu').html(fragments.submenu)
+        unloading()
         window.modifier.modifySubobjects()
 
         @model.trigger('TableRowView:page_fragments_changed')
@@ -256,7 +263,6 @@ class TableRowView extends Backbone.View
 
     click: () ->
         json_fragments = @model.get('json_fragments')
-        $h1 = $('h1')
 
         # obsluha pro JSON odpoved ze serveru
         prepare_fragments = (resp, status, xhr) =>
@@ -267,12 +273,12 @@ class TableRowView extends Backbone.View
 
             # aktualizujeme URL prohlizece
             Backbone.history.navigate(@$el.find('a').attr('href'), {replace: true})
-            $h1.removeClass('loading')
+            unloading()
 
         # mame uz menene fragmenty nactene?
         if not json_fragments
             # ne-e; vyzobneme data ze serveru
-            $h1.addClass('loading')
+            loading()
             options =
                 url: "#{ @$el.find('a').attr('href') }?ajax" # NOTE: mrdka, musim pridat neco k URL, jinak prohlizec odpovedi kesuje a pak nabizi po stisku tlacitka Back JSON data
                 success: prepare_fragments
@@ -289,7 +295,7 @@ class TableRowView extends Backbone.View
     # dvojklik nas posle na uzemne nizsi celek (napr. kraj -> okres)
     dblclick: () ->
         if PAGE_TYPE != 'town'
-            $('h1').addClass('loading')
+            loading()
             url = @$el.find('a').attr('href')
             url = "#{ url.replace('/kampane/mf/', '') }/_/"
             window.location = url
@@ -494,7 +500,7 @@ class DistrictView extends Backbone.View
                 @updateGObject('normal')
 
             google.maps.event.addListener gobj, 'click', () =>
-                $('h1').addClass('loading')
+                loading()
                 window.location = "#{ @model.get('url') }_/"
 
         # fokus na okres
@@ -560,7 +566,7 @@ class AppView extends Backbone.View
     el: $('#app')
 
     initialize: () ->
-        $('h1').addClass('loading')
+        loading()
 
         # nacteme data
         log('AppView.initialize:fetch')
@@ -602,6 +608,8 @@ class AppView extends Backbone.View
         # tak ja si myslim, ze troska historie taky jeste nikoho nezabila...
         Backbone.history = new Backbone.History
         Backbone.history.start({pushState: true})
+
+        unloading()
 
     # --- pomocne obrysy kraju ------------------------------------------------
 

@@ -1,5 +1,5 @@
 (function() {
-  var AppView, CONTROL_LEGEND, DEBUG, DescriptionView, DistrictList, DistrictView, EVENTS_CACHE, EXTREMS, GEO_OBJECTS_URLS, GeoObject, GeoObjectList, HazardEvents, LEGENDS, LegendView, MAP, MAP_ACTIVE_CIRCLE_BORDER_COLOR, MAP_ACTIVE_CIRCLE_COLOR, MAP_ACTIVE_CIRCLE_ZINDEX, MAP_ACTIVE_POLY_COLOR, MAP_ACTIVE_POLY_ZINDEX, MAP_BORDERS_COLOR, MAP_BORDERS_ZINDEX, MAP_CIRCLE_COLOR, MAP_CIRCLE_ZINDEX, MAP_HOVER_CIRCLE_COLOR, MAP_HOVER_CIRCLE_ZINDEX, MAP_HOVER_POLY_COLOR, MAP_HOVER_POLY_ZINDEX, MAP_POLY_ZINDEX, MAP_STYLE, ModifyHtml, PAGE_TYPE, PARAMETERS, POINT_MAX_RADIUS, POINT_MIN_RADIUS, PrimerView, RegionList, RegionView, TYPES, TableRowView, TableView, convert_to_hex, convert_to_rgb, get_color, hex, interpolate_color, log, parseUrl, path, setPolygonBoundsFn, trim;
+  var AppView, CONTROL_LEGEND, DEBUG, DescriptionView, DistrictList, DistrictView, EVENTS_CACHE, EXTREMS, GEO_OBJECTS_URLS, GeoObject, GeoObjectList, HazardEvents, LEGENDS, LegendView, MAP, MAP_ACTIVE_CIRCLE_BORDER_COLOR, MAP_ACTIVE_CIRCLE_COLOR, MAP_ACTIVE_CIRCLE_ZINDEX, MAP_ACTIVE_POLY_COLOR, MAP_ACTIVE_POLY_ZINDEX, MAP_BORDERS_COLOR, MAP_BORDERS_ZINDEX, MAP_CIRCLE_COLOR, MAP_CIRCLE_ZINDEX, MAP_HOVER_CIRCLE_COLOR, MAP_HOVER_CIRCLE_ZINDEX, MAP_HOVER_POLY_COLOR, MAP_HOVER_POLY_ZINDEX, MAP_POLY_ZINDEX, MAP_STYLE, ModifyHtml, PAGE_TYPE, PARAMETERS, POINT_MAX_RADIUS, POINT_MIN_RADIUS, PrimerView, RegionList, RegionView, TYPES, TableRowView, TableView, convert_to_hex, convert_to_rgb, get_color, hex, interpolate_color, loading, log, parseUrl, path, setPolygonBoundsFn, trim, unloading;
   var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
     for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
     function ctor() { this.constructor = child; }
@@ -586,6 +586,12 @@
     };
     return DistrictList;
   })();
+  loading = function() {
+    return $('body').ajaxLoader();
+  };
+  unloading = function() {
+    return $('body').ajaxLoaderRemove();
+  };
   /*
   Uvodni text.
   */
@@ -701,6 +707,7 @@
       $('h1').text(this.model.get('title'));
       $('#sub-objects').replaceWith(fragments.sub_objects);
       $('#podmenu').html(fragments.submenu);
+      unloading();
       window.modifier.modifySubobjects();
       return this.model.trigger('TableRowView:page_fragments_changed');
     };
@@ -871,9 +878,8 @@
       });
     };
     TableRowView.prototype.click = function() {
-      var $h1, json_fragments, options, prepare_fragments;
+      var json_fragments, options, prepare_fragments;
       json_fragments = this.model.get('json_fragments');
-      $h1 = $('h1');
       prepare_fragments = __bind(function(resp, status, xhr) {
         if (!json_fragments) {
           this.model.set({
@@ -884,10 +890,11 @@
         Backbone.history.navigate(this.$el.find('a').attr('href'), {
           replace: true
         });
-        return $h1.removeClass('loading');
+        return unloading();
       }, this);
       if (!json_fragments) {
-        $h1.addClass('loading');
+        console.log('1');
+        loading();
         options = {
           url: "" + (this.$el.find('a').attr('href')) + "?ajax",
           success: prepare_fragments
@@ -909,7 +916,8 @@
     TableRowView.prototype.dblclick = function() {
       var url;
       if (PAGE_TYPE !== 'town') {
-        $('h1').addClass('loading');
+        console.log('2');
+        loading();
         url = this.$el.find('a').attr('href');
         url = "" + (url.replace('/kampane/mf/', '')) + "/_/";
         window.location = url;
@@ -1174,7 +1182,8 @@
           return this.updateGObject('normal');
         }, this));
         google.maps.event.addListener(gobj, 'click', __bind(function() {
-          $('h1').addClass('loading');
+          console.log('3');
+          loading();
           return window.location = "" + (this.model.get('url')) + "_/";
         }, this));
       }
@@ -1257,7 +1266,7 @@
     __extends(AppView, Backbone.View);
     AppView.prototype.el = $('#app');
     AppView.prototype.initialize = function() {
-      $('h1').addClass('loading');
+      loading();
       log('AppView.initialize:fetch');
       this.options.geo_objects.fetch();
       log('AppView.initialize:TableRowView');
@@ -1290,9 +1299,10 @@
         collection: this.options.geo_objects
       });
       Backbone.history = new Backbone.History;
-      return Backbone.history.start({
+      Backbone.history.start({
         pushState: true
       });
+      return unloading();
     };
     AppView.prototype.loadRegions = function() {
       log('AppView.loadRegions');
