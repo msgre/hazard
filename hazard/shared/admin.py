@@ -5,6 +5,7 @@ from django.core.cache import cache
 from django.conf import settings
 
 from chunks.models import Chunk
+from chunks.templatetags.chunks import CACHE_PREFIX
 
 
 class ClearCacheMixin(admin.ModelAdmin):
@@ -37,6 +38,14 @@ class ChunkAdmin(admin.ModelAdmin):
                 "%scss/chunk_admin.css" % settings.STATIC_URL,
             )
         }
+
+    def save_model(self, request, obj, form, change):
+        """
+        Smazani cache chunku.
+        """
+        obj.save()
+        cache_key = CACHE_PREFIX + obj.key
+        cache.delete(cache_key)
 
 admin.site.unregister(Chunk)
 admin.site.register(Chunk, ChunkAdmin)
