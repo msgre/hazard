@@ -7,7 +7,20 @@ from django.views.generic import TemplateView, RedirectView
 
 admin.autodiscover()
 
+PREFIX = 'http://www.mapyhazardu.cz/' # TODO: na zivem serveru prepnout
 urlpatterns = patterns('',
+    url(r'^(?P<url>pridat/)$', RedirectView.as_view(url=PREFIX+'%(url)s')),
+    url(r'^(?P<url>hitparada/.*)$', RedirectView.as_view(url=PREFIX+'%(url)s')),
+    url(r'^(?P<url>podporuji-nas/)$', RedirectView.as_view(url=PREFIX+'%(url)s')),
+    url(r'^(?P<url>navod/)$', RedirectView.as_view(url=PREFIX+'%(url)s')),
+    url(r'^(?P<url>sousedstvi/)$', RedirectView.as_view(url=PREFIX+'%(url)s')),
+    url(r'^(?P<url>d/.+)$', RedirectView.as_view(url=PREFIX+'%(url)s')),
+    url(r'^(?P<url>spoluprace/)$', RedirectView.as_view(url=PREFIX+'%(url)s')),
+    url(r'^(?P<url>kml/)$', RedirectView.as_view(url=PREFIX+'%(url)s')),
+    url(r'^(?P<url>gdd-.+)$', RedirectView.as_view(url=PREFIX+'%(url)s')),
+)
+
+urlpatterns += patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', TemplateView.as_view(template_name='pages/homepage.html')),
     url(r'^kampan/$', RedirectView.as_view(url='/kampane/')),

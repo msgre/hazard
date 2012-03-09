@@ -18,14 +18,13 @@ oldMHModal = () ->
         html = """
             <div id="dialog" title="Upozornění" style="display:none">
                 <p><strong>MapyHazardu se mění!</strong></p>
-
-                <p>V březnu 2012 jsme naše stránky zásadně změnili. Chceme o hazardu
-                informovat v širších souvislostech a tento přerod nám to umožní.</p>
-
+                <p>V březnu 2012 jsme naše stránky zásadně změnili. Chceme o
+                hazardu informovat v širších souvislostech a tento přerod nám
+                to umožní.</p>
                 <p>Původní aplikaci, s pomocí které může kdokoliv prověřovat
-                konflikty heren poblíž dříve chráněných budov, jsme ale ponechali.
+                konflikty heren poblíž dříve chráněných budov, jsme ponechali.
                 Najdete ji na adrese
-                <a href="http://puvodni.mapyhazardu.cz/">puvodni.mapyhazardu.cz</a>.
+                <a href="http://puvodni.mapyhazardu.cz/">puvodni.mapyhazardu.cz</a>.</p>
             </div>
         """
         $('body').append(html)

@@ -893,7 +893,6 @@
         return unloading();
       }, this);
       if (!json_fragments) {
-        console.log('1');
         loading();
         options = {
           url: "" + (this.$el.find('a').attr('href')) + "?ajax",
@@ -916,7 +915,6 @@
     TableRowView.prototype.dblclick = function() {
       var url;
       if (PAGE_TYPE !== 'town') {
-        console.log('2');
         loading();
         url = this.$el.find('a').attr('href');
         url = "" + (url.replace('/kampane/mf/', '')) + "/_/";
@@ -1182,7 +1180,6 @@
           return this.updateGObject('normal');
         }, this));
         google.maps.event.addListener(gobj, 'click', __bind(function() {
-          console.log('3');
           loading();
           return window.location = "" + (this.model.get('url')) + "_/";
         }, this));
