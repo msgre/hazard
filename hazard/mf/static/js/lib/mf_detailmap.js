@@ -473,7 +473,6 @@
         map: MAP,
         position: new google.maps.LatLng(geo[1], geo[0]),
         title: 'herna',
-        shadow: ICONS['shadow'],
         zIndex: ZINDEX[icon_type],
         icon: ICONS[icon_type]
       });
@@ -552,7 +551,6 @@
     ICONS['disallowed_hovered'] = new google.maps.MarkerImage("" + ICONS_URL + "spendlosy.png", size, new google.maps.Point(0, 0), anchor);
     ZINDEX['disallowed'] = DISALLOWED_PIN_Z_INDEX;
     ZINDEX['disallowed_hovered'] = HOVERED_PIN_Z_INDEX;
-    ICONS['shadow'] = new google.maps.MarkerImage("" + ICONS_URL + "spendlosy.png", new google.maps.Size(18, 10), new google.maps.Point(45, 0), new google.maps.Point(17, 9));
     map_options = {
       zoom: 6,
       center: new google.maps.LatLng(49.38512, 14.61765),
