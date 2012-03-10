@@ -8,7 +8,7 @@
         <li><a href="{{ town_url }}"{% if request.path == town_url %} class="active"{% endif %}>Základní přehled</a></li>
         {% variable statistics.conflict_hell_counts|key:town.id as conflict_hell_counts %}
         {% if conflict_hell_counts %}
-            <li><a href="{{ town_map_url }}"{% if request.path == town_map_url %} class="active"{% endif %}>Podrobná mapa</a></li>
+            <li><a href="{{ town_map_url }}"{% if request.path == town_map_url %} class="active"{% endif %}>Podrobná mapa této obce</a></li>
         {% endif %}
         <li class="l"><a href="{{ town_comments }}"{% if request.path == town_comments %} class="active"{% endif %}>Komentáře</a></li>
     </ul>
