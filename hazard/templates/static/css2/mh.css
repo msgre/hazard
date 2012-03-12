@@ -12,8 +12,11 @@ h1, h2, h3 {
 h3 {
   font-size: 1.6em; }
 
+a {
+  color: #7d000b; }
+
 #header {
-  padding-bottom: 20px; }
+  padding-bottom: 10px; }
 
 #menu ul {
   float: right;
@@ -69,13 +72,6 @@ h3 {
     font-size: 1.3em;
     line-height: 120%;
     margin-bottom: 0; }
-#content .perex {
-  font-size: 1.8em;
-  color: #5e5d5d;
-  line-height: 120%;
-  margin-bottom: 0.8em; }
-  #content .perex a {
-    color: #444443; }
 #content #znate-situaci p {
   color: #a5a5a5;
   font-size: 1.5em;
@@ -125,8 +121,18 @@ h3 {
       background-image: url("../img/tr.png");
       background-position: 150px top;
       background-repeat: repeat-y; }
-  #content table tr.active td.aLeft {
+  #content table tr.active td.aLeft,
+  #content table tr.hover td.aLeft {
     background-color: #ffd400; }
+#content .mh-text p, #content .mh-text li {
+  font-size: 1.2em; }
+#content .perex {
+  font-size: 1.8em !important;
+  color: #5e5d5d;
+  line-height: 120%;
+  margin-bottom: 0.8em; }
+  #content .perex a {
+    color: #444443; }
 
 #home h3 {
   text-transform: uppercase; }
@@ -162,7 +168,7 @@ h3 {
   #home #dolni-boxy p {
     margin-bottom: 10px; }
 #home #ctverce a {
-  height: 145px;
+  height: 142px;
   display: block;
   text-decoration: none;
   position: relative;
@@ -225,13 +231,13 @@ h3 {
     top: 0;
     left: 0;
     background-image: url("../img/logo-male.png"); }
-#header #bread {
-  margin-top: 18px;
-  margin-left: 95px; }
-  #header #bread a {
+
+#bread {
+  margin-bottom: 10px; }
+  #bread a {
     text-decoration: none;
     color: #444443; }
-  #header #bread span {
+  #bread span {
     color: #fac90e; }
 
 #podmenu, #podmenu-horni {
@@ -290,3 +296,8 @@ h3 {
     padding-left: 10px; }
     #footer p span {
       padding-left: 100px; }
+
+.ui-autocomplete .ui-autocomplete-category {
+  font-weight: bold; }
+.ui-autocomplete .ui-menu-item a {
+  padding-left: 1.4em; }
