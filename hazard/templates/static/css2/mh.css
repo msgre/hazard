@@ -1,4 +1,4 @@
-@import url(http://fonts.googleapis.com/css?family=Magra:400,700|Francois+One&subset=latin,latin-ext);
+@import url(http://fonts.googleapis.com/css?family=Magra:400,700&subset=latin,latin-ext);
 body {
   font-size: 0.8em;
   border-top: 13px solid #444443;
@@ -6,8 +6,8 @@ body {
   text-shadow: 0px 0px 1px rgba(0, 0, 0, 0); }
 
 h1, h2, h3 {
-  font-family: 'Francois One', sans-serif;
-  text-shadow: 0px 0px 1px rgba(0, 0, 0, 0); }
+  font-family: "nimbus-sans-condensed",sans-serif;
+  font-weight: 900; }
 
 h3 {
   font-size: 1.6em; }
@@ -50,7 +50,7 @@ a {
   #content ul.red li {
     background-image: url("../img/li-red.png"); }
 #content h1 {
-  font-size: 2.5em; }
+  font-size: 2.7em; }
 #content .text h2 {
   margin-bottom: 0; }
   #content .text h2.bTop {
@@ -89,7 +89,7 @@ a {
   margin-top: 15px; }
 #content .nadpisPruh {
   border-top: 4px solid #8e8c8d;
-  padding-top: 3px;
+  padding-top: 0px;
   margin-bottom: 20px; }
   #content .nadpisPruh h3 {
     color: white;
@@ -103,6 +103,7 @@ a {
 #content h3.sedySikmy {
   color: white;
   padding: 5px 0 5px 10px;
+  font-size: 1.8em;
   background-color: #8e8c8d;
   background-image: url("../img/sek.png");
   background-repeat: no-repeat;
@@ -161,7 +162,7 @@ a {
   #home #dolni-boxy h3 {
     color: white;
     padding-left: 10px;
-    font-size: 1.4em; }
+    font-size: 1.6em; }
   #home #dolni-boxy a {
     font-size: 1.2em;
     color: #7d000b; }
@@ -193,8 +194,8 @@ a {
   #home #ctverce a h3 {
     position: absolute;
     bottom: 5px;
-    line-height: 135%;
-    font-size: 1.3em;
+    line-height: 95%;
+    font-size: 1.9em;
     margin-bottom: 0;
     color: #383838;
     text-transform: none;

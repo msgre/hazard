@@ -17,6 +17,9 @@
         <link rel="stylesheet" href="{{ STATIC_URL }}css2/michal.css" type="text/css" media="screen, projection">
         {% block css %}{% endblock %}
     {% endcompress %}
+    {# typekit #}
+    <script type="text/javascript" src="http://use.typekit.com/ows4fjx.js"></script>
+    <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
 </head>
 <body id="body">
     <div class="container" id="{% block container_id %}home{% endblock %}">
