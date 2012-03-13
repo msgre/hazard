@@ -125,8 +125,6 @@ a {
   #content table tr.active td.aLeft,
   #content table tr.hover td.aLeft {
     background-color: #ffd400; }
-#content .mh-text p, #content .mh-text li {
-  font-size: 1.2em; }
 #content .perex {
   font-size: 1.8em !important;
   color: #5e5d5d;
