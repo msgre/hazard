@@ -133,6 +133,9 @@ a {
   #content .perex a {
     color: #444443; }
 
+.mh-text p, .mh-text li {
+  font-size: 1.2em; }
+
 #home h3 {
   text-transform: uppercase; }
 #home #kdo-jsme a {
