@@ -12,69 +12,10 @@
     <h1>Mapy</h1>
 
     <div class="span-8 sidebar">
-        <div class="box">
-            <p>Mapujeme hazard. A to hned několika způsoby.</p>
-        </div>
-        <ul>
-            <li><a href="#puvodni-mh">Původní mapy hazardu</a></li>
-            <li><a href="#mapy-ov">Mapa obecních vyhlášek</a></li>
-        </ul>
+        {% chunk "mapy-perex" %}
     </div>
     <div class="span-16 last text">
-        <p>TODO: Krome <a href="/kampane/">kampani</a> mapujeme hazard i na
-        dalsich frontach. Meli bychom ty nase kampane ale nejak vysvetlit,
-        mozna ten zakladni koncept, ze zadas jmeno sve obce/okresu/kraje
-        a dostanes informace o hazardu v tve oblasti. Momentalne mame
-        ale zpracovanu jedinou kampan. Tyto informace ale musi byt i na strance
-        kampane.</p>
-
-        <h2 id="puvodni-mh">Původní mapy hazardu</h2>
-        <p>TODO: obkecani co to je puvodni MH (ze to vzniklo spontanne z Barcampu,
-        ze se behem kratke doby podarilo strhnout pozornost, ze to pouzival
-        ombudsman, ze to slouzi k "lidove" tvorivosti, ze uz to pouze dokumentuje
-        nejakou situaci bez opory v zakone), prolink z textu i screenshotu
-        na <a href="http://www.mapyhazardu.cz/">http://www.mapyhazardu.cz/</a>.</p>
-        <a href="#"><img src="/static/img/puvodni-mh.png"></a>
-
-        <h2 id="mapy-ov">Mapa obecních vyhlášek</h2>
-        <p>TODO: nejaky vysvetlujici text, strucne vysvetleni, uvedeni Jakuba Mracka,
-        podrobnosti na <a href="http://www.tepliceprotihernam.cz/moznosti-regulace-hazardu/">http://www.tepliceprotihernam.cz/moznosti-regulace-hazardu/</a></p>
-        <p><iframe width="630px" height="400px" scrolling="no"  src="https://www.google.com/fusiontables/embedviz?viz=MAP&#038;q=select+col1+from+3032945+&#038;h=false&#038;lat=50.0120182466822&amp;lng=14.93323689062504&#038;z=7&#038;t=1&#038;l=col1"></iframe></p>
-        <h3>Vysvětlivky</h3>
-        <table class="vysvetlivky">
-            <tbody>
-                <tr>
-                    <td><img src="http://www.osf.cz/images/stories/obrazky/ikony/mapa-watchdogu/red.png" alt="" align="middle"></td>
-                    <td>Hazard není regulován vyhláškou</td>
-                    <td><img src="http://www.osf.cz/images/stories/obrazky/ikony/mapa-watchdogu/blue.png" alt="" align="middle"></td>
-                    <td>Plošný zákaz</td>
-                </tr>
-                <tr>
-                    <td><img src="http://www.osf.cz/images/stories/obrazky/ikony/mapa-watchdogu/green.png" alt="" align="middle"></td>
-                    <td>Povolené adresy</td>
-                    <td><img src="http://www.easyicon.cn/download/png/553002/24/" alt="" width="32px"></td>
-                    <td>Zakázané adresy</td>
-                </tr>
-                <tr>
-                    <td><img src="http://www.osf.cz/images/stories/obrazky/ikony/mapa-watchdogu/pink.png" alt="" align="middle"></td>
-                    <td>Vymezená vzdálenost</td>
-                    <td><img src="http://www.osf.cz/images/stories/obrazky/ikony/mapa-watchdogu/purple.png" alt="" align="middle"></td>
-                    <td>Vymezený čas provozu</td>
-                </tr>
-                <tr>
-                    <td><img src="http://cdn-img.easyicon.cn/png/5531/553101.gif" alt="" width="32px"></td>
-                    <td>Omezení reklamy</td>
-                    <td><img src="http://www.osf.cz/images/stories/obrazky/ikony/mapa-watchdogu/lightblue.png" alt="" align="middle"></td>
-                    <td>Omezení propagace nápojů zdarma apod.</td>
-                </tr>
-                <tr>
-                    <td><img src="http://www.osf.cz/images/stories/obrazky/ikony/mapa-watchdogu/yellow.png" alt="" align="middle"></td>
-                    <td>Kombinace vícero opatření</td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            </tbody>
-        </table>
+        {% chunk "mapy-text" %}
     </div>
     <div class="clear"></div>
 {% endblock %}

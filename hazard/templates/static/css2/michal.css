@@ -28,3 +28,14 @@ div.jquery-ajax-loader {
 	opacity: .6;
     z-index:1000;
 }
+
+#home #ctverce a.chunk-admin {
+    display:none;
+}
+a.chunk-admin {
+    text-decoration:none;
+    margin-right:6px;
+    float:left;
+    color:yellow !important;
+    text-shadow: 0 0 6px #000;
+}

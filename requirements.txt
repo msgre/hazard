@@ -15,3 +15,4 @@ BeautifulSoup
 lxml
 slimit
 -e hg+https://bitbucket.org/carljm/django-model-utils#egg=django_model_utils
+-e git+https://github.com/msgre/django-chunks.git#egg=chunk

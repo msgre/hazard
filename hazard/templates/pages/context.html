@@ -16,7 +16,7 @@
     <div class="span-8 sidebar">
         <div class="box">
             {% block main_perex %}
-                <p>TODO: 1</p>
+                {% chunk "souvislosti-perex" %}
             {% endblock %}
         </div>
         <ul>
@@ -28,10 +28,7 @@
     </div>
     <div class="span-16 last text">
         {% block main_content %}
-            <p>TODO: na strankach a podstrankach sekce souvislosti by mely
-            byt soustredeny obecne informace, ktere se tykaji hazardu. Tj.
-            nic specifickeho (to patri do kampani), ale dlouhodobe platne
-            fakta, apod.</p>
+            {% chunk "souvislosti-text" %}
         {% endblock %}
     </div>
     <div class="clear"></div>
