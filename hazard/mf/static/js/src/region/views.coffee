@@ -272,7 +272,7 @@ class TableRowView extends Backbone.View
             @model.trigger('TableRowView:page_fragments_prepared')
 
             # aktualizujeme URL prohlizece
-            Backbone.history.navigate(@$el.find('a').attr('href'), {replace: true})
+            # Backbone.history.navigate(@$el.find('a').attr('href'), {replace: true}) # TODO: MSIE zlobi
             unloading()
 
         # mame uz menene fragmenty nactene?
@@ -605,9 +605,10 @@ class AppView extends Backbone.View
             el: $("#table-description span")
             collection: @options.geo_objects
 
-        # tak ja si myslim, ze troska historie taky jeste nikoho nezabila...
-        Backbone.history = new Backbone.History
-        Backbone.history.start({pushState: true})
+        # TODO: MSIE zlobi
+        # # tak ja si myslim, ze troska historie taky jeste nikoho nezabila...
+        # Backbone.history = new Backbone.History
+        # Backbone.history.start({pushState: true})
 
         unloading()
 

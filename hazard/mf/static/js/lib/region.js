@@ -887,9 +887,6 @@
           });
         }
         this.model.trigger('TableRowView:page_fragments_prepared');
-        Backbone.history.navigate(this.$el.find('a').attr('href'), {
-          replace: true
-        });
         return unloading();
       }, this);
       if (!json_fragments) {
@@ -1294,10 +1291,6 @@
       new DescriptionView({
         el: $("#table-description span"),
         collection: this.options.geo_objects
-      });
-      Backbone.history = new Backbone.History;
-      Backbone.history.start({
-        pushState: true
       });
       return unloading();
     };
