@@ -49,6 +49,10 @@ a {
     list-style-position: inside; }
   #content ul.red li {
     background-image: url("../img/li-red.png"); }
+#content ol li {
+  background-image: url("");
+  background-repeat: no-repeat;
+  background-position: left 3px; }
 #content h1 {
   font-size: 2.7em; }
 #content .text h2 {
@@ -135,6 +139,8 @@ a {
 
 .mh-text p, .mh-text li {
   font-size: 1.2em; }
+.mh-text li li {
+  font-size: 1em; }
 
 #home h3 {
   text-transform: uppercase; }
