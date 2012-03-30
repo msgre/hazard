@@ -1,0 +1,23 @@
+{% extends "pages/context.html" %}
+
+{% load chunks %}
+
+{% block title %}Dokumenty | {{ block.super }}{% endblock %}
+
+{% block breadcrumb %}
+    <a href="/">Úvodní stránka</a> » <a href="{% url context %}">Souvislosti</a> » <span>Dokumenty</span>
+{% endblock %}
+
+{% block main_header %}
+    <h1>Dokumenty</h1>
+{% endblock %}
+
+{% block main_perex %}
+    {% chunk "dokumenty-perex" %}
+{% endblock %}
+
+{% block main_content %}
+    {% chunk "dokumenty-text" %}
+{% endblock %}
+
+{# vim: set et si ts=4 sw=4 syn=django: #}

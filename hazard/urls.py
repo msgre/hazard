@@ -32,6 +32,8 @@ urlpatterns += patterns('',
     url(r'^souvislosti/$', TemplateView.as_view(template_name='pages/context.html'), name="context"),
     url(r'^souvislosti/porusovani-zakona/$', TemplateView.as_view(template_name='pages/law.html'), name='law'),
     url(r'^souvislosti/casovy-vyvoj/$', TemplateView.as_view(template_name='pages/timeline.html'), name='timeline'),
+    url(r'^souvislosti/dokumenty/$', TemplateView.as_view(template_name='pages/documents.html'), name='documents'),
+    url(r'^souvislosti/infografiky/$', TemplateView.as_view(template_name='pages/infograph.html'), name='infograph'),
     url(r'^souvislosti/slovnik-pojmu/', include('hazard.dictionary.urls')),
 )
 

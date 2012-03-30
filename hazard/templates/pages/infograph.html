@@ -1,0 +1,23 @@
+{% extends "pages/context.html" %}
+
+{% load chunks %}
+
+{% block title %}Infografiky | {{ block.super }}{% endblock %}
+
+{% block breadcrumb %}
+    <a href="/">Úvodní stránka</a> » <a href="{% url context %}">Souvislosti</a> » <span>Infografiky</span>
+{% endblock %}
+
+{% block main_header %}
+    <h1>Infografiky</h1>
+{% endblock %}
+
+{% block main_perex %}
+    {% chunk "infografiky-perex" %}
+{% endblock %}
+
+{% block main_content %}
+    {% chunk "infografiky-text" %}
+{% endblock %}
+
+{# vim: set et si ts=4 sw=4 syn=django: #}
