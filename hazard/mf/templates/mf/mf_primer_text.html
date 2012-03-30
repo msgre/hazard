@@ -9,11 +9,11 @@
         {% if conflict_hell_counts %}
             {# uvod; kde #}
             {{ obj.get_lokativ }} povolilo Ministerstvo financí k 23.&nbsp;srpnu&nbsp;2011 provoz
-            <a href="{% url campaign-mf-about campaign="mf" %}">nejméně</a>
+            v <a href="{% url campaign-mf-about campaign="mf" %}">nejméně</a>
 
             {# cisla heren #}
             <span class="hells snippet">
-                {{ conflict_hell_counts }}&nbsp;{{ conflict_hell_counts|grammar:"0=heren,1=herny,?=heren" }}
+                {{ conflict_hell_counts }}&nbsp;{{ conflict_hell_counts|grammar:"0=hernách,1=herně,?=hernách" }}
                 ({{ statistics.conflict_hell_perc|key:obj.id|floatformat:1 }}%&nbsp;z&nbsp;{{ hell_counts }})
             </span>
 
@@ -30,9 +30,9 @@
             v rozporu se zákonem.
         {% else %}
             {{ obj.get_lokativ }} byl k 23. srpnu 2011 povolen Ministerstvem financí
-            provoz
+            provoz v
             <span class="hells snippet">
-                {{ hell_counts }}&nbsp;{{ hell_counts|grammar:"0=heren,1=herny,?=heren" }}
+                {{ hell_counts }}&nbsp;{{ hell_counts|grammar:"0=hernách,1=herně,?=hernách" }}
             </span>
             <span class="snippet">a</span>
             <span class="machines snippet">
