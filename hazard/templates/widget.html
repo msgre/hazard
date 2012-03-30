@@ -1,0 +1,26 @@
+<div style="width:300px; border: thin solid rgb(153, 153, 153);">
+<form id="form1" name="form1" method="get" action="https://www.darujme.cz/index.php">
+<div style="font-weight: bold; text-align:center; font-family: Geneva,Arial,Helvetica,sans-serif; font-size: 12px; padding:15px;">Chci darovat občanskému sdružení Brnění</div>
+  <div style="text-align:center;">
+
+  <input type="button" name="Submit" value="" onclick="document.getElementById('qty').value = 100;" style="border:0; background-image:url({{ STATIC_URL }}img/100kc.gif);height:29px;width:80px;" />
+  <input type="button" name="Submit2" value="" onclick="document.getElementById('qty').value = 300;" style="border:0; background-image:url({{ STATIC_URL }}img/300kc.gif);height:29px;width:80px;" /><br/>
+  <input type="button" name="Submit3" value="" onclick="document.getElementById('qty').value = 500;" style="border:0; background-image:url({{ STATIC_URL }}img/500kc.gif);height:29px;width:80px;" />
+ <input type="button" name="Submit4" value="" onclick="document.getElementById('qty').value = 1000;" style="border:0; background-image:url({{ STATIC_URL }}img/1000kc.gif);height:29px;width:80px;" />
+    </div>
+    <div style="font-weight: normal; text-align:center; font-family: Geneva,Arial,Helvetica,sans-serif; font-size: 12px; padding:10px;">nebo <input id="qty" type="text" name="ammount" style="width:50px;" />  ,-&nbsp;Kč
+      <div style="padding-top:15px;">
+
+      <input type="button" name="Submit4" value="" onClick="submit();" style="border:0; background-image:url({{ STATIC_URL }}img/darovat.gif);height:29px;width:80px; " /></div>
+    </div>
+    <div align="center" style="margin-bottom:15px;"> <a href="http://www.darujme.cz" style="small">powered by darujme.cz<br> BEZPEČNÁ CESTA PRO VAŠE DARY</a>
+
+      </div>
+
+      </div>
+<input type="hidden" name="project" value="200112001"/>
+<input type="hidden" name="client" value="20011201"/>
+<input type="hidden" name="page" value="checkout"/>
+<input type="hidden" name="currency" value="CZK"/>
+</form>
+</div>
