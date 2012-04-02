@@ -11,7 +11,6 @@ AJAX_CACHE_TIMEOUT = 60 * 10
 urlpatterns = patterns('',
     # staticke stranky
     url(r'^$', MfCampaignBase.as_view(template_name='mf/homepage.html'), name='campaign-mf-homepage'),
-    url(r'^pomozte/$', MfCampaignBase.as_view(template_name='mf/help.html'), name='campaign-mf-help'),
     url(r'^o-mape/$', MfCampaignBase.as_view(template_name='mf/about.html'), name='campaign-mf-about'),
     # ajaxy
     url(r'^ajax/(?P<type>kraje|okresy)/$', cache_page(MfAjax.as_view(), AJAX_CACHE_TIMEOUT), name='campaign-mf-ajax'),

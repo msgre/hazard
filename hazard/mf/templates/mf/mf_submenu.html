@@ -1,11 +1,9 @@
 <div class="span-24" id="podmenu">
     {% url campaign-mf-homepage campaign=campaign.slug as mf_homepage_url %}
     {% url campaign-mf-about campaign=campaign.slug as mf_about_url %}
-    {% url campaign-mf-help campaign=campaign.slug as mf_help_url %}
     <ul>
         <li><a href="{{ mf_homepage_url }}"{% if request.path == mf_homepage_url %} class="active"{% endif %}>Stručný úvod</a></li>
         <li><a href="{{ mf_about_url }}"{% if request.path == mf_about_url %} class="active"{% endif %}>Co se z mapy dozvíte</a></li>
-        <li class="l"><a href="{{ mf_help_url }}"{% if request.path == mf_help_url %} class="active"{% endif %}>Pomozte</a></li>
     </ul>
 </div>
 
