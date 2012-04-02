@@ -18,7 +18,7 @@
   oldMHModal = function() {
     var html;
     if (!$.cookie(COOKIE_NAME)) {
-      html = "<div id=\"dialog\" title=\"Upozornění\" style=\"display:none\">\n    <p><strong>MapyHazardu se mění!</strong></p>\n    <p>V březnu 2012 jsme naše stránky zásadně změnili. Chceme o\n    hazardu informovat v širších souvislostech a tento přerod nám\n    to umožní.</p>\n    <p>Původní aplikaci, s pomocí které může kdokoliv prověřovat\n    konflikty heren poblíž dříve chráněných budov, jsme ponechali.\n    Najdete ji na adrese\n    <a href=\"http://puvodni.mapyhazardu.cz/\">puvodni.mapyhazardu.cz</a>.</p>\n</div>";
+      html = "<div id=\"dialog\" title=\"Upozornění\" style=\"display:none\">\n    <p><strong>MapyHazardu se mění!</strong></p>\n    <p>V březnu 2012 jsme naše stránky zásadně změnili. Chceme o\n    hazardu informovat v širších souvislostech a tento přerod nám\n    to umožní.</p>\n    <p>Původní aplikaci, s pomocí které může kdokoliv prověřovat\n    konflikty heren poblíž dříve chráněných budov, jsme ponechali.\n    Najdete ji na adrese\n    <a href=\"http://sousedstvi.mapyhazardu.cz/\">sousedstvi.mapyhazardu.cz</a>.</p>\n</div>";
       $('body').append(html);
       $('#dialog').dialog({
         width: 500,

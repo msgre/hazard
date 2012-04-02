@@ -24,7 +24,7 @@ oldMHModal = () ->
                 <p>Původní aplikaci, s pomocí které může kdokoliv prověřovat
                 konflikty heren poblíž dříve chráněných budov, jsme ponechali.
                 Najdete ji na adrese
-                <a href="http://puvodni.mapyhazardu.cz/">puvodni.mapyhazardu.cz</a>.</p>
+                <a href="http://sousedstvi.mapyhazardu.cz/">sousedstvi.mapyhazardu.cz</a>.</p>
             </div>
         """
         $('body').append(html)

@@ -7,7 +7,8 @@ from django.views.generic import TemplateView, RedirectView
 
 admin.autodiscover()
 
-PREFIX = 'http://www.mapyhazardu.cz/' # TODO: na zivem serveru prepnout
+# URL ze stareho webu
+PREFIX = 'http://puvodni.mapyhazardu.cz/'
 urlpatterns = patterns('',
     url(r'^(?P<url>pridat/)$', RedirectView.as_view(url=PREFIX+'%(url)s')),
     url(r'^(?P<url>hitparada/.*)$', RedirectView.as_view(url=PREFIX+'%(url)s')),
