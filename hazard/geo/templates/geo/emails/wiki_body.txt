@@ -4,7 +4,7 @@ Právě nám někdo poslal na web mapu pro obec {{ entry.title }}.
 Nepovedlo se ale z Wikipedie vysosnout podrobnější informace o obci
 a je třeba to ošéfovat nějak manuálně.
 
-http://www.mapyhazardu.cz/admin/
-http://www.mapyhazardu.cz/admin/geo/entry/{{ entry.id }}/
+http://sousedstvi.mapyhazardu.cz/admin/
+http://sousedstvi.mapyhazardu.cz/admin/geo/entry/{{ entry.id }}/
 
 Gudlak.

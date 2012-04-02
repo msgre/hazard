@@ -4,6 +4,6 @@ Právě nám někdo poslal na web mapu pro obec {{ entry.title }}.
 Pro tuto obec ale už data máme a nyní se musí zkontrolovat, která z
 map popisuje situaci v obci lépe.
 
-http://www.mapyhazardu.cz/admin/geo/entry/{{ entry.id }}/
+http://sousedstvi.mapyhazardu.cz/admin/geo/entry/{{ entry.id }}/
 
 Tak šup šup.

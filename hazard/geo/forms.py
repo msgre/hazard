@@ -433,7 +433,7 @@ class EmailForm(forms.Form):
     DEFAULT_EMAIL_MESSAGE = u"""Dobrý den,
 děkujeme za Váš příspěvek do mapovaní hazardu v ČR.
 
-Musíme Vás ale upozornit, že obec %(title)s je v naší aplikaci už evidována. Pokud chcete informace o hernách či budovách aktualizovat, prostudujte si podrobně tento návod: http://www.mapyhazardu.cz/spoluprace/
+Musíme Vás ale upozornit, že obec %(title)s je v naší aplikaci už evidována. Pokud chcete informace o hernách či budovách aktualizovat, prostudujte si podrobně tento návod: http://sousedstvi.mapyhazardu.cz/spoluprace/
 
 Děkujeme
 
