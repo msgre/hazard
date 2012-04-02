@@ -18,6 +18,17 @@
     {% include "header_big.html" %}
 {% endblock %}
 
+{% block body_start %}
+    <div id="fb-root"></div>
+    <script>(function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/cs_CZ/all.js#xfbml=1";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));</script>
+{% endblock %}
+
 {% block main %}
     {# uvodni lajna #}
     <div class="span-12">
@@ -53,6 +64,8 @@
             <p>
                 <a href="{% url new-list %}">Starší zprávy  »</a>
             </p>
+            {# fb like box #}
+            <div class="fb-like-box" data-href="https://www.facebook.com/pages/Mapy-Hazardu/365105930194901" data-width="260" data-height="240" data-show-faces="false" data-stream="true" data-header="true"></div>
         </div>
         <div class="span-7 append-1">
             {% chunk "homepage-aktualne" %}

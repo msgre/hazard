@@ -22,6 +22,7 @@
     <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
 </head>
 <body id="body">
+    {% block body_start %}{% endblock %}
     <div class="container" id="{% block container_id %}home{% endblock %}">
         {% block page_header %}{% endblock %}
         <div id="content" class="mh-text">
