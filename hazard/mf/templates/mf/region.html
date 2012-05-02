@@ -7,7 +7,7 @@
 {% block fb %}
     <meta property="og:type" content="article">
     <meta property="og:title" content="{{ region.title }}">
-    <meta property="og:description" content="{% filter striptags %}{% mf_primer_text region %}{% endfilter %}">
+    <meta property="og:description" content="{% filter striptags|stripstar|stripmultiwhitechars|nbsp2space %}{% mf_primer_text region %}{% endfilter %}">
     <meta property="og:url" content="http://www.mapyhazardu.cz{{ request.path }}">
 {% endblock %}
 

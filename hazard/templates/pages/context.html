@@ -1,13 +1,13 @@
 {% extends "pages/base.html" %}
 
-{% load chunks %}
+{% load chunks shared %}
 
 {% block title %}Souvislosti | {{ block.super }}{% endblock %}
 
 {% block fb %}
     <meta property="og:type" content="article">
     <meta property="og:title" content="Souvislosti">
-    <meta property="og:description" content="{% filter striptags %}{% chunk "souvislosti-perex" %}{% endfilter %}">
+    <meta property="og:description" content="{% filter striptags|stripstar|stripmultiwhitechars|nbsp2space %}{% chunk "souvislosti-perex" %}{% endfilter %}">
     <meta property="og:url" content="http://www.mapyhazardu.cz{{ request.path }}">
 {% endblock %}
 

@@ -114,6 +114,10 @@ def key(dictionary, key):
 def space2nbsp(value):
     return mark_safe(value.replace(u' ', u'&nbsp;'))
 
+@register.filter
+def nbsp2space(value):
+    return value.replace(u'&nbsp;', u' ')
+
 
 class Variable(ttag.helpers.AsTag):
     """
@@ -335,4 +339,15 @@ do_wrap = register.tag("wrap", do_wrap)
 def startswith(text, substr):
     return text.startswith(substr)
 
+@register.filter
+def stripnewlines(text):
+    return text.replace(u'\n', u' ').strip()
 
+WHITECHARS_RE = re.compile(r'\s+')
+@register.filter
+def stripmultiwhitechars(text):
+    return WHITECHARS_RE.sub(u' ', text).strip()
+
+@register.filter
+def stripstar(text):
+    return text.replace(u'✸', u' ').strip()

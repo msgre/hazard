@@ -7,7 +7,7 @@
 {% block fb %}
     <meta property="og:type" content="article">
     <meta property="og:title" content="Návody, jak se zbavit hazardu">
-    <meta property="og:description" content="{% filter striptags %}{% chunk "navody-perex" %}{% endfilter %}">
+    <meta property="og:description" content="{% filter striptags|stripstar|stripmultiwhitechars|nbsp2space %}{% chunk "navody-perex" %}{% endfilter %}">
     <meta property="og:url" content="http://www.mapyhazardu.cz{{ request.path }}">
 {% endblock %}
 
