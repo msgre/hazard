@@ -4,6 +4,13 @@
 
 {% block title %}{{ district.title }} (kampaň {{ campaign.get_title }}){% endblock %}
 
+{% block fb %}
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="{{ district.title }}">
+    <meta property="og:description" content="{% filter striptags %}{% mf_primer_text district %}{% endfilter %}">
+    <meta property="og:url" content="http://www.mapyhazardu.cz{{ request.path }}">
+{% endblock %}
+
 {% block breadcrumb %}
     <a href="/">Úvodní stránka</a> » <a href="{{ region.get_absolute_url }}">{{ region.title }}</a> » <span>{{ district.title }}</span>
 {% endblock %}
@@ -19,7 +26,7 @@
             {# TODO: mohl bych tu konecne zrealizovat i to vyrazeni grafu, pokud v obci nic neni #}
             {% mf_primer_text district %}
         {% endblock %}
-        <iframe src="//www.facebook.com/plugins/like.php?href&amp;send=false&amp;layout=standard&amp;width=400&amp;show_faces=true&amp;action=like&amp;colorscheme=light&amp;font&amp;height=80" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:80px;" allowTransparency="true"></iframe>
+        <iframe src="//www.facebook.com/plugins/like.php?href={% filter urlencode %}http://www.mapyhazardu.cz{{ request.path }}{% endfilter %}&amp;send=false&amp;layout=standard&amp;width=400&amp;show_faces=true&amp;action=like&amp;colorscheme=light&amp;font&amp;height=80" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:80px;" allowTransparency="true"></iframe>
     </div>
 
     <h3 class="sedySikmy">Situace v ostatních okresech</h3>

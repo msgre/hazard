@@ -4,6 +4,13 @@
 
 {% block title %}Návody, jak se zbavit hazardu | {{ block.super }}{% endblock %}
 
+{% block fb %}
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Návody, jak se zbavit hazardu">
+    <meta property="og:description" content="{% filter striptags %}{% chunk "navody-perex" %}{% endfilter %}">
+    <meta property="og:url" content="http://www.mapyhazardu.cz{{ request.path }}">
+{% endblock %}
+
 {% block breadcrumb %}
     <a href="/">Úvodní stránka</a> » <span>Návody, jak se zbavit hazardu</span>
 {% endblock %}
@@ -16,7 +23,7 @@
     </div>
     <div class="span-16 last text">
         {% chunk "navody-text" %}
-        <iframe src="//www.facebook.com/plugins/like.php?href&amp;send=false&amp;layout=standard&amp;width=450&amp;show_faces=true&amp;action=like&amp;colorscheme=light&amp;font&amp;height=80" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:80px;" allowTransparency="true"></iframe>
+        <iframe src="//www.facebook.com/plugins/like.php?href={% filter urlencode %}http://www.mapyhazardu.cz{{ request.path }}{% endfilter %}&amp;send=false&amp;layout=standard&amp;width=450&amp;show_faces=true&amp;action=like&amp;colorscheme=light&amp;font&amp;height=80" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:80px;" allowTransparency="true"></iframe>
     </div>
     <div class="clear"></div>
 {% endblock %}
