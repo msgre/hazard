@@ -137,6 +137,9 @@ register.tag(Variable)
 def grammar(count, variants):
     """
     Sklonovadlo.
+
+    Pouziti:
+        {{ some_count }}&nbsp;{{ some_count|grammar:"0=hernách,1=herně,?=hernách" }}
     """
     variants = [[y.strip() for y in i.strip().split('=')] for i in variants.split(',')]
     variants = dict([(i[0] == '?' and i[0] or int(i[0]), i[1]) for i in variants])

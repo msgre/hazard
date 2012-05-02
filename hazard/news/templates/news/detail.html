@@ -4,6 +4,13 @@
 
 {% block title %}{{ new.title }} | Zprávy | {{ block.super }}{% endblock %}
 
+{% block fb %}
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="{{ new.title }}">
+    <meta property="og:description" content="{{ new.annotation }}">
+    <meta property="og:url" content="http://www.mapyhazardu.cz{{ request.path }}">
+{% endblock %}
+
 {% block breadcrumb %}
     <a href="/">Úvodní stránka</a> » <a href="{% url new-list %}">Zprávy</a> » <span>{{ new.title }}</span>
 {% endblock %}
