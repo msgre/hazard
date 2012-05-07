@@ -106,7 +106,7 @@ class KMLForm(forms.Form):
         if data:
             # kontrola URL
             data = data.strip()
-            if 'output=nl' not in data:
+            if 'output=nl' not in data and data.startswith('http://maps.google.com/'):
                 data = data + '&output=nl'
 
             # stahneme KML soubor
