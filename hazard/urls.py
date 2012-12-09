@@ -36,6 +36,7 @@ urlpatterns += patterns('',
     url(r'^souvislosti/dokumenty/$', TemplateView.as_view(template_name='pages/documents.html'), name='documents'),
     url(r'^souvislosti/infografiky/$', TemplateView.as_view(template_name='pages/infograph.html'), name='infograph'),
     url(r'^souvislosti/slovnik-pojmu/', include('hazard.dictionary.urls')),
+    url(r'^souvislosti/kalkulacka/', TemplateView.as_view(template_name='pages/calculator.html'), name="calculator"),
 )
 
 # debug static media server
