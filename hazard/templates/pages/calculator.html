@@ -11,10 +11,6 @@
     <meta property="og:url" content="http://www.mapyhazardu.cz{{ request.path }}">
 {% endblock %}
 
-{% block plain_js %}
-	<script type="text/javascript" src="{{ STATIC_URL }}js/kalkulacka.js"></script>
-{% endblock %}
-
 {% block breadcrumb %}
     <a href="/">Úvodní stránka</a> » <a href="{% url context %}">Souvislosti</a> » <span>Kalouskova kalkulačka</span>
 {% endblock %}
@@ -29,41 +25,48 @@
 
 {% block main_content %}
     <div id="kalkulacka">
-        <form>
-            <div><label for="suma_penez">Kolik obec má z matů peněz: </label><input value="10000000" id="suma_penez" type="text"></div>
-            <div><label for="suma_matu">Kolik matů má obec: </label><input value="100" id="suma_matu" type="text"></div>
-            <div class="center"><input type="submit" value="Kolik do toho museli občané naházet" /></div>
+        <form style="font-size:140%">
+            <div><label style="float:left;width:300px" for="suma_penez">Kolik má obec z automatů peněz: </label><input style="margin-bottom:0" value="10000000" id="suma_penez" type="text"><br/><span style="font-size:80%"><em>Čísla zjistíte na <a href="#">XXX</a></em></span></div>
+            <div><label style="float:left;width:300px" for="suma_matu">Kolik automatů má obec: </label><input style="margin-bottom:0" value="100" id="suma_matu" type="text"><br/><span style="font-size:80%"><em>Počty přístrojů povolovaných Ministerstvem financí, VLT apod. zjistíte v <a href="http://www.osbrneni.cz/wp-content/uploads/2012/12/Česká-republika.xlsx">našem seznamu</a>, počty klasických automatů (VHP) na vaší obci <a href="#">nebo zde</a></em></span></div>
         </form>
+        <br/>
+        <hr/>
+        <div style="padding:20px; font-size:140%;text-align:center;">
+            <h2>Ve vaší obci naházeli lidé do matů <span class="r_vysledek"></span>. @děkujeme</h2>
+        </div>
+        <hr/>
         <div id="rovnice">
-            <h2>Sofistikovaný výpočet:</h2>
-            <p>Pevná složka: 0.8 × (<span id="r_pocet_matu"></span> × 55 × 365) = <strong class="r_pevna"></strong><br />
-                <em>80 % z (počet automatů v obci × denní taxa × počet dní v roce)</em>
+            <h2>Sofistikovaný výpočet</h2>
+            <br/>
+		<p>Výpočet se skládá z pevné složky (denní taxa 55 Kč za každý hazardní přístroj) a proměnné složky, podle toho, kolik lidé do automatů naházejí. Viz <a href="http://www.osbrneni.cz/wp-content/uploads/2012/01/Legislativa_Zakon-c-_202_1990Sb_o_loteriich_a_jinych_podobnych_hrach_ve_zneni_k_1012012_pracovni_verze.pdf">zákon o loteriích</a>, § 41 - § 41i.I</p>
+            <p><strong>Pevná složka</strong></p>
+            <p>0.8 × (<span id="r_pocet_matu"></span> × 55 × 365) = <strong class="r_pevna"></strong><br />
+                <em>80 % z (počet automatů v obci × denní taxa × počet dní v roce); 20% jde státu</em>
             </p>
-            <p>Poměrná složka:
-            </p>
+            <p><strong>Poměrná složka</strong></p>
             <ol>
                 <li>
                     <span id="r_pocet_penez"></span> - <span class="r_pevna"></span> = <strong class="r_pomerna"></strong>
-                    <br /><em>(Celkový počet peněz - pevná částka) = Kolik peněz připadá na poměrnou částku</em>
+                    <br /><em>(Celkový počet peněz - pevná částka) = Tolik peněz připadá na poměrnou částku</em>
                 </li>
                 <li>
                     <span class="r_pomerna"></span> / 80 × 100 = <strong class="r_pomerna_cela"></strong><br />
-                    <em>Rozdíl z bodu 1 je 80 % co musel provozovatel odvést, proto zjistíme 100 %</em>
+                    <em>Obce získávají z povinného odvodu od hazardních firem 80 %, 20 % jde státu</em>
                 </li>
                 <li>
                     <span class="r_pomerna_cela"></span> / 20 × 100 = <strong class="r_pomerna_cela_prov"></strong><br />
-                    <em>Výsledek z bodu 2 je 20 % toho co provozovatelům zůstane z rozdílu prohry - výhry. Opět zjistíme 100 %</em>
+                    <em>Provozovatelé jsou zdaněni 20 % z toho, co u nich hráči prohrají</em>
                 </li>
                 <li>
                     <span class="r_pomerna_cela_prov"></span> × 4 = <strong class="r_vysledek"></strong><br />
-                    <em>Výsledke z bodu 3 mluví o rozdílu mezi výhrami a prohrami, čili jde (teoreticky) o 25 % toho, co tam fakt nahází. Čili opět získáme 100 %</em>
+                    <em>Hráčům se podle zákona musí vrátit 75 % z toho, co do automatů nahází</em>
                 </li>
             </ol>
-            <h2 class="center">Ve vaší obci naházel lidé do matů <span class="r_vysledek"></span> korun. @děkujeme</h2>
         </div>
     </div>
-    <script>Kalkulacka.run();</script>
-
     {% chunk "kalkulacka-text" %}
+    <script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/kalkulacka.js"></script>
+    <script>Kalkulacka.run();</script>
 {% endblock %}
 {# vim: set et si ts=4 sw=4 syn=django: #}
