@@ -240,12 +240,16 @@ class KMLForm(forms.Form):
         Pokusi se pres Google Geocode service zjistit kteremu mestu odpovida
         zadana pozice `pos`.
         """
-        json = geocode("%(lat)s, %(lon)s" % pos, '')
-        try:
-            town = json['Placemark'][0]['AddressDetails']['Country']['AdministrativeArea']['SubAdministrativeArea']['SubAdministrativeAreaName']
-        except (KeyError, IndexError):
-            town = None
-        return town
+        json = geocode(pos['lat'], pos['lon'])
+        if json['status'] == 'OK':
+            parts = [i['address_components'] for i in json['results'] if 'locality' in i['types']]
+            if not len(parts):
+                return None
+            town = [i['long_name'] for i in parts[0] if 'locality' in i['types']]
+            if not town:
+                return None
+            return town[0]
+        return None
 
     def guess_wikipedia_url(self, town):
         """
