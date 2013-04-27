@@ -1,17 +1,12 @@
 import urllib
 from utils import simplejson, geocoder_factory
 
-# http://code.google.com/apis/maps/documentation/geocoding/index.html
-
-def geocode(q, api_key):
+# https://developers.google.com/maps/documentation/geocoding/#ReverseGeocoding
+def geocode(lat, lon):
     json = simplejson.load(urllib.urlopen(
-        'http://maps.google.com/maps/geo?' + urllib.urlencode({
-            'q': q.encode('utf-8'),
-            'output': 'json',
-            'oe': 'utf8',
-            'sensor': 'false',
-            'key': api_key,
-            'hl': 'cs'
+        'http://maps.googleapis.com/maps/api/geocode/json?' + urllib.urlencode({
+            'latlng': '%s,%s' % (lat, lon),
+            'sensor': 'false'
         })
     ))
     return json
