@@ -6,7 +6,8 @@ def geocode(lat, lon):
     json = simplejson.load(urllib.urlopen(
         'http://maps.googleapis.com/maps/api/geocode/json?' + urllib.urlencode({
             'latlng': '%s,%s' % (lat, lon),
-            'sensor': 'false'
+            'sensor': 'false',
+            'language': 'cs'
         })
     ))
     return json
