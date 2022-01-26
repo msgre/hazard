@@ -5,7 +5,7 @@ django-compressor==0.6.4
 South==0.7.3
 -e git+https://github.com/sebleier/django-redis-cache.git@41b51139aeb61a3c36d80c1e8ee4c63f003ea6b6#egg=django_redis_cache-0.5.0-py2.7-dev
 redis==2.2.2
-ipython==0.10.1
+ipython==7.16.3
 uwsgi
 Markdown==2.0.3
 Fabric==1.0.0
